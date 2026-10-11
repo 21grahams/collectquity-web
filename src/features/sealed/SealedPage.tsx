@@ -148,15 +148,16 @@ function SealedCard({
         isLong ? quarterBoxes(item.quarterUnitValues, item.quantity, item.totalCost, year) : undefined
       }
       onQuarterClick={isLong ? (q) => onQuarter(q.quarter) : undefined}
+      // Completed holds are history: their sale is already recorded, so their items are read-only.
       actions={
-        <>
-          <IconAction label="Edit" icon={<EditOutlined />} onClick={onEdit} />
-          {isLong && <IconAction label="Mark Sold" icon={<SellOutlined />} tone="green" onClick={onSell} />}
-          {item.holdStatus !== 'historical' && (
+        item.holdStatus === 'historical' ? undefined : (
+          <>
+            <IconAction label="Edit" icon={<EditOutlined />} onClick={onEdit} />
+            {isLong && <IconAction label="Mark Sold" icon={<SellOutlined />} tone="green" onClick={onSell} />}
             <IconAction label="Move" icon={<SwapHorizOutlined />} onClick={onMove} />
-          )}
-          <IconAction label="Remove" icon={<DeleteOutline />} tone="danger" onClick={onRemove} />
-        </>
+            <IconAction label="Remove" icon={<DeleteOutline />} tone="danger" onClick={onRemove} />
+          </>
+        )
       }
     />
   );

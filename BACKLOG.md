@@ -42,6 +42,11 @@ Ideas agreed for **after** the new app matches the old one (parity first). Not s
   Decide what happens to photos when an item is sold or merged. Lighter alternative for Singles:
   official card art from a free card database (e.g. Pokémon TCG API) by Pokémon + set, with no
   uploads; set-name matching won't always work, and sealed has no equivalent.
+- **Edit a completed hold (low priority, database).** Completed holds are read-only in the app
+  (their sale is recorded at completion, so editing or removing their items would make Sealed and
+  Summary disagree). If a past hold ever needs correcting, add a proper edit for the hold itself:
+  sold price, cost and profit, plus its items, updated together. Until then, fixes are a one-off
+  database change.
 - **Collections (long-term; staged).** Goal: eventually a real product for other people; for
   now the owner tracks only Pokémon but wants the ability to add more. Collections live under
   one account (Gmail-style: graham.kirsh@ holds Pokémon, Shoes, Hats); a new email is an
