@@ -29,14 +29,16 @@ export function groupSealed(items: readonly SealedItem[]): SealedGroup[] {
     .map((g) => ({ ...g, items: newestFirst(g.items) }));
 }
 
+const unitsLabel = (n: number) => `${n} unit${n !== 1 ? 's' : ''}`;
+
 export function groupSummary(group: SealedGroup, valuePct = 100): string {
-  if (valuePct < 100) {
-    const t = totals(group.items, { valuePct });
+  const t = totals(group.items, { valuePct });
+  const base = `${unitsLabel(t.units)} · ${formatMoney(t.totalValue)}`;
 
-    return `${t.units} units · ${formatMoney(t.totalValue)} @${valuePct}%`;
-  }
-  const t = totals(group.items);
-  const base = `${t.units} units · ${formatMoney(t.totalValue)}`;
+  return valuePct < 100 ? `${base} @${valuePct}%` : base;
+}
 
-  return group.status === 'long' ? `${base} · ${formatMoney(t.value80)} @80%` : base;
+/** A completed hold's header: the real sale total instead of a stale market value. */
+export function soldSummary(group: SealedGroup, soldPrice: number): string {
+  return `${unitsLabel(totals(group.items).units)} · Sold ${formatMoney(soldPrice)}`;
 }

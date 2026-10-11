@@ -2,7 +2,7 @@ import type { SealedItem } from '../api/types';
 
 import { describe, expect, it } from 'vitest';
 
-import { groupSealed, groupSummary } from './sealedGroups';
+import { groupSealed, groupSummary, soldSummary } from './sealedGroups';
 
 function item(overrides: Partial<SealedItem>): SealedItem {
   return {
@@ -52,12 +52,12 @@ describe('groupSealed', () => {
 });
 
 describe('groupSummary', () => {
-  it('shows units, value and @80% for Long Hold', () => {
+  it('shows units and value for Long Hold, like every hold', () => {
     const [long] = groupSealed([
       item({ quantity: 1, unitValue: 480.21 }),
       item({ id: 2, quantity: 6, unitValue: 139.63 }),
     ]);
-    expect(groupSummary(long!)).toBe('7 units · $1,317.99 · $1,054.39 @80%');
+    expect(groupSummary(long!)).toBe('7 units · $1,317.99');
   });
 
   it('shows the chosen percentage instead when below 100%', () => {
@@ -68,5 +68,16 @@ describe('groupSummary', () => {
   it('shows units and value for Short Holds', () => {
     const [g] = groupSealed([short(1, 14, 'current', { quantity: 6, unitValue: 72.38 })]);
     expect(groupSummary(g!)).toBe('6 units · $434.28');
+  });
+});
+
+describe('soldSummary', () => {
+  it('shows units and the sale total', () => {
+    const [g] = groupSealed([short(1, 14, 'historical', { quantity: 15, unitValue: 50 })]);
+    expect(soldSummary(g!, 1000)).toBe('15 units · Sold $1,000.00');
+  });
+  it('says "unit" for one', () => {
+    const [g] = groupSealed([short(1, 15, 'historical', { quantity: 1, unitValue: 50 })]);
+    expect(soldSummary(g!, 200)).toBe('1 unit · Sold $200.00');
   });
 });

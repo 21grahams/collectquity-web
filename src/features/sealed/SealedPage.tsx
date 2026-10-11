@@ -1,4 +1,4 @@
-import type { SealedItem } from '../../api/types';
+import type { CompletedHold, SealedItem } from '../../api/types';
 import type { SealedGroup } from '../../lib/sealedGroups';
 import type { QuarterTarget } from '../items/QuarterSheet';
 import type { SellTarget } from '../items/SellSheet';
@@ -18,12 +18,12 @@ import { ItemCard } from '../../components/ItemCard';
 import { EmptyCollection, ErrorState, LoadingState } from '../../components/ListStates';
 import { PercentPicker } from '../../components/PercentPicker';
 import { StickyToolbar } from '../../components/StickyToolbar';
-import { useAppContext, useSealed } from '../../hooks/queries';
+import { useAppContext, useCompletedHolds, useSealed } from '../../hooks/queries';
 import { useCollapsibleGroups } from '../../hooks/useCollapsibleGroups';
 import { useValuePercent } from '../../hooks/useStickyState';
 import { cardNumbers, pasFeesLabel, quarterBoxes, totals } from '../../lib/cardMath';
-import { formatDate } from '../../lib/format';
-import { groupSealed, groupSummary } from '../../lib/sealedGroups';
+import { formatDate, formatGain, formatMoney, gainLabel } from '../../lib/format';
+import { groupSealed, groupSummary, soldSummary } from '../../lib/sealedGroups';
 import { fonts, tokens } from '../../theme/tokens';
 import { ItemFormSheet } from '../items/ItemFormSheet';
 import { MoveSheet } from '../items/MoveSheet';
@@ -37,11 +37,14 @@ function GroupHeader({
   collapsed,
   onToggle,
   valuePct,
+  sold,
 }: {
   group: SealedGroup;
   collapsed: boolean;
   onToggle: () => void;
   valuePct: number;
+  /** Set for completed holds: show what it actually sold for. */
+  sold?: CompletedHold;
 }) {
   return (
     <Box
@@ -83,12 +86,26 @@ function GroupHeader({
         sx={{
           fontFamily: fonts.mono,
           fontSize: 11,
-          color: tokens.text3,
+          color: sold ? (sold.profit >= 0 ? tokens.green : tokens.red) : tokens.text3,
           flexShrink: 0,
           whiteSpace: 'nowrap',
         }}
       >
-        {groupSummary(group, valuePct)}
+        {sold ? soldSummary(group, sold.soldPrice) : groupSummary(group, valuePct)}
+      </Box>
+    </Box>
+  );
+}
+
+/** Under Long Hold's and the current hold's header while open: cost and gain at the picked percentage. */
+function CostGainLine({ group, valuePct }: { group: SealedGroup; valuePct: number }) {
+  const t = totals(group.items, { valuePct });
+
+  return (
+    <Box sx={{ fontFamily: fonts.mono, fontSize: 11, color: tokens.text3, pl: 2.75, mt: -0.5, mb: 1 }}>
+      Cost {formatMoney(t.totalCost)} ·{' '}
+      <Box component="span" sx={{ color: t.gain >= 0 ? tokens.green : tokens.red }}>
+        {gainLabel(t.gain)} {formatGain(t.gain)}
       </Box>
     </Box>
   );
@@ -158,6 +175,8 @@ export function SealedPage() {
 
   const groups = useMemo(() => groupSealed(sealed.data ?? []), [sealed.data]);
   const currentGroup = groups.find((g) => g.status === 'current');
+  const completedHolds = useCompletedHolds();
+  const soldByHold = new Map((completedHolds.data ?? []).map((h) => [h.id, h]));
   const [valuePct, setValuePct] = useValuePercent();
   const isPhone = useMediaQuery('(max-width:599.95px)', { noSsr: true });
   const { isCollapsed, toggle, allCollapsed, toggleAll } = useCollapsibleGroups(
@@ -259,7 +278,11 @@ export function SealedPage() {
               collapsed={groupCollapsed}
               onToggle={() => toggle(group.holdId)}
               valuePct={valuePct}
+              sold={soldByHold.get(group.holdId)}
             />
+            {!groupCollapsed && group.status !== 'historical' && (
+              <CostGainLine group={group} valuePct={valuePct} />
+            )}
             {!groupCollapsed && (
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                 {group.items.map((item) => (
