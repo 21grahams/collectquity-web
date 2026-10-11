@@ -1,21 +1,11 @@
-# After-parity backlog
+# Backlog
 
-Ideas agreed for **after** the new app matches the old one (parity first). Not scheduled yet.
+What's next, in order. The old app is retired, so database work is open.
 
-- **Backend comment cleanup.** Frontend done (2026-10-06). After cutover, as part of retiring
-  `legacy_*`, trim backend comments to non-obvious "why" notes (never edit applied migrations;
-  do it in the retirement migration, scripts and README).
-- **One card per sealed product per hold (first after cutover).** Adding or moving a product
-  into a hold that already has it (same name, ignoring case and spaces) merges into that card:
-  quantity, cost and PAS fees add up; the existing card's quarter values are kept; the earliest
-  purchase date wins; the absorbed row is soft-deleted so sales history still links. Edit blocks
-  a rename that would create a duplicate ("Already in this hold — use Add to increase qty").
-  Change lives in the database functions; check production for existing duplicates first.
-- **Enforce valid conditions in the database.** After cutover (when the old app's free-text name
-  field can no longer write), add a database rule matching the app's: NM/LP/MP/HP/DMG, or
-  PSA/BGS/CGC/SGC/TAG with a grade from 1 to 10 in half steps.
-- **Rename the app** (right after the quick fixes; before new features and any App Store/Swift
-  release). Name idea: "Pulled", but lean broader than Pokémon, since collections for other
+- **Profile avatar (next; easy win).** Your own image on your profile, even with a single
+  profile: nicer UI. Needs a Supabase Storage bucket for the image plus an upload/crop step. It lives in the avatar menu
+  ("Change photo") and replaces the initial in the top-right circle.
+- **Rename the app** (after the avatar; before new features and any App Store/Swift release). Name idea: "Pulled", but lean broader than Pokémon, since collections for other
   hobbies and other users are a long-term goal (see Collections). Includes the
   custom domain, GitHub repo names, and tidying the Mac folders at the same time (`~/Pullsheet`
   vs `~/pullsheet-web`): moving the backend folder means updating the nightly backup job's paths,
@@ -32,10 +22,6 @@ Ideas agreed for **after** the new app matches the old one (parity first). Not s
   only names you've saved. Once the card catalog is connected for pricing, suggest every card and
   set from it (e.g. "Charizard ex – Obsidian Flames"), so new items match the catalog from the
   start and get prices without a separate matching step.
-- **Profile avatar (higher priority).** Your own image on your profile, even with a single
-  profile: nicer UI. Needs a Supabase Storage bucket for the image (small backend addition that
-  doesn't touch tables the old app uses) plus an upload/crop step. It lives in the avatar menu
-  ("Change photo") and replaces the initial in the top-right circle.
 - **Item photos (nice to have, after the avatar).** Optional photo per card/item: proof of
   condition, telling copies apart, a thumbnail in the list. Reuses the avatar's storage and upload
   pieces; photos are shrunk on the phone before upload (free tier is 1 GB; lists stay fast).

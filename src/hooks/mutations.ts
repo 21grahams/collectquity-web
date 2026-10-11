@@ -1,4 +1,5 @@
 import type { QueryKey } from '@tanstack/react-query';
+import type { SealedItem } from '../api/types';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -65,13 +66,20 @@ export const useSellSingle = () =>
     () => 'Marked sold!',
   );
 
-export const useAddSealed = () =>
-  useSave(
+export const useAddSealed = () => {
+  const queryClient = useQueryClient();
+
+  // The database merges an add into a card already in that hold; it returns that card's id.
+  return useSave(
     (v: WithId<{ hold: 'long' | 'short'; input: api.SealedInput }>) =>
       api.addSealed(v.requestId, v.hold, v.input),
     SEALED,
-    () => 'Added!',
+    (id) =>
+      (queryClient.getQueryData<SealedItem[]>(queryKeys.sealed) ?? []).some((i) => i.id === id)
+        ? 'Added to existing card!'
+        : 'Added!',
   );
+};
 
 export const useEditSealed = () =>
   useSave(

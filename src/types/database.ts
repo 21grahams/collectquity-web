@@ -1,11 +1,6 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: '14.18';
-  };
   public: {
     Tables: {
       app_users: {
@@ -109,19 +104,19 @@ export type Database = {
           action: string;
           created_at: string;
           request_id: string;
-          response: Json;
+          response: NonNullable<Json>;
         };
         Insert: {
           action: string;
           created_at?: string;
           request_id: string;
-          response: Json;
+          response: NonNullable<Json>;
         };
         Update: {
           action?: string;
           created_at?: string;
           request_id?: string;
-          response?: Json;
+          response?: NonNullable<Json>;
         };
         Relationships: [];
       };
@@ -232,6 +227,7 @@ export type Database = {
           set_name: string;
           total_cost: number;
           updated_at: string;
+          single_display_name: string | null;
         };
         Insert: {
           condition?: string;
@@ -373,6 +369,7 @@ export type Database = {
         };
         Returns: number;
       };
+      adopt_price: { Args: { p_source: number; p_target: number }; Returns: undefined };
       api_add_account: {
         Args: {
           p_card_last2: string;
@@ -420,18 +417,9 @@ export type Database = {
         Args: { p_profit: number; p_request_id: string; p_sold_price: number };
         Returns: string;
       };
-      api_delete_account: {
-        Args: { p_id: number; p_request_id: string };
-        Returns: undefined;
-      };
-      api_delete_sealed: {
-        Args: { p_id: number; p_request_id: string };
-        Returns: undefined;
-      };
-      api_delete_single: {
-        Args: { p_id: number; p_request_id: string };
-        Returns: undefined;
-      };
+      api_delete_account: { Args: { p_id: number; p_request_id: string }; Returns: undefined };
+      api_delete_sealed: { Args: { p_id: number; p_request_id: string }; Returns: undefined };
+      api_delete_single: { Args: { p_id: number; p_request_id: string }; Returns: undefined };
       api_edit_account: {
         Args: {
           p_card_last2: string;
@@ -477,7 +465,7 @@ export type Database = {
         Returns: undefined;
       };
       api_get_context: {
-        Args: never;
+        Args: Record<PropertyKey, never>;
         Returns: {
           current_short_hold_id: number;
           current_short_hold_name: string;
@@ -487,7 +475,7 @@ export type Database = {
         }[];
       };
       api_get_summary: {
-        Args: never;
+        Args: Record<PropertyKey, never>;
         Returns: {
           completed_hold_count: number;
           completed_holds_profit: number;
@@ -526,7 +514,7 @@ export type Database = {
         }[];
       };
       api_list_accounts: {
-        Args: never;
+        Args: Record<PropertyKey, never>;
         Returns: {
           card_last2: string;
           email: string;
@@ -539,7 +527,7 @@ export type Database = {
         }[];
       };
       api_list_completed_holds: {
-        Args: never;
+        Args: Record<PropertyKey, never>;
         Returns: {
           completed_at: string;
           cost_basis: number;
@@ -553,7 +541,7 @@ export type Database = {
         }[];
       };
       api_list_sealed: {
-        Args: never;
+        Args: Record<PropertyKey, never>;
         Returns: {
           fee_units: number;
           fees: number;
@@ -574,7 +562,7 @@ export type Database = {
         }[];
       };
       api_list_singles: {
-        Args: never;
+        Args: Record<PropertyKey, never>;
         Returns: {
           condition: string;
           display_name: string;
@@ -594,10 +582,7 @@ export type Database = {
           unit_value: number;
         }[];
       };
-      api_move_sealed: {
-        Args: { p_id: number; p_quantity: number; p_request_id: string };
-        Returns: string;
-      };
+      api_move_sealed: { Args: { p_id: number; p_quantity: number; p_request_id: string }; Returns: string };
       api_sell_long_hold_item: {
         Args: {
           p_id: number;
@@ -628,12 +613,9 @@ export type Database = {
         };
         Returns: undefined;
       };
-      app_timezone: { Args: never; Returns: string };
-      app_today: { Args: never; Returns: string };
-      complete_short_hold: {
-        Args: { p_profit: number; p_sold_price: number };
-        Returns: string;
-      };
+      app_timezone: { Args: Record<PropertyKey, never>; Returns: string };
+      app_today: { Args: Record<PropertyKey, never>; Returns: string };
+      complete_short_hold: { Args: { p_profit: number; p_sold_price: number }; Returns: string };
       delete_account: { Args: { p_id: number }; Returns: undefined };
       delete_sealed: { Args: { p_id: number }; Returns: undefined };
       delete_single: { Args: { p_id: number }; Returns: undefined };
@@ -679,7 +661,7 @@ export type Database = {
         Returns: undefined;
       };
       ensure_active_short_hold: {
-        Args: never;
+        Args: Record<PropertyKey, never>;
         Returns: {
           completed_at: string | null;
           cost_basis: number | null;
@@ -699,90 +681,59 @@ export type Database = {
           isSetofReturn: false;
         };
       };
-      is_app_user: { Args: never; Returns: boolean };
+      is_app_user: { Args: Record<PropertyKey, never>; Returns: boolean };
       latest_unit_value: {
-        Args: {
-          p_from?: string;
-          p_sealed_item_id: number;
-          p_single_id: number;
-          p_to?: string;
-        };
+        Args: { p_from?: string; p_sealed_item_id: number; p_single_id: number; p_to?: string };
         Returns: number;
       };
-      legacy_check_name: {
-        Args: { p_actual: string; p_expected: Json };
-        Returns: undefined;
-      };
-      legacy_date: { Args: { p: Json }; Returns: string };
-      legacy_dispatch: { Args: { d: Json; p_action: string }; Returns: Json };
-      legacy_fmt_date: { Args: { p: string }; Returns: string };
-      legacy_get_accounts: { Args: never; Returns: Json };
-      legacy_get_sealed: { Args: never; Returns: Json };
-      legacy_get_singles: { Args: never; Returns: Json };
-      legacy_get_sold_log: { Args: never; Returns: Json };
-      legacy_get_summary: { Args: never; Returns: Json };
-      legacy_int: { Args: { p: Json }; Returns: number };
-      legacy_num: { Args: { p: Json }; Returns: number };
-      legacy_quarter: { Args: { p: Json }; Returns: number };
-      legacy_read: { Args: { p_action: string }; Returns: Json };
-      legacy_sold_totals: { Args: { p_category: string }; Returns: Json };
-      legacy_write: { Args: { p_action: string; p_data: Json }; Returns: Json };
-      long_hold_id: { Args: never; Returns: number };
-      move_sealed: {
-        Args: { p_id: number; p_quantity: number };
-        Returns: string;
-      };
-      parse_card_name: {
-        Args: { p_name: string };
-        Returns: Record<string, unknown>;
-      };
-      quarter_end: {
-        Args: { p_quarter: number; p_year: number };
-        Returns: string;
-      };
+      long_hold_id: { Args: Record<PropertyKey, never>; Returns: number };
+      move_sealed: { Args: { p_id: number; p_quantity: number }; Returns: string };
+      quarter_end: { Args: { p_quarter: number; p_year: number }; Returns: string };
       quarter_of: { Args: { p_date: string }; Returns: number };
-      quarter_start: {
-        Args: { p_quarter: number; p_year: number };
-        Returns: string;
-      };
+      quarter_start: { Args: { p_quarter: number; p_year: number }; Returns: string };
       request_record: {
         Args: { p_action: string; p_request_id: string; p_result?: Json };
         Returns: undefined;
       };
       request_replay: { Args: { p_request_id: string }; Returns: Json };
-      sell_long_hold_item: {
-        Args: {
-          p_id: number;
-          p_profit: number;
-          p_quantity: number;
-          p_sold_price: number;
+      sealed_name_key: { Args: { p_name: string }; Returns: string };
+      sealed_twin: {
+        Args: { p_except: number; p_hold_id: number; p_name: string };
+        Returns: {
+          created_at: string;
+          deleted_at: string | null;
+          fee_units: number;
+          fees: number;
+          hold_id: number;
+          id: number;
+          name: string;
+          purchase_date: string | null;
+          quantity: number;
+          total_cost: number;
+          updated_at: string;
         };
+        SetofOptions: {
+          from: '*';
+          to: 'sealed_items';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      sell_long_hold_item: {
+        Args: { p_id: number; p_profit: number; p_quantity: number; p_sold_price: number };
         Returns: undefined;
       };
       sell_single: {
-        Args: {
-          p_id: number;
-          p_profit: number;
-          p_quantity: number;
-          p_sold_price: number;
-        };
+        Args: { p_id: number; p_profit: number; p_quantity: number; p_sold_price: number };
         Returns: undefined;
       };
       set_quarter_price: {
-        Args: {
-          p_quarter: number;
-          p_sealed_item_id: number;
-          p_single_id: number;
-          p_unit_value: number;
-        };
+        Args: { p_quarter: number; p_sealed_item_id: number; p_single_id: number; p_unit_value: number };
         Returns: undefined;
       };
       short_hold_name: { Args: { p_number: number }; Returns: string };
-      single_display_name: {
-        Args: { s: Database['public']['Tables']['singles']['Row'] };
-        Returns: string;
-      };
-      stale_item_message: { Args: never; Returns: string };
+      single_display_name: { Args: { s: Database['public']['Tables']['singles']['Row'] }; Returns: string };
+      stale_item_message: { Args: Record<PropertyKey, never>; Returns: string };
     };
     Enums: {
       [_ in never]: never;
@@ -806,9 +757,7 @@ export type Tables<
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
     : never) = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
-}
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
   ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
       DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
       Row: infer R;
@@ -831,9 +780,7 @@ export type TablesInsert<
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
     : never) = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
-}
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Insert: infer I;
     }
@@ -855,9 +802,7 @@ export type TablesUpdate<
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
     : never) = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
-}
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Update: infer U;
     }
@@ -879,9 +824,7 @@ export type Enums<
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
     : never) = never,
-> = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
-}
+> = DefaultSchemaEnumNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
     ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
@@ -895,9 +838,7 @@ export type CompositeTypes<
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
     : never) = never,
-> = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
-}
+> = PublicCompositeTypeNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
     ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
