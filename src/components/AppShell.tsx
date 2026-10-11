@@ -22,6 +22,26 @@ export function AppShell() {
   const keyboardOpen = useKeyboardOpen();
   const showBottomTabs = isPhone && !keyboardOpen;
 
+  // iOS can leave pinned bars (the bottom tabs) floating where the keyboard was, mostly on
+  // short pages. Nudging the scroll by a pixel once the keyboard has closed resets them.
+  const keyboardWasOpen = useRef(false);
+  useEffect(() => {
+    if (keyboardOpen) {
+      keyboardWasOpen.current = true;
+
+      return;
+    }
+    if (!keyboardWasOpen.current) return;
+    keyboardWasOpen.current = false;
+    const timer = setTimeout(() => {
+      const y = window.scrollY;
+      window.scrollTo(0, y + 1);
+      window.scrollTo(0, y);
+    }, 350);
+
+    return () => clearTimeout(timer);
+  }, [keyboardOpen]);
+
   // Tapping the tab you're already on scrolls back to the top, like most apps.
   const goTo = (path: string) => {
     if (path === current) window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -75,7 +95,7 @@ export function AppShell() {
   }, [headerHeight]);
 
   return (
-    <Box sx={{ minHeight: '100dvh' }}>
+    <Box sx={{ minHeight: 'calc(100dvh + 1px)' }}>
       <Box
         component="header"
         ref={headerRef}
