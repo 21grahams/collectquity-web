@@ -2,9 +2,9 @@
 
 React rewrite of the PullSheet frontend: a single-user Pokémon collection and P&L tracker,
 used mostly as an iPhone home-screen app, plus desktop. Live at
-https://21grahams.github.io/pullsheet-web/. The goal is **feature parity** with the old app
-(`21grahams/pullsheet`, which stays untouched until cutover). No new features except login,
-the offline banner and removing the old Settings URL box.
+https://21grahams.github.io/pullsheet-web/. It reached parity with the original app
+(`21grahams/pullsheet`, now archived) and replaced it on 2026-10-07; the old app was retired on
+2026-10-11. New work comes from `BACKLOG.md`.
 
 The backend lives in `21grahams/pullsheet-backend` (private, `~/Pullsheet`). Its `api_*`
 Postgres functions are this app's entire API.
@@ -33,7 +33,7 @@ reloads.
 - `src/hooks/`: one TanStack Query hook per query/mutation.
 - `src/features/{auth,singles,sealed,summary,accounts}/`: screens.
 - `src/lib/`: pure, unit-tested helpers (money/date formatting, per-card math).
-- `src/theme/`: tokens copied from the old app's `:root`, plus the MUI theme. Don't redesign.
+- `src/theme/`: the design tokens (originally the old app's `:root`), plus the MUI theme.
 
 Rules:
 
@@ -64,6 +64,6 @@ Rules:
 
 ## Status
 
-- Phases 0–3 done (backend API, scaffold, read-only screens, all saving) by 2026-10-06.
-- Phase 4 (polish/parity) in progress. Then 5 cutover.
+- All phases done: live since 2026-10-07; the old app, its adapter and `legacy_*` were retired
+  on 2026-10-11. Next: the backlog (merge duplicate sealed cards, the condition rule, the rename).
 - The app will be renamed later. Keep new identifiers name-neutral where cheap.
