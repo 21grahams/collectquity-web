@@ -2,10 +2,7 @@
 
 What's next, in order. The old app is retired, so database work is open.
 
-- **Profile avatar (next; easy win).** Your own image on your profile, even with a single
-  profile: nicer UI. Needs a Supabase Storage bucket for the image plus an upload/crop step. It lives in the avatar menu
-  ("Change photo") and replaces the initial in the top-right circle.
-- **Rename the app** (after the avatar; before new features and any App Store/Swift release). Name idea: "Pulled", but lean broader than Pokémon, since collections for other
+- **Rename the app** (next; before new features and any App Store/Swift release). Name idea: "Pulled", but lean broader than Pokémon, since collections for other
   hobbies and other users are a long-term goal (see Collections). Includes the
   custom domain, GitHub repo names, and tidying the Mac folders at the same time (`~/Pullsheet`
   vs `~/pullsheet-web`): moving the backend folder means updating the nightly backup job's paths,

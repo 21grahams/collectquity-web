@@ -152,3 +152,21 @@ export const useDeleteAccount = () =>
     ACCOUNTS,
     () => 'Removed',
   );
+
+function useAvatarChange<T>(fn: (v: T) => Promise<void>, message: string) {
+  const queryClient = useQueryClient();
+  const notify = useNotify();
+
+  return useMutation({
+    mutationFn: fn,
+    onSuccess: async () => {
+      notify(message, 'success');
+      await queryClient.invalidateQueries({ queryKey: queryKeys.avatar });
+    },
+    onError: (error) => notify(`Failed — ${error.message}`, 'error'),
+  });
+}
+
+export const useUploadAvatar = () => useAvatarChange(api.uploadAvatar, 'Photo updated!');
+
+export const useRemoveAvatar = () => useAvatarChange(() => api.removeAvatar(), 'Photo removed');

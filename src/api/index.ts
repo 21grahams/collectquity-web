@@ -352,3 +352,38 @@ export const editAccount = (requestId: string, id: number, input: AccountInput) 
 
 export const deleteAccount = (requestId: string, id: number) =>
   save(supabase.rpc('api_delete_account', { p_request_id: requestId, p_id: id }));
+
+// ── profile photo ───────────────────────────────────────────
+const avatars = () => supabase.storage.from('avatars');
+
+async function avatarPath(): Promise<string> {
+  const { data } = await supabase.auth.getSession();
+  const id = data.session?.user.id;
+  if (!id) throw new ApiError('Not logged in');
+
+  return `${id}/avatar.jpg`;
+}
+
+/** A temporary link to your photo, or null if you haven't set one. */
+export async function getAvatarUrl(): Promise<string | null> {
+  const { data, error } = await avatars().createSignedUrl(await avatarPath(), 60 * 60);
+
+  return error ? null : data.signedUrl;
+}
+
+export async function uploadAvatar(photo: Blob): Promise<void> {
+  if (!navigator.onLine)
+    throw new ApiError("You're offline — your photo can't be saved until you reconnect.");
+  const { error } = await avatars().upload(await avatarPath(), photo, {
+    upsert: true,
+    contentType: 'image/jpeg',
+  });
+  if (error) throw new ApiError(error.message);
+}
+
+export async function removeAvatar(): Promise<void> {
+  if (!navigator.onLine)
+    throw new ApiError("You're offline — your photo can't be removed until you reconnect.");
+  const { error } = await avatars().remove([await avatarPath()]);
+  if (error) throw new ApiError(error.message);
+}

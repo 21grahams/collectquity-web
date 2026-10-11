@@ -1,8 +1,12 @@
 import { Box, Divider, Menu, MenuItem } from '@mui/material';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { useAuth } from '../features/auth/authContext';
+import { useRemoveAvatar, useUploadAvatar } from '../hooks/mutations';
+import { useAvatarUrl } from '../hooks/queries';
+import { squareJpeg } from '../lib/avatarImage';
 import { fonts, tokens } from '../theme/tokens';
+import { useNotify } from './notifyContext';
 
 function formatBuiltAt(iso: string): string {
   return new Date(iso).toLocaleString('en-US', {
@@ -22,6 +26,26 @@ export function AvatarMenu() {
   const [signingOut, setSigningOut] = useState(false);
   const email = session?.user.email ?? '';
   const open = anchor != null;
+  const notify = useNotify();
+  const avatar = useAvatarUrl();
+  const upload = useUploadAvatar();
+  const remove = useRemoveAvatar();
+  const fileInput = useRef<HTMLInputElement>(null);
+  // An expired or missing photo link falls back to the initial.
+  const [brokenUrl, setBrokenUrl] = useState<string | null>(null);
+  const photo = avatar.data && avatar.data !== brokenUrl ? avatar.data : null;
+
+  async function pickPhoto(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    setAnchor(null);
+    try {
+      upload.mutate(await squareJpeg(file));
+    } catch {
+      notify("Couldn't read that photo", 'error');
+    }
+  }
 
   return (
     <>
@@ -46,10 +70,24 @@ export function AvatarMenu() {
           color: open ? tokens.bg : tokens.gold,
           backgroundColor: open ? tokens.gold : tokens.goldDim,
           border: `1px solid ${tokens.gold}`,
+          overflow: 'hidden',
+          p: 0,
+          opacity: upload.isPending || remove.isPending ? 0.5 : 1,
         }}
       >
-        {(email.trim()[0] ?? '?').toUpperCase()}
+        {photo ? (
+          <Box
+            component="img"
+            src={photo}
+            alt=""
+            onError={() => setBrokenUrl(photo)}
+            sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+          />
+        ) : (
+          (email.trim()[0] ?? '?').toUpperCase()
+        )}
       </Box>
+      <input ref={fileInput} type="file" accept="image/*" hidden onChange={pickPhoto} />
       <Menu
         anchorEl={anchor}
         open={open}
@@ -75,6 +113,21 @@ export function AvatarMenu() {
             {email}
           </Box>
         </Box>
+        <Divider sx={{ borderColor: tokens.border }} />
+        <MenuItem onClick={() => fileInput.current?.click()} sx={{ fontSize: 15, minHeight: 44 }}>
+          {photo ? 'Change photo' : 'Add photo'}
+        </MenuItem>
+        {photo && (
+          <MenuItem
+            onClick={() => {
+              setAnchor(null);
+              remove.mutate();
+            }}
+            sx={{ fontSize: 15, minHeight: 44, color: tokens.text2 }}
+          >
+            Remove photo
+          </MenuItem>
+        )}
         <Divider sx={{ borderColor: tokens.border }} />
         <Box sx={{ px: 2, py: 1.25, fontSize: 11, color: tokens.text3 }}>
           PullSheet · Pokémon collection portfolio tracker

@@ -9,6 +9,7 @@ export const queryKeys = {
   accounts: ['accounts'] as const,
   completedHolds: ['completedHolds'] as const,
   summary: ['summary'] as const,
+  avatar: ['avatar'] as const,
 };
 
 export const useAppContext = () => useQuery({ queryKey: queryKeys.context, queryFn: api.getContext });
@@ -23,3 +24,5 @@ export const useCompletedHolds = () =>
   useQuery({ queryKey: queryKeys.completedHolds, queryFn: api.listCompletedHolds });
 
 export const useSummary = () => useQuery({ queryKey: queryKeys.summary, queryFn: api.getSummary });
+
+export const useAvatarUrl = () => useQuery({ queryKey: queryKeys.avatar, queryFn: api.getAvatarUrl });
