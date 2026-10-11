@@ -158,8 +158,11 @@ export function SummaryPage() {
           {formatMoney(atPct(p.value, valuePct))}
         </Box>
         <Box sx={{ fontFamily: fonts.mono, fontSize: 11, color: tokens.text3, mt: '3px' }}>
-          Cost: {formatMoney(p.spent)} · {gainLabel(portfolioGain)}: {formatGain(portfolioGain)} · Return:{' '}
-          {formatSignedPct(returnPct({ spent: p.spent, gain: portfolioGain }))}
+          Cost: {formatMoney(p.spent)} ·{' '}
+          <Box component="span" sx={{ color: signColor(portfolioGain) }}>
+            {gainLabel(portfolioGain)}: {formatGain(portfolioGain)} · Return:{' '}
+            {formatSignedPct(returnPct({ spent: p.spent, gain: portfolioGain }))}
+          </Box>
         </Box>
       </Panel>
 
