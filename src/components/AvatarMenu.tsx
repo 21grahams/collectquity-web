@@ -5,6 +5,7 @@ import { useAuth } from '../features/auth/authContext';
 import { useRemoveAvatar, useUploadAvatar } from '../hooks/mutations';
 import { useAvatarUrl } from '../hooks/queries';
 import { squareJpeg } from '../lib/avatarImage';
+import { APP_NAME, TAGLINE } from '../lib/brand';
 import { fonts, tokens } from '../theme/tokens';
 import { useNotify } from './notifyContext';
 
@@ -130,7 +131,7 @@ export function AvatarMenu() {
         )}
         <Divider sx={{ borderColor: tokens.border }} />
         <Box sx={{ px: 2, py: 1.25, fontSize: 11, color: tokens.text3 }}>
-          PullSheet · Pokémon collection portfolio tracker
+          {APP_NAME} · {TAGLINE}
           <br />
           Version {__APP_VERSION__} · built {formatBuiltAt(__BUILT_AT__)}
         </Box>

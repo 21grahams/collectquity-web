@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 
 import { Box, Button, CircularProgress } from '@mui/material';
 
+import { APP_NAME } from '../lib/brand';
 import { tokens } from '../theme/tokens';
 
 export function LoadingState() {
@@ -24,7 +25,7 @@ export function EmptyState({ icon, children }: { icon: string; children: ReactNo
 function friendlyLoadError(error: unknown): string {
   const message = error instanceof Error ? error.message : '';
   if (/load failed|failed to fetch|network/i.test(message)) {
-    return "Can't reach PullSheet. Check your connection and try again.";
+    return `Can't reach ${APP_NAME}. Check your connection and try again.`;
   }
 
   return `Couldn't load this. ${message}`;

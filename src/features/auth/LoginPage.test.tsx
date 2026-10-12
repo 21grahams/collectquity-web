@@ -74,7 +74,7 @@ describe('LoginPage', () => {
 describe('friendlyAuthError', () => {
   it('translates Supabase messages', () => {
     expect(friendlyAuthError('Invalid login credentials')).toBe('Wrong email or password.');
-    expect(friendlyAuthError('Failed to fetch')).toMatch(/can't reach pullsheet/i);
+    expect(friendlyAuthError('Failed to fetch')).toMatch(/can't reach collectquity/i);
     expect(friendlyAuthError('Something else')).toBe('Something else');
   });
 });

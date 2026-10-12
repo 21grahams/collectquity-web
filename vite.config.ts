@@ -3,10 +3,12 @@ import react from '@vitejs/plugin-react';
 import { defineConfig, loadEnv } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
-// GitHub Pages serves this repo at /pullsheet-web/; VITE_BASE overrides it.
+import { APP_NAME, TAGLINE } from './src/lib/brand.ts';
+
+// Served from the root of collectquity.com; VITE_BASE overrides it.
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const base = env.VITE_BASE || '/pullsheet-web/';
+  const base = env.VITE_BASE || '/';
 
   const version = (process.env.GITHUB_SHA ?? 'dev').slice(0, 7);
   const builtAt = new Date().toISOString();
@@ -19,6 +21,11 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [
       react(),
+      {
+        name: 'brand-html',
+        transformIndexHtml: (html) =>
+          html.replaceAll('%APP_NAME%', APP_NAME).replaceAll('%TAGLINE%', TAGLINE),
+      },
       VitePWA({
         // A new deploy is downloaded in the background on launch and takes
         // over right away, so updates arrive within one or two launches and
@@ -26,9 +33,9 @@ export default defineConfig(({ mode }) => {
         registerType: 'autoUpdate',
         includeAssets: ['icon.svg', 'apple-touch-icon.png'],
         manifest: {
-          name: 'PullSheet',
-          short_name: 'PullSheet',
-          description: 'Pokémon collection portfolio tracker by NotAStockGenius',
+          name: APP_NAME,
+          short_name: APP_NAME,
+          description: TAGLINE,
           start_url: base,
           scope: base,
           display: 'standalone',

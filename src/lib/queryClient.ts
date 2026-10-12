@@ -15,7 +15,7 @@ export const queryClient = new QueryClient({
 
 export const cachePersister = createSyncStoragePersister({
   storage: window.localStorage,
-  key: isLiveDatabase ? 'pullsheet-cache' : 'pullsheet-cache-practice',
+  key: isLiveDatabase ? 'collectquity-cache' : 'collectquity-cache-practice',
 });
 
 export const persistOptions = { persister: cachePersister, maxAge: WEEK, buster: __APP_VERSION__ };

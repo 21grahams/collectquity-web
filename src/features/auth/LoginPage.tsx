@@ -7,6 +7,7 @@ import { Navigate } from 'react-router';
 import { PracticeBanner } from '../../components/PracticeBanner';
 import { SaveButton } from '../../components/SaveButton';
 import { Wordmark } from '../../components/Wordmark';
+import { TAGLINE } from '../../lib/brand';
 import { validateLogin } from '../../lib/loginForm';
 import { useAuth } from './authContext';
 
@@ -91,7 +92,7 @@ export function LoginPage() {
             pendingLabel="Logging in…"
           />
           <Typography variant="caption" color="text.secondary" align="center">
-            Pokémon collection portfolio tracker
+            {TAGLINE}
           </Typography>
         </Stack>
       </Box>
