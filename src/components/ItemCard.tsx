@@ -16,6 +16,10 @@ interface ItemCardProps {
   /** Market value is shown at this percentage; below 100 the column says so. */
   valuePct: number;
   feesLabel: string | null;
+  /** The automatic-price line, for items linked to a catalog product. */
+  market?: ReactNode;
+  /** The market value updates itself daily (shown in the Auto line's blue). */
+  autoValue?: boolean;
   quarters?: QuarterBox[];
   onQuarterClick?: (q: QuarterBox) => void;
   actions?: ReactNode;
@@ -142,6 +146,8 @@ export function ItemCard({
   numbers,
   valuePct,
   feesLabel,
+  market,
+  autoValue,
   quarters,
   onQuarterClick,
   actions,
@@ -211,7 +217,13 @@ export function ItemCard({
 
       <Box sx={{ ...divider, ...ledger }}>
         <Box sx={metaLabel}>Cost</Box>
-        <Box sx={{ ...metaLabel, ...(valuePct < 100 && { color: tokens.gold }) }}>
+        <Box
+          sx={{
+            ...metaLabel,
+            ...(autoValue && { color: tokens.blue }),
+            ...(valuePct < 100 && { color: tokens.gold }),
+          }}
+        >
           {valuePct < 100 ? `Market @ ${valuePct}%` : 'Market Value'}
         </Box>
         <Box sx={metaLabel}>{gainLabel(numbers.gain)}</Box>
@@ -229,6 +241,7 @@ export function ItemCard({
         )}
       </Box>
       {feesLabel && <Box sx={{ ...finePrint, mt: 0.75 }}>Includes PAS fees: {feesLabel}</Box>}
+      {market}
 
       {quarters && <QuarterGrid quarters={quarters} onQuarterClick={onQuarterClick} />}
 

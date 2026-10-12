@@ -2,8 +2,11 @@
 
 What's next, in order. The old app is retired, so database work is open.
 
-- **Rename the app** (next; before new features and any App Store/Swift release). Name idea: "Pulled", but lean broader than Pokémon, since collections for other
-  hobbies and other users are a long-term goal (see Collections). Includes the
+- **Rename the app** (top priority, but floating: not a blocker for other work; must happen before
+  any App Store/Swift release). Still brainstorming; lean broader than Pokémon, since collections
+  for other hobbies and other users are a long-term goal (see Collections). Before settling, search
+  USPTO for sound-alikes in classes 9, 36 and 42 (Arcula was dropped: too close to the registered
+  Arculus crypto-wallet marks). Includes the
   custom domain, GitHub repo names, and tidying the Mac folders at the same time (`~/Pullsheet`
   vs `~/pullsheet-web`): moving the backend folder means updating the nightly backup job's paths,
   the practice setup, and Claude's per-project notes together.

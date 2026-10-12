@@ -44,6 +44,23 @@ export interface SealedItem extends ItemBase {
   holdStatus: HoldStatus;
 }
 
+export type GradedBasis = 'long_term' | 'recent';
+
+/** An item priced automatically every morning from a catalog product. */
+export interface MarketLink {
+  singleId: number | null;
+  sealedItemId: number | null;
+  productName: string;
+  /** You typed a value yourself; daily updates skip this item. */
+  pinned: boolean;
+  gradedBasis: GradedBasis;
+  lastRunAt: string | null;
+  lastStatus: 'updated' | 'no_price' | 'not_found' | 'error' | null;
+  /** Graded cards only: the 7-day price and the median of all recorded sales. */
+  recentUnitValue: number | null;
+  longTermUnitValue: number | null;
+}
+
 export interface RetailerAccount {
   id: number;
   retailer: string;

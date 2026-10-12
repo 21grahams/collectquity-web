@@ -57,6 +57,76 @@ export type Database = {
         };
         Relationships: [];
       };
+      market_links: {
+        Row: {
+          created_at: string;
+          fetched_unit_value: number | null;
+          graded_basis: string;
+          id: number;
+          last_run_at: string | null;
+          last_status: string | null;
+          long_term_unit_value: number | null;
+          pinned: boolean;
+          printing: string | null;
+          product_name: string;
+          recent_unit_value: number | null;
+          sealed_item_id: number | null;
+          single_id: number | null;
+          tcgplayer_id: string;
+          updated_at: string;
+          market_value: number | null;
+        };
+        Insert: {
+          created_at?: string;
+          fetched_unit_value?: number | null;
+          graded_basis?: string;
+          id?: never;
+          last_run_at?: string | null;
+          last_status?: string | null;
+          long_term_unit_value?: number | null;
+          pinned?: boolean;
+          printing?: string | null;
+          product_name: string;
+          recent_unit_value?: number | null;
+          sealed_item_id?: number | null;
+          single_id?: number | null;
+          tcgplayer_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          fetched_unit_value?: number | null;
+          graded_basis?: string;
+          id?: never;
+          last_run_at?: string | null;
+          last_status?: string | null;
+          long_term_unit_value?: number | null;
+          pinned?: boolean;
+          printing?: string | null;
+          product_name?: string;
+          recent_unit_value?: number | null;
+          sealed_item_id?: number | null;
+          single_id?: number | null;
+          tcgplayer_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'market_links_sealed_item_id_fkey';
+            columns: ['sealed_item_id'];
+            isOneToOne: true;
+            referencedRelation: 'sealed_items';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'market_links_single_id_fkey';
+            columns: ['single_id'];
+            isOneToOne: true;
+            referencedRelation: 'singles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       price_checks: {
         Row: {
           checked_on: string;
@@ -540,6 +610,20 @@ export type Database = {
           sold_price: number;
         }[];
       };
+      api_list_market_links: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          graded_basis: string;
+          last_run_at: string;
+          last_status: string;
+          long_term_unit_value: number;
+          pinned: boolean;
+          product_name: string;
+          recent_unit_value: number;
+          sealed_item_id: number;
+          single_id: number;
+        }[];
+      };
       api_list_sealed: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -603,6 +687,16 @@ export type Database = {
         };
         Returns: undefined;
       };
+      api_set_market_link: {
+        Args: {
+          p_graded_basis: string;
+          p_pinned: boolean;
+          p_request_id: string;
+          p_sealed_item_id: number;
+          p_single_id: number;
+        };
+        Returns: undefined;
+      };
       api_set_quarter_price: {
         Args: {
           p_quarter: number;
@@ -616,6 +710,7 @@ export type Database = {
       app_timezone: { Args: Record<PropertyKey, never>; Returns: string };
       app_today: { Args: Record<PropertyKey, never>; Returns: string };
       complete_short_hold: { Args: { p_profit: number; p_sold_price: number }; Returns: string };
+      copy_market_link: { Args: { p_source: number; p_target: number }; Returns: undefined };
       delete_account: { Args: { p_id: number }; Returns: undefined };
       delete_sealed: { Args: { p_id: number }; Returns: undefined };
       delete_single: { Args: { p_id: number }; Returns: undefined };
@@ -687,10 +782,24 @@ export type Database = {
         Returns: number;
       };
       long_hold_id: { Args: Record<PropertyKey, never>; Returns: number };
+      market_job_secrets: { Args: Record<PropertyKey, never>; Returns: Json };
+      market_links_to_refresh: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          condition: string;
+          kind: string;
+          link_id: number;
+          printing: string;
+          tcgplayer_id: string;
+        }[];
+      };
+      market_value: { Args: { l: Database['public']['Tables']['market_links']['Row'] }; Returns: number };
       move_sealed: { Args: { p_id: number; p_quantity: number }; Returns: string };
+      pin_market_link: { Args: { p_sealed_item_id: number; p_single_id: number }; Returns: undefined };
       quarter_end: { Args: { p_quarter: number; p_year: number }; Returns: string };
       quarter_of: { Args: { p_date: string }; Returns: number };
       quarter_start: { Args: { p_quarter: number; p_year: number }; Returns: string };
+      record_market_prices: { Args: { p_results: Json }; Returns: number };
       request_record: {
         Args: { p_action: string; p_request_id: string; p_result?: Json };
         Returns: undefined;

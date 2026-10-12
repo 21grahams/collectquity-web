@@ -1,5 +1,7 @@
+import type { ReactNode } from 'react';
 import type { CompletedHold, SealedItem } from '../../api/types';
 import type { SealedGroup } from '../../lib/sealedGroups';
+import type { MarketTarget } from '../items/MarketSheet';
 import type { QuarterTarget } from '../items/QuarterSheet';
 import type { SellTarget } from '../items/SellSheet';
 import type { CompleteTarget } from './CompleteHoldSheet';
@@ -18,14 +20,17 @@ import { ItemCard } from '../../components/ItemCard';
 import { EmptyCollection, ErrorState, LoadingState } from '../../components/ListStates';
 import { PercentPicker } from '../../components/PercentPicker';
 import { StickyToolbar } from '../../components/StickyToolbar';
-import { useAppContext, useCompletedHolds, useSealed } from '../../hooks/queries';
+import { useAppContext, useCompletedHolds, useMarketLinks, useSealed } from '../../hooks/queries';
 import { useCollapsibleGroups } from '../../hooks/useCollapsibleGroups';
 import { useValuePercent } from '../../hooks/useStickyState';
 import { cardNumbers, pasFeesLabel, quarterBoxes, totals } from '../../lib/cardMath';
 import { formatDate, formatGain, formatMoney, gainLabel } from '../../lib/format';
+import { findLink, isAuto } from '../../lib/marketLink';
 import { groupSealed, groupSummary, soldSummary } from '../../lib/sealedGroups';
 import { fonts, tokens } from '../../theme/tokens';
 import { ItemFormSheet } from '../items/ItemFormSheet';
+import { MarketLine } from '../items/MarketLine';
+import { MarketSheet } from '../items/MarketSheet';
 import { MoveSheet } from '../items/MoveSheet';
 import { QuarterSheet } from '../items/QuarterSheet';
 import { RemoveItemDialog } from '../items/RemoveItemDialog';
@@ -120,10 +125,14 @@ function SealedCard({
   onQuarter,
   onSell,
   onMove,
+  market,
+  autoValue,
 }: {
   item: SealedItem;
   year: number;
   valuePct: number;
+  market: ReactNode;
+  autoValue: boolean;
   onEdit: () => void;
   onRemove: () => void;
   onQuarter: (quarter: 1 | 2 | 3 | 4) => void;
@@ -144,6 +153,8 @@ function SealedCard({
       // Short Hold items with no price show their cost as their value (old-app behavior).
       numbers={cardNumbers(item, { fallbackToCost: !isLong, valuePct })}
       feesLabel={pasFeesLabel(item.fees, item.feeUnits)}
+      market={item.holdStatus === 'historical' ? undefined : market}
+      autoValue={item.holdStatus !== 'historical' && autoValue}
       quarters={
         isLong ? quarterBoxes(item.quarterUnitValues, item.quantity, item.totalCost, year) : undefined
       }
@@ -170,6 +181,8 @@ export function SealedPage() {
   const [editing, setEditing] = useState<SealedItem | null>(null);
   const [removing, setRemoving] = useState<SealedItem | null>(null);
   const [quarterTarget, setQuarterTarget] = useState<QuarterTarget | null>(null);
+  const [marketTarget, setMarketTarget] = useState<MarketTarget | null>(null);
+  const marketLinks = useMarketLinks();
   const [selling, setSelling] = useState<SellTarget | null>(null);
   const [moving, setMoving] = useState<SealedItem | null>(null);
   const [completing, setCompleting] = useState<CompleteTarget | null>(null);
@@ -193,9 +206,26 @@ export function SealedPage() {
     return <LoadingState />;
   }
 
+  const today = context.data.today;
+  const marketLine = (item: SealedItem) => {
+    const link = findLink(marketLinks.data, { sealedItemId: item.id });
+
+    return (
+      link && (
+        <MarketLine
+          link={link}
+          today={today}
+          quantity={item.quantity}
+          onClick={() => setMarketTarget({ item: { sealedItemId: item.id }, name: item.name, link })}
+        />
+      )
+    );
+  };
+
   const addSheet = (
     <>
       <QuarterSheet target={quarterTarget} onClose={() => setQuarterTarget(null)} />
+      <MarketSheet target={marketTarget} onClose={() => setMarketTarget(null)} />
       <SellSheet target={selling} onClose={() => setSelling(null)} />
       <MoveSheet
         item={moving}
@@ -292,6 +322,8 @@ export function SealedPage() {
                     item={item}
                     year={context.data.year}
                     valuePct={valuePct}
+                    market={marketLine(item)}
+                    autoValue={isAuto(marketLinks.data, { sealedItemId: item.id })}
                     onEdit={() => setEditing(item)}
                     onRemove={() => setRemoving(item)}
                     onMove={() => setMoving(item)}

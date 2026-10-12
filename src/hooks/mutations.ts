@@ -1,5 +1,5 @@
-import type { QueryKey } from '@tanstack/react-query';
-import type { SealedItem } from '../api/types';
+import type { QueryClient, QueryKey } from '@tanstack/react-query';
+import type { AppContext, GradedBasis, MarketLink, SealedItem } from '../api/types';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -7,8 +7,8 @@ import * as api from '../api';
 import { useNotify } from '../components/notifyContext';
 import { queryKeys } from './queries';
 
-const SINGLES = [queryKeys.singles, queryKeys.summary];
-const SEALED = [queryKeys.sealed, queryKeys.summary, queryKeys.context];
+const SINGLES = [queryKeys.singles, queryKeys.summary, queryKeys.marketLinks];
+const SEALED = [queryKeys.sealed, queryKeys.summary, queryKeys.context, queryKeys.marketLinks];
 const HOLDS = [...SEALED, queryKeys.completedHolds];
 const ACCOUNTS = [queryKeys.accounts];
 
@@ -37,6 +37,18 @@ function useSave<TVars, TResult>(
   });
 }
 
+type ItemRef = { singleId: number } | { sealedItemId: number };
+
+/** True when saving a value by hand is about to pause an item's daily updates. */
+function pausesAuto(queryClient: QueryClient, item: ItemRef) {
+  return (queryClient.getQueryData<MarketLink[]>(queryKeys.marketLinks) ?? []).some(
+    (l) =>
+      !l.pinned && ('singleId' in item ? l.singleId === item.singleId : l.sealedItemId === item.sealedItemId),
+  );
+}
+
+const PAUSED = ' Auto updates paused for this item.';
+
 export const useAddSingle = () =>
   useSave(
     (v: WithId<{ input: api.SingleInput }>) => api.addSingle(v.requestId, v.input),
@@ -44,12 +56,16 @@ export const useAddSingle = () =>
     () => 'Added!',
   );
 
-export const useEditSingle = () =>
-  useSave(
+export const useEditSingle = () => {
+  const queryClient = useQueryClient();
+
+  return useSave(
     (v: WithId<{ id: number; input: api.SingleInput }>) => api.editSingle(v.requestId, v.id, v.input),
     SINGLES,
-    () => 'Saved!',
+    (_, v) =>
+      v.input.unitValue != null && pausesAuto(queryClient, { singleId: v.id }) ? `Saved!${PAUSED}` : 'Saved!',
   );
+};
 
 export const useDeleteSingle = () =>
   useSave(
@@ -81,12 +97,18 @@ export const useAddSealed = () => {
   );
 };
 
-export const useEditSealed = () =>
-  useSave(
+export const useEditSealed = () => {
+  const queryClient = useQueryClient();
+
+  return useSave(
     (v: WithId<{ id: number; input: api.SealedInput }>) => api.editSealed(v.requestId, v.id, v.input),
     SEALED,
-    () => 'Saved!',
+    (_, v) =>
+      v.input.unitValue != null && pausesAuto(queryClient, { sealedItemId: v.id })
+        ? `Saved!${PAUSED}`
+        : 'Saved!',
   );
+};
 
 export const useDeleteSealed = () =>
   useSave(
@@ -118,17 +140,28 @@ export const useCompleteShortHold = () =>
     (next, v) => `${v.holdName} completed! ${next} started.`,
   );
 
-export const useSetQuarterPrice = () =>
-  useSave(
-    (
-      v: WithId<{
-        item: { singleId: number } | { sealedItemId: number };
-        quarter: 1 | 2 | 3 | 4;
-        unitValue: number;
-      }>,
-    ) => api.setQuarterPrice(v.requestId, v.item, v.quarter, v.unitValue),
+export const useSetQuarterPrice = () => {
+  const queryClient = useQueryClient();
+
+  // Only the current quarter pauses daily updates; past quarters are history.
+  return useSave(
+    (v: WithId<{ item: ItemRef; quarter: 1 | 2 | 3 | 4; unitValue: number }>) =>
+      api.setQuarterPrice(v.requestId, v.item, v.quarter, v.unitValue),
     [...SINGLES, ...SEALED],
-    () => 'Updated!',
+    (_, v) =>
+      v.quarter === queryClient.getQueryData<AppContext>(queryKeys.context)?.quarter &&
+      pausesAuto(queryClient, v.item)
+        ? `Updated!${PAUSED}`
+        : 'Updated!',
+  );
+};
+
+export const useSetMarketLink = () =>
+  useSave(
+    (v: WithId<{ item: ItemRef; pinned: boolean; gradedBasis: GradedBasis }>) =>
+      api.setMarketLink(v.requestId, v.item, v.pinned, v.gradedBasis),
+    [...SINGLES, ...SEALED],
+    (_, v) => (v.pinned ? 'Auto updates paused' : 'Auto updates on!'),
   );
 
 export const useAddAccount = () =>

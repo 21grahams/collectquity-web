@@ -1,5 +1,6 @@
 import type { Single } from '../../api/types';
 import type { SinglesFilters } from '../../lib/singlesFilter';
+import type { MarketTarget } from '../items/MarketSheet';
 import type { QuarterTarget } from '../items/QuarterSheet';
 import type { SellTarget } from '../items/SellSheet';
 
@@ -15,13 +16,16 @@ import { ItemCard } from '../../components/ItemCard';
 import { EmptyCollection, EmptyState, ErrorState, LoadingState } from '../../components/ListStates';
 import { PercentPicker } from '../../components/PercentPicker';
 import { StickyToolbar } from '../../components/StickyToolbar';
-import { useAppContext, useSingles } from '../../hooks/queries';
+import { useAppContext, useMarketLinks, useSingles } from '../../hooks/queries';
 import { useStickyState, useValuePercent } from '../../hooks/useStickyState';
 import { cardNumbers, cardsLabel, pasFeesLabel, quarterBoxes, totals } from '../../lib/cardMath';
 import { formatDate, formatGain, formatMoney, formatSignedPct, gainLabel } from '../../lib/format';
+import { findLink, isAuto } from '../../lib/marketLink';
 import { activeFilterCount, emptyFilters, filterOptions, filterSingles } from '../../lib/singlesFilter';
 import { fonts, tokens } from '../../theme/tokens';
 import { ItemFormSheet } from '../items/ItemFormSheet';
+import { MarketLine } from '../items/MarketLine';
+import { MarketSheet } from '../items/MarketSheet';
 import { QuarterSheet } from '../items/QuarterSheet';
 import { RemoveItemDialog } from '../items/RemoveItemDialog';
 import { SellSheet } from '../items/SellSheet';
@@ -109,7 +113,9 @@ export function SinglesPage() {
   const [editing, setEditing] = useState<Single | null>(null);
   const [removing, setRemoving] = useState<Single | null>(null);
   const [quarterTarget, setQuarterTarget] = useState<QuarterTarget | null>(null);
+  const [marketTarget, setMarketTarget] = useState<MarketTarget | null>(null);
   const [selling, setSelling] = useState<SellTarget | null>(null);
+  const marketLinks = useMarketLinks();
 
   const all = useMemo(() => singles.data ?? [], [singles.data]);
   const shown = useMemo(() => filterSingles(all, search, filters), [all, search, filters]);
@@ -124,6 +130,21 @@ export function SinglesPage() {
   }
 
   const sum = totals(shown, { valuePct });
+  const today = context.data.today;
+  const marketLine = (item: { singleId: number }, name: string, quantity: number) => {
+    const link = findLink(marketLinks.data, item);
+
+    return (
+      link && (
+        <MarketLine
+          link={link}
+          today={today}
+          quantity={quantity}
+          onClick={() => setMarketTarget({ item, name, link })}
+        />
+      )
+    );
+  };
 
   return (
     <Box>
@@ -257,6 +278,8 @@ export function SinglesPage() {
                 valuePct={valuePct}
                 numbers={cardNumbers(s, { valuePct })}
                 feesLabel={pasFeesLabel(s.fees, s.feeUnits)}
+                market={marketLine({ singleId: s.id }, cardTitle(s), s.quantity)}
+                autoValue={isAuto(marketLinks.data, { singleId: s.id })}
                 quarters={quarterBoxes(s.quarterUnitValues, s.quantity, s.totalCost, context.data.year)}
                 onQuarterClick={(q) =>
                   setQuarterTarget({
@@ -314,6 +337,7 @@ export function SinglesPage() {
       />
 
       <QuarterSheet target={quarterTarget} onClose={() => setQuarterTarget(null)} />
+      <MarketSheet target={marketTarget} onClose={() => setMarketTarget(null)} />
       <SellSheet target={selling} onClose={() => setSelling(null)} />
       <RemoveItemDialog
         target={removing && { kind: 'single', item: removing }}

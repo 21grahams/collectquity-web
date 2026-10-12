@@ -3,7 +3,9 @@
 import type {
   AppContext,
   CompletedHold,
+  GradedBasis,
   HoldStatus,
+  MarketLink,
   RetailerAccount,
   SealedItem,
   Single,
@@ -187,6 +189,22 @@ export async function getSummary(): Promise<Summary> {
   };
 }
 
+export async function listMarketLinks(): Promise<MarketLink[]> {
+  const rows = unwrap(await send(supabase.rpc('api_list_market_links')));
+
+  return rows.map((r) => ({
+    singleId: n(r.single_id),
+    sealedItemId: n(r.sealed_item_id),
+    productName: r.product_name,
+    pinned: r.pinned,
+    gradedBasis: r.graded_basis as GradedBasis,
+    lastRunAt: r.last_run_at ?? null,
+    lastStatus: (r.last_status ?? null) as MarketLink['lastStatus'],
+    recentUnitValue: n(r.recent_unit_value),
+    longTermUnitValue: n(r.long_term_unit_value),
+  }));
+}
+
 async function save<T>(call: Parameters<typeof send<T>>[0]): Promise<T | null> {
   if (!navigator.onLine) throw new ApiError("You're offline — changes can't be saved until you reconnect.");
   const { data, error } = await send(call);
@@ -339,6 +357,22 @@ export const setQuarterPrice = (
       p_sealed_item_id: ('sealedItemId' in item ? item.sealedItemId : null) as number,
       p_quarter: quarter,
       p_unit_value: unitValue,
+    }),
+  );
+
+export const setMarketLink = (
+  requestId: string,
+  item: { singleId: number } | { sealedItemId: number },
+  pinned: boolean,
+  gradedBasis: GradedBasis,
+) =>
+  save(
+    supabase.rpc('api_set_market_link', {
+      p_request_id: requestId,
+      p_single_id: ('singleId' in item ? item.singleId : null) as number,
+      p_sealed_item_id: ('sealedItemId' in item ? item.sealedItemId : null) as number,
+      p_pinned: pinned,
+      p_graded_basis: gradedBasis,
     }),
   );
 
