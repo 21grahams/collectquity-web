@@ -1,12 +1,13 @@
-# PullSheet web — notes for Claude
+# Collectquity web — notes for Claude
 
-React rewrite of the PullSheet frontend: a single-user Pokémon collection and P&L tracker,
-used mostly as an iPhone home-screen app, plus desktop. Live at
-https://21grahams.github.io/pullsheet-web/. It reached parity with the original app
+The Collectquity frontend (formerly PullSheet, renamed 2026-10-12): a single-user Pokémon
+collection and P&L tracker, used mostly as an iPhone home-screen app, plus desktop. Live at
+https://collectquity.com (GitHub Pages, custom domain via Porkbun DNS). The visible name and
+tagline live only in `src/lib/brand.ts`. It reached parity with the original app
 (`21grahams/pullsheet`, now archived) and replaced it on 2026-10-07; the old app was retired on
 2026-10-11. New work comes from `BACKLOG.md`.
 
-The backend lives in `21grahams/pullsheet-backend` (private, `~/Pullsheet`). Its `api_*`
+The backend lives in `21grahams/collectquity-backend` (private, `~/collectquity/backend`). Its `api_*`
 Postgres functions are this app's entire API.
 
 ## Stack and commands

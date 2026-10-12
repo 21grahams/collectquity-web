@@ -2,23 +2,12 @@
 
 What's next, in order. The old app is retired, so database work is open.
 
-- **Rename the app** (top priority, but floating: not a blocker for other work; must happen before
-  any App Store/Swift release). Still brainstorming; lean broader than Pokémon, since collections
-  for other hobbies and other users are a long-term goal (see Collections). Before settling, search
-  USPTO for sound-alikes in classes 9, 36 and 42 (Arcula was dropped: too close to the registered
-  Arculus crypto-wallet marks). Includes the
-  custom domain, GitHub repo names, and tidying the Mac folders at the same time (`~/Pullsheet`
-  vs `~/pullsheet-web`): moving the backend folder means updating the nightly backup job's paths,
-  the practice setup, and Claude's per-project notes together.
-- **Automatic market values (top new feature).** Prices update by themselves, so
-  values, P&L, quarters and Summary stay current. Plan: match each item once to a catalog product
-  (AI suggests, user confirms), then a daily Supabase scheduled job fetches prices and writes
-  normal per-unit price checks; typing a value still overrides. Candidate sources (verify access,
-  terms, pricing first): Pokémon TCG API (free; TCGplayer market prices, raw singles) and
-  PriceCharting's paid API (graded + sealed). Avoid scraping eBay (sold data is partner-only).
-  First step: a small trial with ~10 real items (raw, graded, sealed) to check coverage and
-  accuracy per source. A paid "pro" tier only matters if the app goes multi-user/App Store.
-- **Catalog autocomplete (right after automatic market values).** Today's autocomplete suggests
+- **Before any App Store release: trademark attorney check** on "Collectquity" (renamed
+  2026-10-12; domain collectquity.com). Neighbors to show them: SoleSavy's COLLECT (Class 9),
+  Collectable, Collecticity. Pair the name with the plain tagline and avoid investment language.
+- **App icon redesign (low).** Today's icon is a placeholder gold serif "C" (slightly off-center);
+  candidates from the design agent include an "arc C" (nested arcs + gem).
+- **Catalog autocomplete (next; automatic market values went live 2026-10-12).** Today's autocomplete suggests
   only names you've saved. Once the card catalog is connected for pricing, suggest every card and
   set from it (e.g. "Charizard ex – Obsidian Flames"), so new items match the catalog from the
   start and get prices without a separate matching step.
