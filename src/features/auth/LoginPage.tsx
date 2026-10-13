@@ -1,9 +1,10 @@
 import type { FormEvent } from 'react';
 
-import { Alert, Box, Stack, TextField, Typography } from '@mui/material';
+import { Alert, Box, InputAdornment, Stack, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
 import { Navigate } from 'react-router';
 
+import { EyeButton } from '../../components/EyeButton';
 import { PracticeBanner } from '../../components/PracticeBanner';
 import { SaveButton } from '../../components/SaveButton';
 import { Wordmark } from '../../components/Wordmark';
@@ -15,6 +16,7 @@ export function LoginPage() {
   const { session, signIn } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [attempted, setAttempted] = useState(false);
@@ -74,7 +76,7 @@ export function LoginPage() {
           />
           <TextField
             label="Password"
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -82,6 +84,19 @@ export function LoginPage() {
             helperText={shown.password}
             required
             fullWidth
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end" sx={{ mr: 0.5 }}>
+                    <EyeButton
+                      revealed={showPassword}
+                      what="password"
+                      onClick={() => setShowPassword((s) => !s)}
+                    />
+                  </InputAdornment>
+                ),
+              },
+            }}
           />
           <SaveButton
             type="submit"

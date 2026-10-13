@@ -5,11 +5,11 @@ import { Box } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 import { CardButton } from '../../components/CardActions';
+import { EyeButton } from '../../components/EyeButton';
 import { EmptyCollection, ErrorState, LoadingState } from '../../components/ListStates';
 import { useAccounts } from '../../hooks/queries';
 import { groupAccounts } from '../../lib/retailers';
 import { fonts, tokens } from '../../theme/tokens';
-import { EyeButton } from './EyeButton';
 
 const detail = { fontSize: 12, color: tokens.text2, fontFamily: fonts.mono, mt: '3px' } as const;
 
@@ -60,7 +60,7 @@ function AccountCard({
     >
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 1 }}>
         <Box sx={{ fontSize: 14, fontWeight: 600 }}>{account.label}</Box>
-        <EyeButton revealed={revealed} onClick={() => setRevealed((r) => !r)} />
+        <EyeButton revealed={revealed} what="account details" onClick={() => setRevealed((r) => !r)} />
       </Box>
       <Box sx={detail}>{show(account.email, '••••••••••••')}</Box>
       <Box sx={detail}>

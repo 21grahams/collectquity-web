@@ -1,14 +1,25 @@
 import { Box } from '@mui/material';
 
-import { tokens } from '../../theme/tokens';
+import { tokens } from '../theme/tokens';
 
-export function EyeButton({ revealed, onClick }: { revealed: boolean; onClick: () => void }) {
+/** Shows or hides something masked; `what` names it for screen readers ("password"). */
+export function EyeButton({
+  revealed,
+  what,
+  onClick,
+}: {
+  revealed: boolean;
+  what: string;
+  onClick: () => void;
+}) {
   return (
     <Box
       component="button"
       type="button"
-      aria-label={revealed ? 'Hide account details' : 'Show account details'}
+      aria-label={`${revealed ? 'Hide' : 'Show'} ${what}`}
       aria-pressed={revealed}
+      // Tapping it leaves the keyboard and cursor where they were.
+      onPointerDown={(e: React.PointerEvent) => e.preventDefault()}
       onClick={onClick}
       sx={{
         background: 'none',

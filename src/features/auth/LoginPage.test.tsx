@@ -36,7 +36,7 @@ function renderLogin(overrides: Partial<AuthContextValue> = {}) {
 
 function fillAndSubmit(email: string, password: string) {
   fireEvent.change(screen.getByLabelText(/email/i), { target: { value: email } });
-  fireEvent.change(screen.getByLabelText(/password/i), { target: { value: password } });
+  fireEvent.change(screen.getByLabelText(/^password/i), { target: { value: password } });
   fireEvent.click(screen.getByRole('button', { name: /log in/i }));
 }
 
@@ -62,6 +62,16 @@ describe('LoginPage', () => {
     renderLogin({ signIn: vi.fn().mockResolvedValue('Wrong email or password.') });
     fillAndSubmit('me@example.com', 'nope');
     expect(await screen.findByText('Wrong email or password.')).toBeInTheDocument();
+  });
+
+  it('the eye shows and hides the password', () => {
+    renderLogin();
+    const password = screen.getByLabelText(/^password/i);
+    expect(password).toHaveAttribute('type', 'password');
+    fireEvent.click(screen.getByLabelText('Show password'));
+    expect(password).toHaveAttribute('type', 'text');
+    fireEvent.click(screen.getByLabelText('Hide password'));
+    expect(password).toHaveAttribute('type', 'password');
   });
 
   it('has no sign-up or password-reset links (single user, sign-ups disabled)', () => {
