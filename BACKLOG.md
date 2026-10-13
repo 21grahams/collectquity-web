@@ -5,8 +5,8 @@ What's next, in order. The old app is retired, so database work is open.
 - **Before any App Store release: trademark attorney check** on "Collectquity" (renamed
   2026-10-12; domain collectquity.com). Neighbors to show them: SoleSavy's COLLECT (Class 9),
   Collectable, Collecticity. Pair the name with the plain tagline and avoid investment language.
-- **App icon redesign (low).** Today's icon is a placeholder gold serif "C" (slightly off-center);
-  candidates from the design agent include an "arc C" (nested arcs + gem).
+- **App icon (low).** Since 2026-10-13 the icon is a gold ring "C" with a padlock ("for now");
+  revisit for a final design before any App Store release.
 - **Item photos (nice to have, after the avatar).** Optional photo per card/item: proof of
   condition, telling copies apart, a thumbnail in the list. Reuses the avatar's storage and upload
   pieces; photos are shrunk on the phone before upload (free tier is 1 GB; lists stay fast).
