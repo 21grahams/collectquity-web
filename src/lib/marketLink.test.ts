@@ -7,6 +7,8 @@ import { findLink, isGradedLink, marketStatus } from './marketLink';
 const link = (over: Partial<MarketLink> = {}): MarketLink => ({
   singleId: 1,
   sealedItemId: null,
+  tcgplayerId: '42382',
+  printing: 'Holofoil',
   productName: 'Charizard 004/102',
   pinned: false,
   gradedBasis: 'long_term',

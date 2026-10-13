@@ -1,8 +1,11 @@
+import type { CatalogProduct, MarketLink } from '../api/types';
+
 import { describe, expect, it } from 'vitest';
 
 import {
   emptyItemForm,
   formFromItem,
+  linkFromProduct,
   marketLabel,
   toSealedInput,
   toSingleInput,
@@ -85,6 +88,7 @@ describe('toSingleInput / toSealedInput', () => {
       fees: 30,
       feeUnits: 2,
       unitValue: 600,
+      link: null,
     });
   });
   it('uppercases condition and tag', () => {
@@ -163,6 +167,95 @@ describe('editing (formFromItem + original)', () => {
       cost: '170',
       fees: '6.78',
       feeUnits: 2,
+    });
+  });
+});
+
+describe('catalog links', () => {
+  const charizard: CatalogProduct = {
+    tcgplayerId: '509879',
+    kind: 'single',
+    name: 'Charizard ex',
+    number: '125/197',
+    setName: 'Obsidian Flames',
+    productName: 'Charizard ex - 125/197',
+    printings: ['Holofoil'],
+    imageUrl: null,
+  };
+  const valid = { ...base, pokemon: 'Charizard ex', setName: 'Obsidian Flames', condition: 'NM' };
+
+  it('picks the only printing; several must be chosen', () => {
+    expect(linkFromProduct(charizard).printing).toBe('Holofoil');
+    const mew = linkFromProduct({ ...charizard, printings: ['Normal', 'Reverse Holofoil'] });
+    expect(mew.printing).toBeNull();
+    expect(validateItemForm('single', { ...valid, market: '5', link: mew }).printing).toBe(
+      'Choose a printing',
+    );
+  });
+
+  it('sealed products have no printing', () => {
+    const etb = linkFromProduct({ ...charizard, kind: 'sealed', number: null, printings: ['Normal'] });
+    expect(etb).toMatchObject({ printing: null, printings: [] });
+  });
+
+  it('a linked item may leave the market value blank', () => {
+    const link = linkFromProduct(charizard);
+    expect(validateItemForm('single', { ...valid, link }).market).toBeUndefined();
+    expect(toSingleInput({ ...valid, link })).toMatchObject({
+      unitValue: null,
+      link: { tcgplayerId: '509879', printing: 'Holofoil' },
+    });
+  });
+
+  it('adding without a pick sends no link', () => {
+    expect(toSingleInput({ ...valid, market: '5' }).link).toBeNull();
+  });
+
+  describe('editing', () => {
+    const item = {
+      id: 3,
+      pokemon: 'Charizard ex',
+      setName: 'Obsidian Flames',
+      condition: 'NM',
+      extra: '',
+      displayName: '',
+      quantity: 1,
+      purchaseDate: '2026-10-01',
+      totalCost: 20,
+      fees: 0,
+      feeUnits: 0,
+      unitValue: 25,
+      quarterUnitValues: [null, null, null, 25] as const,
+    };
+    const saved = {
+      singleId: 3,
+      tcgplayerId: '509879',
+      printing: 'Holofoil',
+      productName: 'Charizard ex - 125/197',
+    } as MarketLink;
+
+    it('an untouched link is left alone', () => {
+      const original = formFromItem(item, '2026-10-12', saved);
+      expect(original.values.link).toMatchObject({ tcgplayerId: '509879', printing: 'Holofoil' });
+      expect(toSingleInput(original.values, original).link).toBeNull();
+    });
+
+    it('removing the link unlinks; picking another product switches', () => {
+      const original = formFromItem(item, '2026-10-12', saved);
+      expect(toSingleInput({ ...original.values, link: null }, original).link).toBe('unlink');
+      const other = linkFromProduct({ ...charizard, tcgplayerId: '509963' });
+      expect(toSingleInput({ ...original.values, link: other }, original).link).toEqual({
+        tcgplayerId: '509963',
+        printing: 'Holofoil',
+      });
+    });
+
+    it('linking an unlinked item sends the new link', () => {
+      const original = formFromItem(item, '2026-10-12');
+      expect(toSingleInput({ ...original.values, link: linkFromProduct(charizard) }, original).link).toEqual({
+        tcgplayerId: '509879',
+        printing: 'Holofoil',
+      });
     });
   });
 });

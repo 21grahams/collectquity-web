@@ -2,6 +2,7 @@
 
 import type {
   AppContext,
+  CatalogProduct,
   CompletedHold,
   GradedBasis,
   HoldStatus,
@@ -195,6 +196,8 @@ export async function listMarketLinks(): Promise<MarketLink[]> {
   return rows.map((r) => ({
     singleId: n(r.single_id),
     sealedItemId: n(r.sealed_item_id),
+    tcgplayerId: r.tcgplayer_id,
+    printing: r.printing ?? null,
     productName: r.product_name,
     pinned: r.pinned,
     gradedBasis: r.graded_basis as GradedBasis,
@@ -205,6 +208,21 @@ export async function listMarketLinks(): Promise<MarketLink[]> {
   }));
 }
 
+export async function searchCatalog(query: string, kind: CatalogProduct['kind']): Promise<CatalogProduct[]> {
+  const rows = unwrap(await send(supabase.rpc('api_search_catalog', { p_query: query, p_kind: kind })));
+
+  return rows.map((r) => ({
+    tcgplayerId: r.tcgplayer_id,
+    kind: r.kind as CatalogProduct['kind'],
+    name: r.name,
+    number: r.number ?? null,
+    setName: r.set_name,
+    productName: r.product_name,
+    printings: r.printings ?? [],
+    imageUrl: r.image_url ?? null,
+  }));
+}
+
 async function save<T>(call: Parameters<typeof send<T>>[0]): Promise<T | null> {
   if (!navigator.onLine) throw new ApiError("You're offline — changes can't be saved until you reconnect.");
   const { data, error } = await send(call);
@@ -212,6 +230,9 @@ async function save<T>(call: Parameters<typeof send<T>>[0]): Promise<T | null> {
 
   return data;
 }
+
+/** null keeps the item's current link (or adds none); 'unlink' removes it. */
+export type LinkChange = { tcgplayerId: string; printing: string | null } | 'unlink' | null;
 
 export interface SingleInput {
   pokemon: string;
@@ -225,6 +246,7 @@ export interface SingleInput {
   feeUnits: number;
   /** null on edit = keep the current price. */
   unitValue: number | null;
+  link: LinkChange;
 }
 
 export interface SealedInput {
@@ -236,6 +258,7 @@ export interface SealedInput {
   feeUnits: number;
   /** null on edit = keep the current price. */
   unitValue: number | null;
+  link: LinkChange;
 }
 
 export interface AccountInput {
@@ -245,6 +268,13 @@ export interface AccountInput {
   phoneLast4: string;
   loop: string;
   notes: string;
+}
+
+function linkArg(link: LinkChange) {
+  if (link === null) return {};
+  if (link === 'unlink') return { p_link: {} };
+
+  return { p_link: { tcgplayer_id: link.tcgplayerId, printing: link.printing } };
 }
 
 const singleArgs = (i: SingleInput) => ({
@@ -258,6 +288,7 @@ const singleArgs = (i: SingleInput) => ({
   p_fees: i.fees,
   p_fee_units: i.feeUnits,
   p_unit_value: i.unitValue as number,
+  ...linkArg(i.link),
 });
 
 const sealedArgs = (i: SealedInput) => ({
@@ -268,6 +299,7 @@ const sealedArgs = (i: SealedInput) => ({
   p_fees: i.fees,
   p_fee_units: i.feeUnits,
   p_unit_value: i.unitValue as number,
+  ...linkArg(i.link),
 });
 
 const accountArgs = (i: AccountInput) => ({

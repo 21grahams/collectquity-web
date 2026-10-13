@@ -69,7 +69,7 @@ export function ProfitDisplay({ profit }: { profit: number | null }) {
 
 export function FieldRow({ children, columns = '1fr 1fr' }: { children: ReactNode; columns?: string }) {
   return (
-    <Box sx={{ display: 'grid', gridTemplateColumns: columns, gap: 1.5, alignItems: 'start' }}>
+    <Box data-field-row sx={{ display: 'grid', gridTemplateColumns: columns, gap: 1.5, alignItems: 'start' }}>
       {children}
     </Box>
   );

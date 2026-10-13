@@ -1,4 +1,4 @@
-import type { SealedItem, Single } from '../../api/types';
+import type { CatalogProduct, SealedItem, Single } from '../../api/types';
 import type { ItemFormOriginal, ItemFormValues, ItemKind } from '../../lib/itemForm';
 
 import { Box } from '@mui/material';
@@ -9,18 +9,21 @@ import { FieldRow, MoneyInput, Segmented, Stepper, TextInput } from '../../compo
 import { SaveButton } from '../../components/SaveButton';
 import { CancelButton, Field, Sheet } from '../../components/Sheet';
 import { useAddSealed, useAddSingle, useEditSealed, useEditSingle } from '../../hooks/mutations';
-import { useSealed, useSingles } from '../../hooks/queries';
+import { useMarketLinks, useSealed, useSingles } from '../../hooks/queries';
 import { useSaveSession } from '../../hooks/useSaveSession';
 import {
   emptyItemForm,
   formFromItem,
+  linkFromProduct,
   marketLabel,
   toSealedInput,
   toSingleInput,
   validateItemForm,
 } from '../../lib/itemForm';
+import { findLink } from '../../lib/marketLink';
 import { suggestionList } from '../../lib/suggestions';
 import { tokens } from '../../theme/tokens';
+import { CatalogLink } from './CatalogLink';
 import { ConditionPicker } from './ConditionPicker';
 
 interface Props {
@@ -58,6 +61,7 @@ export function ItemFormSheet({ kind, open, onClose, today, editing }: Props) {
   const addSealed = useAddSealed();
   const editSingle = useEditSingle();
   const editSealed = useEditSealed();
+  const marketLinks = useMarketLinks();
   const [form, setForm] = useState<ItemFormValues>(() => emptyItemForm(today));
   const [original, setOriginal] = useState<ItemFormOriginal | null>(null);
   const [showTag, setShowTag] = useState(false);
@@ -68,7 +72,16 @@ export function ItemFormSheet({ kind, open, onClose, today, editing }: Props) {
   if (open !== wasOpen) {
     setWasOpen(open);
     if (open) {
-      const prefill = editing ? formFromItem(editing, today) : null;
+      const prefill = editing
+        ? formFromItem(
+            editing,
+            today,
+            findLink(
+              marketLinks.data,
+              'pokemon' in editing ? { singleId: editing.id } : { sealedItemId: editing.id },
+            ),
+          )
+        : null;
       setOriginal(prefill);
       setForm(prefill?.values ?? emptyItemForm(today));
       setShowTag(!!prefill?.values.extra);
@@ -92,6 +105,25 @@ export function ItemFormSheet({ kind, open, onClose, today, editing }: Props) {
     [singles.data, sealed.data],
   );
 
+  const errors = validateItemForm(kind, form);
+  const invalid = Object.keys(errors).length > 0;
+  const shown = attempted ? errors : {};
+
+  const pickProduct = (p: CatalogProduct) =>
+    setForm((f) => ({
+      ...f,
+      ...(p.kind === 'single' ? { pokemon: p.name, setName: p.setName } : { name: p.name }),
+      link: linkFromProduct(p),
+    }));
+  const catalogLink = (
+    <CatalogLink
+      link={form.link}
+      named={!!(kind === 'single' ? form.pokemon : form.name).trim()}
+      printingError={shown.printing}
+      onChange={(link) => set('link', link)}
+    />
+  );
+
   const text = (key: keyof ItemFormValues) => ({
     value: form[key] as string,
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => set(key, e.target.value as never),
@@ -99,9 +131,6 @@ export function ItemFormSheet({ kind, open, onClose, today, editing }: Props) {
 
   const pending = addSingle.isPending || addSealed.isPending || editSingle.isPending || editSealed.isPending;
 
-  const errors = validateItemForm(kind, form);
-  const invalid = Object.keys(errors).length > 0;
-  const shown = attempted ? errors : {};
   const unchanged = original != null && JSON.stringify(form) === JSON.stringify(original.values);
 
   function submit() {
@@ -170,6 +199,8 @@ export function ItemFormSheet({ kind, open, onClose, today, editing }: Props) {
               value={form.pokemon}
               onChange={(v) => set('pokemon', v)}
               options={suggestions.pokemon}
+              catalog="single"
+              onPickProduct={pickProduct}
             />
           </Field>
         ) : (
@@ -179,6 +210,8 @@ export function ItemFormSheet({ kind, open, onClose, today, editing }: Props) {
               value={form.name}
               onChange={(v) => set('name', v)}
               options={suggestions.name}
+              catalog="sealed"
+              onPickProduct={pickProduct}
             />
           </Field>
         )}
@@ -186,6 +219,7 @@ export function ItemFormSheet({ kind, open, onClose, today, editing }: Props) {
           <Stepper value={form.quantity} min={1} onChange={(n) => set('quantity', n)} ariaLabel="quantity" />
         </Field>
       </FieldRow>
+      {kind === 'sealed' && catalogLink}
 
       {kind === 'single' && (
         <>
@@ -197,6 +231,7 @@ export function ItemFormSheet({ kind, open, onClose, today, editing }: Props) {
               options={suggestions.setName}
             />
           </Field>
+          {catalogLink}
           <Field label="Condition" error={shown.condition}>
             <ConditionPicker key={openCount} value={form.condition} onChange={(c) => set('condition', c)} />
           </Field>
@@ -208,7 +243,7 @@ export function ItemFormSheet({ kind, open, onClose, today, editing }: Props) {
           <TextInput type="date" {...text('purchaseDate')} />
         </Field>
         <Field label={marketLabel(form.quantity)} error={shown.market}>
-          <MoneyInput {...text('market')} />
+          <MoneyInput placeholder={form.link ? 'Auto' : '0.00'} {...text('market')} />
         </Field>
       </FieldRow>
 

@@ -1,9 +1,18 @@
-import type { SealedInput, SingleInput } from '../api';
-import type { SealedItem, Single } from '../api/types';
+import type { LinkChange, SealedInput, SingleInput } from '../api';
+import type { CatalogProduct, MarketLink, SealedItem, Single } from '../api/types';
 
 import { isValidCondition } from './condition';
 
 export type ItemKind = 'single' | 'sealed';
+
+/** The catalog product an item is (or will be) priced from. */
+export interface FormLink {
+  tcgplayerId: string;
+  productName: string;
+  printing: string | null;
+  /** Empty when unknown (a link saved earlier); the printing then can't be changed without re-picking. */
+  printings: string[];
+}
 
 export interface ItemFormValues {
   pokemon: string;
@@ -20,6 +29,7 @@ export interface ItemFormValues {
   fees: string;
   feeUnits: number;
   hold: 'long' | 'short';
+  link: FormLink | null;
 }
 
 export const emptyItemForm = (today: string): ItemFormValues => ({
@@ -35,7 +45,17 @@ export const emptyItemForm = (today: string): ItemFormValues => ({
   fees: '',
   feeUnits: 0,
   hold: 'long',
+  link: null,
 });
+
+export const linkFromProduct = (p: CatalogProduct): FormLink => ({
+  tcgplayerId: p.tcgplayerId,
+  productName: p.productName,
+  printing: p.kind === 'single' && p.printings.length === 1 ? p.printings[0]! : null,
+  printings: p.kind === 'single' ? p.printings : [],
+});
+
+export const needsPrinting = (link: FormLink | null) => !!link && !link.printing && link.printings.length > 1;
 
 export const marketLabel = (quantity: number) =>
   quantity > 1 ? 'Market Value Per Item' : 'Total Market Value';
@@ -47,7 +67,7 @@ function parseMoney(text: string): number {
 }
 
 export type ItemFormErrors = Partial<
-  Record<'pokemon' | 'setName' | 'condition' | 'name' | 'market' | 'feeUnits', string>
+  Record<'pokemon' | 'setName' | 'condition' | 'name' | 'market' | 'feeUnits' | 'printing', string>
 >;
 
 export function validateItemForm(kind: ItemKind, v: ItemFormValues): ItemFormErrors {
@@ -59,7 +79,8 @@ export function validateItemForm(kind: ItemKind, v: ItemFormValues): ItemFormErr
   } else if (!v.name.trim()) {
     errors.name = 'Enter a name';
   }
-  if (!parseMoney(v.market)) errors.market = 'Enter a market value';
+  if (!parseMoney(v.market) && !v.link) errors.market = 'Enter a market value';
+  if (needsPrinting(v.link)) errors.printing = 'Choose a printing';
   if (v.feeUnits > v.quantity) errors.feeUnits = "Units w/ fee can't exceed qty";
 
   return errors;
@@ -74,7 +95,7 @@ export interface ItemFormOriginal {
 
 const toInputText = (n: number) => String(Math.round(n * 100) / 100);
 
-export function formFromItem(item: Single | SealedItem, today: string): ItemFormOriginal {
+export function formFromItem(item: Single | SealedItem, today: string, link?: MarketLink): ItemFormOriginal {
   const baseCost = item.totalCost - item.fees;
   const values: ItemFormValues = {
     ...emptyItemForm(today),
@@ -87,6 +108,14 @@ export function formFromItem(item: Single | SealedItem, today: string): ItemForm
     market: item.unitValue != null ? toInputText(item.unitValue) : '',
     fees: item.fees ? toInputText(item.fees) : '',
     feeUnits: item.feeUnits,
+    link: link
+      ? {
+          tcgplayerId: link.tcgplayerId,
+          productName: link.productName,
+          printing: link.printing,
+          printings: [],
+        }
+      : null,
   };
 
   return { values, baseCost, fees: item.fees, unitValue: item.unitValue };
@@ -95,8 +124,9 @@ export function formFromItem(item: Single | SealedItem, today: string): ItemForm
 // Untouched money fields send back the exact stored value, so an edit never
 // rounds away fractions of a cent left by earlier partial sales or moves; an
 // untouched market value is sent as null so no quarter price gets written.
+// A linked item may leave it blank: the morning update fills it in.
 function shared(v: ItemFormValues, original?: ItemFormOriginal) {
-  const keep = <T>(field: 'cost' | 'fees' | 'market', exact: T, parsed: number): T | number =>
+  const keep = <T, P>(field: 'cost' | 'fees' | 'market', exact: T, parsed: P): T | P =>
     original && v[field] === original.values[field] ? exact : parsed;
 
   return {
@@ -105,8 +135,16 @@ function shared(v: ItemFormValues, original?: ItemFormOriginal) {
     baseCost: keep('cost', original?.baseCost ?? 0, parseMoney(v.cost)),
     fees: keep('fees', original?.fees ?? 0, parseMoney(v.fees)),
     feeUnits: v.feeUnits,
-    unitValue: keep('market', null, parseMoney(v.market)),
+    unitValue: keep('market', null, parseMoney(v.market) || null),
+    link: linkChange(v.link, original?.values.link ?? null),
   };
+}
+
+function linkChange(link: FormLink | null, was: FormLink | null): LinkChange {
+  if (!link) return was ? 'unlink' : null;
+  if (was && link.tcgplayerId === was.tcgplayerId && link.printing === was.printing) return null;
+
+  return { tcgplayerId: link.tcgplayerId, printing: link.printing };
 }
 
 export const toSingleInput = (v: ItemFormValues, original?: ItemFormOriginal): SingleInput => ({

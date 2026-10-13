@@ -7,10 +7,6 @@ What's next, in order. The old app is retired, so database work is open.
   Collectable, Collecticity. Pair the name with the plain tagline and avoid investment language.
 - **App icon redesign (low).** Today's icon is a placeholder gold serif "C" (slightly off-center);
   candidates from the design agent include an "arc C" (nested arcs + gem).
-- **Catalog autocomplete (next; automatic market values went live 2026-10-12).** Today's autocomplete suggests
-  only names you've saved. Once the card catalog is connected for pricing, suggest every card and
-  set from it (e.g. "Charizard ex – Obsidian Flames"), so new items match the catalog from the
-  start and get prices without a separate matching step.
 - **Item photos (nice to have, after the avatar).** Optional photo per card/item: proof of
   condition, telling copies apart, a thumbnail in the list. Reuses the avatar's storage and upload
   pieces; photos are shrunk on the phone before upload (free tier is 1 GB; lists stay fast).

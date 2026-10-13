@@ -50,6 +50,8 @@ export type GradedBasis = 'long_term' | 'recent';
 export interface MarketLink {
   singleId: number | null;
   sealedItemId: number | null;
+  tcgplayerId: string;
+  printing: string | null;
   productName: string;
   /** You typed a value yourself; daily updates skip this item. */
   pinned: boolean;
@@ -59,6 +61,20 @@ export interface MarketLink {
   /** Graded cards only: the 7-day price and the median of all recorded sales. */
   recentUnitValue: number | null;
   longTermUnitValue: number | null;
+}
+
+/** A card or sealed product from TCGplayer's catalog. */
+export interface CatalogProduct {
+  tcgplayerId: string;
+  kind: 'single' | 'sealed';
+  /** Cards: the name without its number ("Charizard ex"); sealed: the full product name. */
+  name: string;
+  number: string | null;
+  setName: string;
+  productName: string;
+  /** e.g. Normal, Holofoil, Reverse Holofoil. */
+  printings: string[];
+  imageUrl: string | null;
 }
 
 export interface RetailerAccount {

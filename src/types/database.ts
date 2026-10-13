@@ -18,6 +18,77 @@ export type Database = {
         };
         Relationships: [];
       };
+      catalog_products: {
+        Row: {
+          group_id: number;
+          image_url: string | null;
+          kind: string;
+          name: string;
+          number: string | null;
+          printings: string[];
+          product_name: string;
+          search_text: string;
+          tcgplayer_id: string;
+        };
+        Insert: {
+          group_id: number;
+          image_url?: string | null;
+          kind: string;
+          name: string;
+          number?: string | null;
+          printings?: string[];
+          product_name: string;
+          search_text: string;
+          tcgplayer_id: string;
+        };
+        Update: {
+          group_id?: number;
+          image_url?: string | null;
+          kind?: string;
+          name?: string;
+          number?: string | null;
+          printings?: string[];
+          product_name?: string;
+          search_text?: string;
+          tcgplayer_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'catalog_products_group_id_fkey';
+            columns: ['group_id'];
+            isOneToOne: false;
+            referencedRelation: 'catalog_sets';
+            referencedColumns: ['group_id'];
+          },
+        ];
+      };
+      catalog_sets: {
+        Row: {
+          group_id: number;
+          modified_on: string | null;
+          name: string;
+          released_on: string | null;
+          synced_at: string | null;
+          tcgplayer_name: string;
+        };
+        Insert: {
+          group_id: number;
+          modified_on?: string | null;
+          name: string;
+          released_on?: string | null;
+          synced_at?: string | null;
+          tcgplayer_name: string;
+        };
+        Update: {
+          group_id?: number;
+          modified_on?: string | null;
+          name?: string;
+          released_on?: string | null;
+          synced_at?: string | null;
+          tcgplayer_name?: string;
+        };
+        Relationships: [];
+      };
       holds: {
         Row: {
           completed_at: string | null;
@@ -459,6 +530,7 @@ export type Database = {
           p_fee_units: number;
           p_fees: number;
           p_hold: string;
+          p_link?: Json;
           p_name: string;
           p_purchase_date: string;
           p_quantity: number;
@@ -474,6 +546,7 @@ export type Database = {
           p_extra: string;
           p_fee_units: number;
           p_fees: number;
+          p_link?: Json;
           p_pokemon: string;
           p_purchase_date: string;
           p_quantity: number;
@@ -509,6 +582,7 @@ export type Database = {
           p_fee_units: number;
           p_fees: number;
           p_id: number;
+          p_link?: Json;
           p_name: string;
           p_purchase_date: string;
           p_quantity: number;
@@ -525,6 +599,7 @@ export type Database = {
           p_fee_units: number;
           p_fees: number;
           p_id: number;
+          p_link?: Json;
           p_pokemon: string;
           p_purchase_date: string;
           p_quantity: number;
@@ -618,10 +693,12 @@ export type Database = {
           last_status: string;
           long_term_unit_value: number;
           pinned: boolean;
+          printing: string;
           product_name: string;
           recent_unit_value: number;
           sealed_item_id: number;
           single_id: number;
+          tcgplayer_id: string;
         }[];
       };
       api_list_sealed: {
@@ -667,6 +744,19 @@ export type Database = {
         }[];
       };
       api_move_sealed: { Args: { p_id: number; p_quantity: number; p_request_id: string }; Returns: string };
+      api_search_catalog: {
+        Args: { p_kind: string; p_query: string };
+        Returns: {
+          image_url: string;
+          kind: string;
+          name: string;
+          number: string;
+          printings: string[];
+          product_name: string;
+          set_name: string;
+          tcgplayer_id: string;
+        }[];
+      };
       api_sell_long_hold_item: {
         Args: {
           p_id: number;
@@ -709,6 +799,9 @@ export type Database = {
       };
       app_timezone: { Args: Record<PropertyKey, never>; Returns: string };
       app_today: { Args: Record<PropertyKey, never>; Returns: string };
+      catalog_card_name: { Args: { p_name: string; p_number: string }; Returns: string };
+      catalog_search_text: { Args: { p_text: string }; Returns: string };
+      catalog_set_name: { Args: { p_name: string }; Returns: string };
       complete_short_hold: { Args: { p_profit: number; p_sold_price: number }; Returns: string };
       copy_market_link: { Args: { p_source: number; p_target: number }; Returns: undefined };
       delete_account: { Args: { p_id: number }; Returns: undefined };
@@ -799,6 +892,7 @@ export type Database = {
       quarter_end: { Args: { p_quarter: number; p_year: number }; Returns: string };
       quarter_of: { Args: { p_date: string }; Returns: number };
       quarter_start: { Args: { p_quarter: number; p_year: number }; Returns: string };
+      record_catalog_set: { Args: { p_products: Json; p_set: Json }; Returns: number };
       record_market_prices: { Args: { p_results: Json }; Returns: number };
       request_record: {
         Args: { p_action: string; p_request_id: string; p_result?: Json };
@@ -834,6 +928,10 @@ export type Database = {
       };
       sell_single: {
         Args: { p_id: number; p_profit: number; p_quantity: number; p_sold_price: number };
+        Returns: undefined;
+      };
+      set_catalog_link: {
+        Args: { p_link: Json; p_sealed_item_id: number; p_single_id: number };
         Returns: undefined;
       };
       set_quarter_price: {

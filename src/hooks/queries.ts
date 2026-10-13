@@ -1,4 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
+import type { CatalogProduct } from '../api/types';
+
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 
 import * as api from '../api';
 
@@ -30,3 +33,37 @@ export const useAvatarUrl = () => useQuery({ queryKey: queryKeys.avatar, queryFn
 
 export const useMarketLinks = () =>
   useQuery({ queryKey: queryKeys.marketLinks, queryFn: api.listMarketLinks });
+
+function useDebounced<T>(value: T, ms: number): T {
+  const [settled, setSettled] = useState(value);
+  useEffect(() => {
+    const timer = setTimeout(() => setSettled(value), ms);
+
+    return () => clearTimeout(timer);
+  }, [value, ms]);
+
+  return settled;
+}
+
+/**
+ * Catalog matches for what's being typed (2+ characters), after a short pause in typing.
+ * `searching` stays true until the matches for the current text are in.
+ */
+export function useCatalogSearch(kind: CatalogProduct['kind'], text: string, enabled = true) {
+  const typed = text.trim();
+  const query = useDebounced(typed, 250);
+  const active = enabled && query.length >= 2;
+  const result = useQuery({
+    queryKey: ['catalog', kind, query.toLowerCase()],
+    queryFn: () => api.searchCatalog(query, kind),
+    enabled: active,
+    staleTime: Infinity,
+    gcTime: 5 * 60_000,
+    placeholderData: keepPreviousData,
+  });
+
+  return {
+    products: query.length >= 2 ? (result.data ?? []) : [],
+    searching: enabled && (typed !== query || (active && result.isFetching)),
+  };
+}
