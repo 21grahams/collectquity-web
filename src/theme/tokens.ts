@@ -14,6 +14,9 @@ export const tokens = {
   radius: 10,
 } as const;
 
+/** Hover styles go under this, so a finger resting on something mid-scroll (iPhone) doesn't trigger them. */
+export const canHover = '@media (hover: hover)';
+
 export const fonts = {
   body: "'DM Sans', system-ui, sans-serif",
   mono: "'DM Mono', ui-monospace, monospace", // numbers

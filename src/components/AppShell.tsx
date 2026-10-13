@@ -149,7 +149,8 @@ export function AppShell() {
         <OfflineBanner />
       </Box>
       <Box sx={{ height: headerHeight }} />
-      <Box component="main" sx={{ maxWidth: 900, mx: 'auto', p: 2, pb: 'calc(16px + var(--bottom-inset))' }}>
+      {/* The bottom padding lets the last card scroll clear of the floating + button. */}
+      <Box component="main" sx={{ maxWidth: 900, mx: 'auto', p: 2, pb: 'calc(92px + var(--bottom-inset))' }}>
         <Outlet />
       </Box>
       <PullToRefresh top={headerHeight} />

@@ -1,4 +1,4 @@
-import { tokens } from '../theme/tokens';
+import { canHover, tokens } from '../theme/tokens';
 
 export const greenButtonSx = {
   py: 1.5,
@@ -7,6 +7,8 @@ export const greenButtonSx = {
   color: tokens.green,
   border: '1px solid rgba(52,199,123,0.25)',
   boxShadow: 'none',
-  '&:hover:not(.Mui-disabled)': { backgroundColor: 'rgba(52,199,123,0.2)', boxShadow: 'none' },
+  [canHover]: {
+    '&:hover:not(.Mui-disabled)': { backgroundColor: 'rgba(52,199,123,0.2)', boxShadow: 'none' },
+  },
   '&.Mui-disabled': { borderColor: 'transparent' },
 };

@@ -4,7 +4,7 @@ import type { CardNumbers, QuarterBox } from '../lib/cardMath';
 import { Box } from '@mui/material';
 
 import { formatGain, formatMoney, gainLabel } from '../lib/format';
-import { fonts, tokens } from '../theme/tokens';
+import { canHover, fonts, tokens } from '../theme/tokens';
 import { useNotify } from './notifyContext';
 
 interface ItemCardProps {
@@ -68,7 +68,7 @@ function QuarterGrid({
             fontFamily: 'inherit',
             cursor: onQuarterClick ? 'pointer' : 'default',
             transition: 'border-color 0.15s',
-            '&:hover': onQuarterClick ? { borderColor: tokens.gold } : {},
+            [canHover]: onQuarterClick ? { '&:hover': { borderColor: tokens.gold } } : {},
           }}
         >
           <Box sx={{ fontSize: 9, letterSpacing: '1.5px', textTransform: 'uppercase', color: tokens.text3 }}>
@@ -201,7 +201,7 @@ export function ItemCard({
                 fontSize: 13,
                 lineHeight: 1,
                 flexShrink: 0,
-                '&:hover': { color: tokens.gold },
+                [canHover]: { '&:hover': { color: tokens.gold } },
                 '&:active': { color: tokens.green },
               }}
             >

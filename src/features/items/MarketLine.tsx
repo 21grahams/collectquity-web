@@ -6,7 +6,7 @@ import { Box } from '@mui/material';
 
 import { formatMoney } from '../../lib/format';
 import { isGradedLink, marketStatus } from '../../lib/marketLink';
-import { fonts, tokens } from '../../theme/tokens';
+import { canHover, fonts, tokens } from '../../theme/tokens';
 
 interface Props {
   link: MarketLink;
@@ -41,7 +41,7 @@ export function MarketLine({ link, today, quantity, onClick }: Props) {
     fontSize: 11,
     color: tokens.text3,
     cursor: 'pointer',
-    '&:hover': { color: tokens.gold },
+    [canHover]: { '&:hover': { color: tokens.gold } },
   } as const;
 
   return (
