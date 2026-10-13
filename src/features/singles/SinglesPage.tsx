@@ -280,6 +280,7 @@ export function SinglesPage() {
                 feesLabel={pasFeesLabel(s.fees, s.feeUnits)}
                 market={marketLine({ singleId: s.id }, cardTitle(s), s.quantity)}
                 autoValue={isAuto(marketLinks.data, { singleId: s.id })}
+                image={findLink(marketLinks.data, { singleId: s.id })?.imageUrl}
                 quarters={quarterBoxes(s.quarterUnitValues, s.quantity, s.totalCost, context.data.year)}
                 onQuarterClick={(q) =>
                   setQuarterTarget({

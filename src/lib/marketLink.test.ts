@@ -16,6 +16,7 @@ const link = (over: Partial<MarketLink> = {}): MarketLink => ({
   lastStatus: 'updated',
   recentUnitValue: null,
   longTermUnitValue: null,
+  imageUrl: null,
   ...over,
 });
 

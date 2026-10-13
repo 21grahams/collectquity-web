@@ -61,6 +61,7 @@ export interface MarketLink {
   /** Graded cards only: the 7-day price and the median of all recorded sales. */
   recentUnitValue: number | null;
   longTermUnitValue: number | null;
+  imageUrl: string | null;
 }
 
 /** A card or sealed product from TCGplayer's catalog. */

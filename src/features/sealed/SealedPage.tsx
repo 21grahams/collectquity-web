@@ -127,12 +127,14 @@ function SealedCard({
   onMove,
   market,
   autoValue,
+  image,
 }: {
   item: SealedItem;
   year: number;
   valuePct: number;
   market: ReactNode;
   autoValue: boolean;
+  image: string | null | undefined;
   onEdit: () => void;
   onRemove: () => void;
   onQuarter: (quarter: 1 | 2 | 3 | 4) => void;
@@ -155,6 +157,7 @@ function SealedCard({
       feesLabel={pasFeesLabel(item.fees, item.feeUnits)}
       market={item.holdStatus === 'historical' ? undefined : market}
       autoValue={item.holdStatus !== 'historical' && autoValue}
+      image={image}
       quarters={
         isLong ? quarterBoxes(item.quarterUnitValues, item.quantity, item.totalCost, year) : undefined
       }
@@ -324,6 +327,7 @@ export function SealedPage() {
                     valuePct={valuePct}
                     market={marketLine(item)}
                     autoValue={isAuto(marketLinks.data, { sealedItemId: item.id })}
+                    image={findLink(marketLinks.data, { sealedItemId: item.id })?.imageUrl}
                     onEdit={() => setEditing(item)}
                     onRemove={() => setRemoving(item)}
                     onMove={() => setMoving(item)}

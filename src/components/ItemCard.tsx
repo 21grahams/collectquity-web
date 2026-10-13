@@ -5,6 +5,7 @@ import { Box } from '@mui/material';
 
 import { formatGain, formatMoney, gainLabel } from '../lib/format';
 import { canHover, fonts, tokens } from '../theme/tokens';
+import { CardArt } from './CardArt';
 import { useNotify } from './notifyContext';
 
 interface ItemCardProps {
@@ -23,6 +24,8 @@ interface ItemCardProps {
   quarters?: QuarterBox[];
   onQuarterClick?: (q: QuarterBox) => void;
   actions?: ReactNode;
+  /** Catalog art for linked items, shown down the card's left side. */
+  image?: string | null;
 }
 
 const BORDER: Record<CardNumbers['tone'], string> = {
@@ -78,7 +81,8 @@ function QuarterGrid({
           <Box
             sx={{
               ...mono,
-              fontSize: 12,
+              // Five-digit totals ($10,000.00+) would overflow the narrow box on phones.
+              fontSize: q.total != null && q.total >= 10_000 ? 10 : 12,
               mt: '2px',
               color: q.delta == null ? tokens.text2 : q.delta >= 0 ? tokens.green : tokens.red,
             }}
@@ -151,6 +155,7 @@ export function ItemCard({
   quarters,
   onQuarterClick,
   actions,
+  image,
 }: ItemCardProps) {
   const notify = useNotify();
   const many = quantity > 1;
@@ -163,6 +168,80 @@ export function ItemCard({
       notify('Copy failed', 'error');
     }
   }
+
+  const headerRow = (
+    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 1 }}>
+      <Box sx={{ minWidth: 0 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+          <Box sx={{ fontWeight: 500, fontSize: 14, lineHeight: 1.3 }}>{title}</Box>
+          <Box
+            component="button"
+            onClick={copy}
+            aria-label="Copy name"
+            sx={{
+              background: 'none',
+              border: 'none',
+              color: tokens.text3,
+              cursor: 'pointer',
+              p: '2px 4px',
+              fontSize: 13,
+              lineHeight: 1,
+              flexShrink: 0,
+              [canHover]: { '&:hover': { color: tokens.gold } },
+              '&:active': { color: tokens.green },
+            }}
+          >
+            ⧉
+          </Box>
+        </Box>
+        <Box sx={{ fontSize: 11, color: tokens.text3, mt: '2px' }}>{subtitle}</Box>
+      </Box>
+      <Box sx={{ display: 'flex', gap: 0.75, flexShrink: 0 }}>
+        <GainPill pct={numbers.gainPct} tone={numbers.tone} hasCost={numbers.totalCost > 0} />
+      </Box>
+    </Box>
+  );
+  // Beside large art the row is narrower: Market Value gets the widest column and the
+  // labels sit tighter, so "MARKET VALUE" stays on one line.
+  const narrow = !!image;
+  const label = narrow ? { ...metaLabel, letterSpacing: '0.4px' } : metaLabel;
+  const bodyRows = (
+    <>
+      <Box
+        sx={{ ...divider, ...ledger, ...(narrow && { gridTemplateColumns: '1fr 1.25fr 1fr', columnGap: 1 }) }}
+      >
+        <Box sx={label}>Cost</Box>
+        <Box
+          sx={{
+            ...label,
+            ...(autoValue && { color: tokens.blue }),
+            ...(valuePct < 100 && { color: tokens.gold }),
+          }}
+        >
+          {valuePct < 100 ? `Market @ ${valuePct}%` : 'Market Value'}
+        </Box>
+        <Box sx={label}>{gainLabel(numbers.gain)}</Box>
+        <Box sx={{ ...money, mt: 0.5, ...(narrow && { fontSize: 13 }) }}>
+          {formatMoney(numbers.totalCost)}
+        </Box>
+        <Box sx={{ ...money, mt: 0.5, ...(narrow && { fontSize: 13 }) }}>
+          {formatMoney(numbers.totalValue)}
+        </Box>
+        <Box sx={{ mt: 0.5 }}>
+          <Gain amount={numbers.gain} />
+        </Box>
+        {many && (
+          <>
+            <Box sx={each}>{formatMoney(numbers.unitCost)} ea</Box>
+            <Box sx={each}>{formatMoney(numbers.unitValue)} ea</Box>
+            <Box />
+          </>
+        )}
+      </Box>
+      {feesLabel && <Box sx={{ ...finePrint, mt: 0.75 }}>Includes PAS fees: {feesLabel}</Box>}
+      {market}
+    </>
+  );
 
   return (
     <Box
@@ -184,64 +263,20 @@ export function ItemCard({
         },
       }}
     >
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 1 }}>
-        <Box sx={{ minWidth: 0 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-            <Box sx={{ fontWeight: 500, fontSize: 14, lineHeight: 1.3 }}>{title}</Box>
-            <Box
-              component="button"
-              onClick={copy}
-              aria-label="Copy name"
-              sx={{
-                background: 'none',
-                border: 'none',
-                color: tokens.text3,
-                cursor: 'pointer',
-                p: '2px 4px',
-                fontSize: 13,
-                lineHeight: 1,
-                flexShrink: 0,
-                [canHover]: { '&:hover': { color: tokens.gold } },
-                '&:active': { color: tokens.green },
-              }}
-            >
-              ⧉
-            </Box>
+      {image ? (
+        <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start' }}>
+          <CardArt url={image} width={76} height={106} />
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            {headerRow}
+            {bodyRows}
           </Box>
-          <Box sx={{ fontSize: 11, color: tokens.text3, mt: '2px' }}>{subtitle}</Box>
         </Box>
-        <Box sx={{ display: 'flex', gap: 0.75, flexShrink: 0 }}>
-          <GainPill pct={numbers.gainPct} tone={numbers.tone} hasCost={numbers.totalCost > 0} />
-        </Box>
-      </Box>
-
-      <Box sx={{ ...divider, ...ledger }}>
-        <Box sx={metaLabel}>Cost</Box>
-        <Box
-          sx={{
-            ...metaLabel,
-            ...(autoValue && { color: tokens.blue }),
-            ...(valuePct < 100 && { color: tokens.gold }),
-          }}
-        >
-          {valuePct < 100 ? `Market @ ${valuePct}%` : 'Market Value'}
-        </Box>
-        <Box sx={metaLabel}>{gainLabel(numbers.gain)}</Box>
-        <Box sx={{ ...money, mt: 0.5 }}>{formatMoney(numbers.totalCost)}</Box>
-        <Box sx={{ ...money, mt: 0.5 }}>{formatMoney(numbers.totalValue)}</Box>
-        <Box sx={{ mt: 0.5 }}>
-          <Gain amount={numbers.gain} />
-        </Box>
-        {many && (
-          <>
-            <Box sx={each}>{formatMoney(numbers.unitCost)} ea</Box>
-            <Box sx={each}>{formatMoney(numbers.unitValue)} ea</Box>
-            <Box />
-          </>
-        )}
-      </Box>
-      {feesLabel && <Box sx={{ ...finePrint, mt: 0.75 }}>Includes PAS fees: {feesLabel}</Box>}
-      {market}
+      ) : (
+        <>
+          {headerRow}
+          {bodyRows}
+        </>
+      )}
 
       {quarters && <QuarterGrid quarters={quarters} onQuarterClick={onQuarterClick} />}
 

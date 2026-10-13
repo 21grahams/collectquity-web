@@ -128,6 +128,45 @@ export type Database = {
         };
         Relationships: [];
       };
+      item_value_history: {
+        Row: {
+          day: string;
+          quantity: number;
+          sealed_item_id: number | null;
+          single_id: number | null;
+          unit_value: number | null;
+        };
+        Insert: {
+          day: string;
+          quantity: number;
+          sealed_item_id?: number | null;
+          single_id?: number | null;
+          unit_value?: number | null;
+        };
+        Update: {
+          day?: string;
+          quantity?: number;
+          sealed_item_id?: number | null;
+          single_id?: number | null;
+          unit_value?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'item_value_history_sealed_item_id_fkey';
+            columns: ['sealed_item_id'];
+            isOneToOne: false;
+            referencedRelation: 'sealed_items';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'item_value_history_single_id_fkey';
+            columns: ['single_id'];
+            isOneToOne: false;
+            referencedRelation: 'singles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       market_links: {
         Row: {
           created_at: string;
@@ -465,6 +504,42 @@ export type Database = {
           },
         ];
       };
+      summary_history: {
+        Row: {
+          current_short_spent: number;
+          current_short_value: number;
+          day: string;
+          long_hold_spent: number;
+          long_hold_value: number;
+          portfolio_spent: number;
+          portfolio_value: number;
+          singles_spent: number;
+          singles_value: number;
+        };
+        Insert: {
+          current_short_spent: number;
+          current_short_value: number;
+          day: string;
+          long_hold_spent: number;
+          long_hold_value: number;
+          portfolio_spent: number;
+          portfolio_value: number;
+          singles_spent: number;
+          singles_value: number;
+        };
+        Update: {
+          current_short_spent?: number;
+          current_short_value?: number;
+          day?: string;
+          long_hold_spent?: number;
+          long_hold_value?: number;
+          portfolio_spent?: number;
+          portfolio_value?: number;
+          singles_spent?: number;
+          singles_value?: number;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -689,6 +764,7 @@ export type Database = {
         Args: Record<PropertyKey, never>;
         Returns: {
           graded_basis: string;
+          image_url: string;
           last_run_at: string;
           last_status: string;
           long_term_unit_value: number;
@@ -893,6 +969,7 @@ export type Database = {
       quarter_of: { Args: { p_date: string }; Returns: number };
       quarter_start: { Args: { p_quarter: number; p_year: number }; Returns: string };
       record_catalog_set: { Args: { p_products: Json; p_set: Json }; Returns: number };
+      record_daily_values: { Args: Record<PropertyKey, never>; Returns: number };
       record_market_prices: { Args: { p_results: Json }; Returns: number };
       request_record: {
         Args: { p_action: string; p_request_id: string; p_result?: Json };

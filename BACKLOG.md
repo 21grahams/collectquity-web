@@ -38,12 +38,11 @@ What's next, in order. The old app is retired, so database work is open.
   cost over time with Singles / Long Hold / Short Hold / All. No mini charts on list cards
   (clutter, slower lists). Use a chart library that fits MUI (e.g. MUI X Charts). Maybe check
   whether JustTCG offers past prices to backfill (PokemonPriceTracker history costs credits).
-- **Item photos (nice to have, after the avatar).** Optional photo per card/item: proof of
-  condition, telling copies apart, a thumbnail in the list. Reuses the avatar's storage and upload
-  pieces; photos are shrunk on the phone before upload (free tier is 1 GB; lists stay fast).
-  Decide what happens to photos when an item is sold or merged. Lighter alternative for Singles:
-  official card art from a free card database (e.g. Pokémon TCG API) by Pokémon + set, with no
-  uploads; set-name matching won't always work, and sealed has no equivalent.
+- **Your own item photos (nice to have).** Linked items already show their catalog art (since
+  2026-10-13; large art down the card's left side, tap for full screen). Still open: an optional
+  photo of your own copy (proof of condition, telling copies apart), mostly for sealed and
+  unlinked items. Reuses the avatar's storage and upload pieces; shrink photos on the phone
+  before upload (free tier is 1 GB). Decide what happens to photos when an item is sold or merged.
 - **Edit a completed hold (low priority, database).** Completed holds are read-only in the app
   (their sale is recorded at completion, so editing or removing their items would make Sealed and
   Summary disagree). If a past hold ever needs correcting, add a proper edit for the hold itself:

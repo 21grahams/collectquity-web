@@ -205,6 +205,7 @@ export async function listMarketLinks(): Promise<MarketLink[]> {
     lastStatus: (r.last_status ?? null) as MarketLink['lastStatus'],
     recentUnitValue: n(r.recent_unit_value),
     longTermUnitValue: n(r.long_term_unit_value),
+    imageUrl: r.image_url ?? null,
   }));
 }
 
