@@ -141,10 +141,11 @@ export function AutocompleteInput({
           </li>
         )}
         renderInput={(params) => (
-          <Box ref={params.slotProps.input.ref}>
+          <Box ref={params.slotProps.input.ref} sx={{ position: 'relative' }}>
             <TextInput
               {...params.slotProps.htmlInput}
               {...inputProps}
+              style={{ paddingRight: value ? 34 : undefined }}
               onFocus={(e) => {
                 params.slotProps.htmlInput.onFocus?.(e);
                 setFocused(true);
@@ -155,6 +156,33 @@ export function AutocompleteInput({
                 setFocused(false);
               }}
             />
+            {value && (
+              <Box
+                component="button"
+                type="button"
+                aria-label="Clear"
+                // Keeps the keyboard up (no blur) so the new name can be typed right away.
+                onPointerDown={(e: React.PointerEvent) => e.preventDefault()}
+                onClick={(e: React.MouseEvent<HTMLElement>) => {
+                  onChange('');
+                  e.currentTarget.parentElement?.querySelector('input')?.focus();
+                }}
+                sx={{
+                  position: 'absolute',
+                  right: 6,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  color: tokens.text3,
+                  fontSize: 15,
+                  p: 0.75,
+                  cursor: 'pointer',
+                }}
+              >
+                ✕
+              </Box>
+            )}
           </Box>
         )}
         slotProps={{

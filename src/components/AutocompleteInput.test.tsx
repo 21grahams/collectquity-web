@@ -75,4 +75,16 @@ describe('AutocompleteInput', () => {
 
     expect(screen.getAllByRole('option').map((o) => o.textContent)).toEqual(['Charizard', 'Charmander']);
   });
+
+  it('the ✕ clears the field', () => {
+    catalog.results = [];
+    render(<Harness onPickProduct={vi.fn()} />);
+    const input = screen.getByLabelText('Pokémon');
+    expect(screen.queryByLabelText('Clear')).toBeNull();
+    fireEvent.change(input, { target: { value: 'Charizard' } });
+    fireEvent.click(screen.getByLabelText('Clear'));
+
+    expect(input).toHaveValue('');
+    expect(screen.queryByLabelText('Clear')).toBeNull();
+  });
 });
