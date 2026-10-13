@@ -31,7 +31,7 @@ export default defineConfig(({ mode }) => {
         // over right away, so updates arrive within one or two launches and
         // a stale app can never stick around.
         registerType: 'autoUpdate',
-        includeAssets: ['icon.svg', 'apple-touch-icon.png'],
+        includeAssets: ['icon.svg', 'apple-touch-icon-v2.png'],
         manifest: {
           name: APP_NAME,
           short_name: APP_NAME,
