@@ -2,6 +2,30 @@
 
 What's next, in order. The old app is retired, so database work is open.
 
+- **Public beta, Pokémon-only (goal: a few weeks out, decided 2026-10-13).** An invite-only
+  browser beta at collectquity.com before any App Store release, so testers can try the app and
+  shape what comes next. Collections is the fast-follow right after (below). Steps:
+  1. **Decide on auth first: stay on Supabase Auth or move to Clerk.** The owner asked to look
+     into Clerk (recommended to them). Compare: Clerk gives polished ready-made sign-up/login
+     screens, social logins and MFA, and works with Supabase as a third-party sign-in (the
+     database rules read Clerk's user id). Supabase Auth is already in place, built in and free.
+     Check for Clerk: price at beta and later scale, whether its login flows work inside the
+     iPhone home-screen app (it keeps its own storage, so the app avoids login redirects and
+     email links today), and moving the owner's existing login over. Decide before step 2,
+     because Clerk's user ids are text, not Supabase's uuid, which sets the owner column's type.
+  2. **Multi-user database.** Every table gets an owner; every rule becomes "you only see your
+     own rows". Fix what assumes one user: the single Long Hold, short hold numbering, Summary
+     totals, the daily jobs and history, market links. The catalog stays shared. The owner's
+     data is assigned to their account (nothing changes for them).
+  3. **Accounts:** sign-up with email confirmation, forgot password (none today), delete my
+     account, a privacy policy page.
+  4. **Onboarding** for new users: a few questions and a Pokémon starting setup, landing on a
+     blank slate.
+  5. **Price-data costs:** the free tiers (JustTCG 100 requests/day and 1,000/month;
+     PokemonPriceTracker ~50 graded cards/day) won't cover many users. Products shared between
+     users are fetched once, but plan a paid tier or a cap on auto-priced items per user.
+  6. **Invite-only access** (invite codes) so the beta's size and costs stay under control.
+
 - **Before any App Store release: trademark attorney check** on "Collectquity" (renamed
   2026-10-12; domain collectquity.com). Neighbors to show them: SoleSavy's COLLECT (Class 9),
   Collectable, Collecticity. Pair the name with the plain tagline and avoid investment language.
@@ -25,8 +49,8 @@ What's next, in order. The old app is retired, so database work is open.
   Summary disagree). If a past hold ever needs correcting, add a proper edit for the hold itself:
   sold price, cost and profit, plus its items, updated together. Until then, fixes are a one-off
   database change.
-- **Collections (long-term; staged).** Goal: eventually a real product for other people; for
-  now the owner tracks only Pokémon but wants the ability to add more. Collections live under
+- **Collections (fast-follow after the beta launches; staged).** Goal: a real product for other
+  people, beyond Pokémon. Collections live under
   one account (Gmail-style: graham.kirsh@ holds Pokémon, Shoes, Hats); a new email is an
   entirely separate account. Design: the money engine (qty, dates, cost, fees, value, P&L,
   quarters, Summary) stays fixed; each collection defines its own descriptive fields (label,
@@ -35,10 +59,9 @@ What's next, in order. The old app is retired, so database work is open.
   the condition picker becomes a pick-from-list field. Stages: (1) multiple collections for one
   user with custom fields, switcher in the avatar menu (medium-heavy); (2) modules per
   collection: Sealed optional, short/long holds optional within it, Accounts optional
-  (medium); (3) other users: onboarding questions, templates (Pokémon, Sneakers, Handbags…),
-  sign-ups with per-user data isolation, account deletion, privacy policy, App Store (heavy;
-  pairs with the rename and Swift). Meanwhile: keep new backend work (e.g. market values) tied to
-  the money engine, not to Pokémon fields.
+  (medium); (3) templates beyond Pokémon in onboarding (Sneakers, Handbags…). Other users,
+  sign-ups and onboarding come first, with the beta above. Meanwhile: keep new backend work
+  (e.g. market values) tied to the money engine, not to Pokémon fields.
 - **Swift app (later).** Mirrors the web app (old + new features) over the same `api_*`
   functions. Follow Apple's Liquid Glass design (iOS 26+): the standard tab bar, navigation bars
   and sheets get it automatically with the current SDK; use the glass effect for custom pieces
