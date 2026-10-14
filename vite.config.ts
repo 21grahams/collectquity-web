@@ -27,10 +27,8 @@ export default defineConfig(({ mode }) => {
           html.replaceAll('%APP_NAME%', APP_NAME).replaceAll('%TAGLINE%', TAGLINE),
       },
       VitePWA({
-        // A new deploy is downloaded in the background on launch and takes
-        // over right away, so updates arrive within one or two launches and
-        // a stale app can never stick around.
-        registerType: 'autoUpdate',
+        // main.tsx decides when a downloaded update takes over (see there).
+        registerType: 'prompt',
         includeAssets: ['icon.svg', 'apple-touch-icon-v2.png'],
         manifest: {
           name: APP_NAME,

@@ -17,8 +17,9 @@ export const queryKeys = {
   marketLinks: ['marketLinks'] as const,
 };
 
+// Approval almost never changes, so don't re-ask every time the app comes back to the front.
 export const useAccount = (enabled: boolean) =>
-  useQuery({ queryKey: queryKeys.account, queryFn: api.getAccount, enabled });
+  useQuery({ queryKey: queryKeys.account, queryFn: api.getAccount, enabled, staleTime: 60 * 60 * 1000 });
 
 export const useAppContext = () => useQuery({ queryKey: queryKeys.context, queryFn: api.getContext });
 

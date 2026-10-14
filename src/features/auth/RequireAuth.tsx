@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import { Box, CircularProgress } from '@mui/material';
+import { Box, Button, CircularProgress } from '@mui/material';
 import { Navigate } from 'react-router';
 
 import { ErrorState } from '../../components/ListStates';
@@ -17,16 +17,22 @@ function Spinner() {
 }
 
 export function RequireAuth({ children }: { children: ReactNode }) {
-  const { session, loading } = useAuth();
+  const { session, loading, signOut } = useAuth();
   const account = useAccount(!!session);
 
   if (loading) return <Spinner />;
   if (!session) return <Navigate to="/login" replace />;
   if (account.isPending) return <Spinner />;
-  if (account.isError) {
+  // A failed re-check keeps the last answer, so a weak signal never pulls the app out from under you.
+  if (!account.data) {
     return (
       <Box sx={{ minHeight: '100dvh', display: 'grid', placeItems: 'center' }}>
-        <ErrorState error={account.error} onRetry={() => account.refetch()} />
+        <Box sx={{ textAlign: 'center' }}>
+          <ErrorState error={account.error} onRetry={() => account.refetch()} />
+          <Button size="small" color="inherit" onClick={signOut}>
+            Log out
+          </Button>
+        </Box>
       </Box>
     );
   }
