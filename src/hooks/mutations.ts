@@ -61,6 +61,8 @@ export const useRedeemInvite = () => {
   });
 };
 
+export const useDeleteMyAccount = () => useMutation({ mutationFn: api.deleteMyAccount });
+
 export const useAddSingle = () =>
   useSave(
     (v: WithId<{ input: api.SingleInput }>) => api.addSingle(v.requestId, v.input),

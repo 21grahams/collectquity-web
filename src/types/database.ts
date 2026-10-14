@@ -297,28 +297,28 @@ export type Database = {
           {
             foreignKeyName: 'market_links_same_user_sealed';
             columns: ['sealed_item_id', 'user_id'];
-            isOneToOne: false;
+            isOneToOne: true;
             referencedRelation: 'sealed_items';
             referencedColumns: ['id', 'user_id'];
           },
           {
             foreignKeyName: 'market_links_same_user_single';
             columns: ['single_id', 'user_id'];
-            isOneToOne: false;
+            isOneToOne: true;
             referencedRelation: 'singles';
             referencedColumns: ['id', 'user_id'];
           },
           {
             foreignKeyName: 'market_links_sealed_item_id_fkey';
             columns: ['sealed_item_id'];
-            isOneToOne: true;
+            isOneToOne: false;
             referencedRelation: 'sealed_items';
             referencedColumns: ['id'];
           },
           {
             foreignKeyName: 'market_links_single_id_fkey';
             columns: ['single_id'];
-            isOneToOne: true;
+            isOneToOne: false;
             referencedRelation: 'singles';
             referencedColumns: ['id'];
           },
@@ -779,6 +779,7 @@ export type Database = {
         Returns: string;
       };
       api_delete_account: { Args: { p_id: number; p_request_id: string }; Returns: undefined };
+      api_delete_my_account: { Args: Record<PropertyKey, never>; Returns: undefined };
       api_delete_sealed: { Args: { p_id: number; p_request_id: string }; Returns: undefined };
       api_delete_single: { Args: { p_id: number; p_request_id: string }; Returns: undefined };
       api_edit_account: {

@@ -16,7 +16,9 @@ export function ResetPasswordPage() {
   const { session, sendPasswordReset, verifyResetCode, setNewPassword } = useAuth();
   const notify = useNotify();
   const [step, setStep] = useState<'email' | 'code'>('email');
-  const [email, setEmail] = useState('');
+  // Filled in from the login once it loads, until you type your own.
+  const [typedEmail, setEmail] = useState<string | null>(null);
+  const email = typedEmail ?? session?.user.email ?? '';
   const [code, setCode] = useState('');
   const [password, setPassword] = useState('');
   // The code logs you in once; if the new password is then refused, only the password is retried.
@@ -27,7 +29,7 @@ export function ResetPasswordPage() {
   const [submitting, setSubmitting] = useState(false);
   const [attempted, setAttempted] = useState(false);
 
-  if (done || (session && step === 'email')) return <Navigate to="/" replace />;
+  if (done) return <Navigate to="/" replace />;
 
   const emailError = validateLogin(email, '').email;
   const passwordError = validateNewPassword(password);

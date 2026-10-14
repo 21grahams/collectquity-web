@@ -1,4 +1,4 @@
-import type { Session } from '@supabase/supabase-js';
+import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import type { QueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import type { AuthContextValue } from './authContext';
@@ -7,13 +7,14 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 
 import { clearStickyMemory } from '../../hooks/useStickyState';
-import { cachePersister } from '../../lib/queryClient';
+import { cacheOwner, cachePersister } from '../../lib/queryClient';
 import { supabase } from '../../lib/supabase';
 import { AuthContext, friendlyAuthError } from './authContext';
 
 async function clearDeviceData(queryClient: QueryClient) {
   queryClient.clear();
   clearStickyMemory();
+  cacheOwner.clear();
   await cachePersister.removeClient();
 }
 
@@ -21,25 +22,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const lastUserId = useRef<string | null | undefined>(undefined);
+
+  // Each open tab also remembers who it last showed, since another tab may have already
+  // updated the shared owner record before this tab hears about the change.
+  const tabUserId = useRef<string | null>(null);
 
   useEffect(() => {
-    // A login can also end without Log out (expired, or the password changed elsewhere), so any
-    // change of person wipes the previous person's saved data before the next one sees it.
-    function track(next: Session | null) {
+    // A login can end without Log out (expired, or the password changed elsewhere), so the saved
+    // data is wiped when a different person logs in, not only on Log out. The same person coming
+    // back keeps theirs (it's their offline copy).
+    function track(event: AuthChangeEvent | 'START', next: Session | null) {
       const userId = next?.user.id ?? null;
-      if (lastUserId.current !== undefined && lastUserId.current !== userId) {
+      if (event === 'SIGNED_OUT') {
         void clearDeviceData(queryClient);
+      } else if (userId) {
+        const owner = cacheOwner.get();
+        const switched = (owner && owner !== userId) || (tabUserId.current && tabUserId.current !== userId);
+        if (switched || cacheOwner.hasUnownedCache()) void clearDeviceData(queryClient);
+        cacheOwner.set(userId);
+        tabUserId.current = userId;
       }
-      lastUserId.current = userId;
       setSession(next);
     }
 
     supabase.auth.getSession().then(({ data }) => {
-      track(data.session);
+      track('START', data.session);
       setLoading(false);
     });
-    const { data } = supabase.auth.onAuthStateChange((_event, next) => track(next));
+    const { data } = supabase.auth.onAuthStateChange((event, next) => track(event, next));
 
     return () => data.subscription.unsubscribe();
   }, [queryClient]);
@@ -78,6 +88,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     async sendPasswordReset(email) {
       const { error } = await supabase.auth.resetPasswordForEmail(email.trim());
+      // Only real accounts hit the resend wait, so showing it would reveal the email has an account.
+      if (error && /only request this after/i.test(error.message)) return null;
 
       return error ? friendlyAuthError(error.message) : null;
     },

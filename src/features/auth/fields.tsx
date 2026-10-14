@@ -18,14 +18,13 @@ export function EmailField({
       label="Email"
       type="email"
       autoComplete="username"
-      inputMode="email"
-      autoCapitalize="none"
       value={value}
       onChange={(e) => onChange(e.target.value)}
       error={!!error}
       helperText={error}
       required
       fullWidth
+      slotProps={{ htmlInput: { inputMode: 'email', autoCapitalize: 'none' } }}
     />
   );
 }

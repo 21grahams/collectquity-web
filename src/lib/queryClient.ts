@@ -15,10 +15,29 @@ export const queryClient = new QueryClient({
   },
 });
 
-export const cachePersister = createSyncStoragePersister({
-  storage: window.localStorage,
-  key: isLiveDatabase ? 'collectquity-cache' : 'collectquity-cache-practice',
-});
+const cacheKey = isLiveDatabase ? 'collectquity-cache' : 'collectquity-cache-practice';
+
+export const cachePersister = createSyncStoragePersister({ storage: window.localStorage, key: cacheKey });
+
+const ownerKey = `${cacheKey}-owner`;
+
+function tryStorage<T>(read: () => T, fallback: T): T {
+  try {
+    return read();
+  } catch {
+    return fallback;
+  }
+}
+
+/** Whose data the saved cache holds, so another person's login can wipe it first. */
+export const cacheOwner = {
+  get: () => tryStorage(() => window.localStorage.getItem(ownerKey), null),
+  set: (userId: string) => tryStorage(() => window.localStorage.setItem(ownerKey, userId), undefined),
+  clear: () => tryStorage(() => window.localStorage.removeItem(ownerKey), undefined),
+  /** Saved before owners were recorded, so it can't be trusted to belong to anyone. */
+  hasUnownedCache: () =>
+    tryStorage(() => !window.localStorage.getItem(ownerKey) && !!window.localStorage.getItem(cacheKey), true),
+};
 
 export const persistOptions = {
   persister: cachePersister,

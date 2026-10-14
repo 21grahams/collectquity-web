@@ -44,7 +44,8 @@ describe('AuthProvider', () => {
     await waitFor(() => expect(clear).toHaveBeenCalled()); // loaded data is wiped too
   });
 
-  it("wipes the previous person's saved data when someone else's login takes over", async () => {
+  it("wipes the previous person's saved data when someone else logs in, but keeps your own", async () => {
+    localStorage.clear();
     const queryClient = new QueryClient();
     const clear = vi.spyOn(queryClient, 'clear');
     render(
@@ -54,14 +55,32 @@ describe('AuthProvider', () => {
         </AuthProvider>
       </QueryClientProvider>,
     );
-    await waitFor(() => expect(authListener).toBeTypeOf('function'));
     act(() => authListener('SIGNED_IN', { user: { id: 'a' } }));
-    clear.mockClear();
-
     act(() => authListener('TOKEN_REFRESHED', { user: { id: 'a' } }));
+    act(() => authListener('INITIAL_SESSION', null));
+    act(() => authListener('SIGNED_IN', { user: { id: 'a' } }));
     expect(clear).not.toHaveBeenCalled();
 
     act(() => authListener('SIGNED_IN', { user: { id: 'b' } }));
-    expect(clear).toHaveBeenCalled();
+    expect(clear).toHaveBeenCalledTimes(1);
+
+    act(() => authListener('SIGNED_OUT', null));
+    expect(clear).toHaveBeenCalledTimes(2);
+  });
+
+  it('wipes saved data from before owners were recorded', () => {
+    localStorage.clear();
+    localStorage.setItem('collectquity-cache-practice', '{}');
+    const queryClient = new QueryClient();
+    const clear = vi.spyOn(queryClient, 'clear');
+    render(
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <LogoutButton />
+        </AuthProvider>
+      </QueryClientProvider>,
+    );
+    act(() => authListener('SIGNED_IN', { user: { id: 'a' } }));
+    expect(clear).toHaveBeenCalledTimes(1);
   });
 });

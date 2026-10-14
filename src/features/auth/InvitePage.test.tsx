@@ -11,7 +11,8 @@ import { AuthContext } from './authContext';
 import { InvitePage } from './InvitePage';
 
 vi.mock('../../lib/supabase', () => ({ supabase: {} }));
-vi.mock('../../api', () => ({ redeemInvite: vi.fn() }));
+vi.mock('../../api', () => ({ redeemInvite: vi.fn(), deleteMyAccount: vi.fn() }));
+vi.mock('../../components/notifyContext', () => ({ useNotify: () => vi.fn() }));
 
 function renderInvite() {
   const auth = { signOut: vi.fn() } as unknown as AuthContextValue;
@@ -66,5 +67,11 @@ describe('InvitePage', () => {
     const auth = renderInvite();
     fireEvent.click(screen.getByRole('button', { name: /log out/i }));
     expect(auth.signOut).toHaveBeenCalled();
+  });
+
+  it('lets you delete the account without an invite', () => {
+    renderInvite();
+    fireEvent.click(screen.getByRole('button', { name: /delete account/i }));
+    expect(screen.getByText('Delete your account?')).toBeInTheDocument();
   });
 });

@@ -471,3 +471,12 @@ export async function removeAvatar(): Promise<void> {
   const { error } = await avatars().remove([await avatarPath()]);
   if (error) throw new ApiError(error.message);
 }
+
+/**
+ * Deletes the login and everything in the collection. The photo goes first (storage files can't
+ * be removed from the database side), and a failure stops here so it's never left behind.
+ */
+export async function deleteMyAccount(): Promise<void> {
+  await removeAvatar();
+  await save(supabase.rpc('api_delete_my_account'));
+}

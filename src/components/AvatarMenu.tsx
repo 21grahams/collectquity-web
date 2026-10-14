@@ -1,7 +1,9 @@
 import { Box, Divider, Menu, MenuItem } from '@mui/material';
 import { useRef, useState } from 'react';
+import { useNavigate } from 'react-router';
 
 import { useAuth } from '../features/auth/authContext';
+import { DeleteAccountDialog } from '../features/auth/DeleteAccountDialog';
 import { useRemoveAvatar, useUploadAvatar } from '../hooks/mutations';
 import { useAvatarUrl } from '../hooks/queries';
 import { squareJpeg } from '../lib/avatarImage';
@@ -25,6 +27,8 @@ export function AvatarMenu() {
   const { session, signOut } = useAuth();
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
   const [signingOut, setSigningOut] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const navigate = useNavigate();
   const email = session?.user.email ?? '';
   const open = anchor != null;
   const notify = useNotify();
@@ -129,6 +133,17 @@ export function AvatarMenu() {
             Remove photo
           </MenuItem>
         )}
+        {email && (
+          <MenuItem
+            onClick={() => {
+              setAnchor(null);
+              navigate('/password');
+            }}
+            sx={{ fontSize: 15, minHeight: 44 }}
+          >
+            Change password
+          </MenuItem>
+        )}
         <Divider sx={{ borderColor: tokens.border }} />
         <Box sx={{ px: 2, py: 1.25, fontSize: 11, color: tokens.text3 }}>
           {APP_NAME} · {TAGLINE}
@@ -142,11 +157,21 @@ export function AvatarMenu() {
             setSigningOut(true);
             await signOut();
           }}
-          sx={{ color: tokens.red, fontSize: 15, minHeight: 44 }}
+          sx={{ fontSize: 15, minHeight: 44 }}
         >
           {signingOut ? 'Logging out…' : 'Log out'}
         </MenuItem>
+        <MenuItem
+          onClick={() => {
+            setAnchor(null);
+            setDeleting(true);
+          }}
+          sx={{ color: tokens.red, fontSize: 15, minHeight: 44 }}
+        >
+          Delete account
+        </MenuItem>
       </Menu>
+      <DeleteAccountDialog open={deleting} onClose={() => setDeleting(false)} />
     </>
   );
 }

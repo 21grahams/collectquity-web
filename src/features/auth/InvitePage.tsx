@@ -1,12 +1,13 @@
 import type { FormEvent } from 'react';
 
-import { Alert, Button, TextField, Typography } from '@mui/material';
+import { Alert, Button, Stack, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
 
 import { SaveButton } from '../../components/SaveButton';
 import { useRedeemInvite } from '../../hooks/mutations';
 import { useAuth } from './authContext';
 import { AuthLayout } from './AuthLayout';
+import { DeleteAccountDialog } from './DeleteAccountDialog';
 
 const MESSAGES = {
   invalid: "That code doesn't work. Check it and try again.",
@@ -19,6 +20,7 @@ export function InvitePage() {
   const redeem = useRedeemInvite();
   const [code, setCode] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const invalid = !code.trim();
 
   async function handleSubmit(e: FormEvent) {
@@ -44,11 +46,11 @@ export function InvitePage() {
       {error && <Alert severity="error">{error}</Alert>}
       <TextField
         label="Invite code"
-        autoCapitalize="characters"
         autoComplete="off"
         value={code}
         onChange={(e) => setCode(e.target.value)}
         fullWidth
+        slotProps={{ htmlInput: { autoCapitalize: 'characters' } }}
       />
       <SaveButton
         type="submit"
@@ -58,9 +60,15 @@ export function InvitePage() {
         label="Join"
         pendingLabel="Joining…"
       />
-      <Button size="small" onClick={signOut}>
-        Log out
-      </Button>
+      <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
+        <Button size="small" color="inherit" onClick={signOut}>
+          Log out
+        </Button>
+        <Button size="small" color="error" onClick={() => setDeleting(true)}>
+          Delete account
+        </Button>
+      </Stack>
+      <DeleteAccountDialog open={deleting} onClose={() => setDeleting(false)} />
     </AuthLayout>
   );
 }
