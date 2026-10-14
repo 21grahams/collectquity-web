@@ -31,6 +31,7 @@ export function CardArt({ url, width, height }: { url: string; width: number; he
           component="img"
           src={artUrl(url, 'card')}
           alt=""
+          referrerPolicy="no-referrer"
           loading="lazy"
           sx={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
         />
@@ -57,6 +58,7 @@ export function CardArt({ url, width, height }: { url: string; width: number; he
             component="img"
             src={artUrl(url, 'full')}
             alt=""
+            referrerPolicy="no-referrer"
             sx={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', borderRadius: '12px' }}
           />
         </Box>

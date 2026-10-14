@@ -72,6 +72,7 @@ function ProductOption({ product }: { product: CatalogProduct }) {
         component="img"
         src={product.imageUrl ?? undefined}
         alt=""
+        referrerPolicy="no-referrer"
         loading="lazy"
         sx={{
           width: 30,

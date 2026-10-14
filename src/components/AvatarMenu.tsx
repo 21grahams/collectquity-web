@@ -144,6 +144,15 @@ export function AvatarMenu() {
             Change password
           </MenuItem>
         )}
+        <MenuItem
+          onClick={() => {
+            setAnchor(null);
+            navigate('/privacy');
+          }}
+          sx={{ fontSize: 15, minHeight: 44 }}
+        >
+          Privacy policy
+        </MenuItem>
         <Divider sx={{ borderColor: tokens.border }} />
         <Box sx={{ px: 2, py: 1.25, fontSize: 11, color: tokens.text3 }}>
           {APP_NAME} · {TAGLINE}

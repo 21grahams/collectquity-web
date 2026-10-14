@@ -20,7 +20,8 @@ export function AuthLayout({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        px: 2,
+        pl: 'max(16px, env(safe-area-inset-left))',
+        pr: 'max(16px, env(safe-area-inset-right))',
         pt: 'env(safe-area-inset-top)',
         pb: 'env(safe-area-inset-bottom)',
       }}

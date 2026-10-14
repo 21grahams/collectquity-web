@@ -126,6 +126,13 @@ export function SignUpPage() {
         label="Create account"
         pendingLabel="Creating…"
       />
+      <Typography variant="caption" color="text.secondary" align="center">
+        For ages 18+. See how we handle your data in our{' '}
+        <Link component={RouterLink} to="/privacy" color="inherit">
+          Privacy Policy
+        </Link>
+        .
+      </Typography>
       <Typography variant="body2" align="center">
         Already have an account?{' '}
         <Link component={RouterLink} to="/login">

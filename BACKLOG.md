@@ -42,6 +42,11 @@ What's next, in order. The old app is retired, so database work is open.
      users are fetched once, but plan a paid tier or a cap on auto-priced items per user.
   6. **Invite-only access** (invite codes) so the beta's size and costs stay under control.
 
+- **Backups for a multi-user app.** Weekly backups go to the owner's Mac (`backups/`; newest 12 kept,
+  none older than 90 days), so beta users' data sits on a laptop (fine with FileVault on). Encrypt
+  the backup files and move them to a private cloud location; at public launch, decide whether
+  Supabase Pro's daily backups ($25/month) replace ours. The privacy page promises backups are gone
+  within ~3 months.
 - **Before any App Store release: trademark attorney check** on "Collectquity" (renamed
   2026-10-12; domain collectquity.com). Neighbors to show them: SoleSavy's COLLECT (Class 9),
   Collectable, Collecticity. Pair the name with the plain tagline and avoid investment language.

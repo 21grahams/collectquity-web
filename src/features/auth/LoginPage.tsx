@@ -63,7 +63,10 @@ export function LoginPage() {
         </Link>
       </Typography>
       <Typography variant="caption" color="text.secondary" align="center">
-        {TAGLINE}
+        {TAGLINE} ·{' '}
+        <Link component={RouterLink} to="/privacy" color="inherit">
+          Privacy
+        </Link>
       </Typography>
     </AuthLayout>
   );

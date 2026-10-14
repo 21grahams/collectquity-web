@@ -7,6 +7,7 @@ import { LoginPage } from './features/auth/LoginPage';
 import { RequireAuth } from './features/auth/RequireAuth';
 import { ResetPasswordPage } from './features/auth/ResetPasswordPage';
 import { SignUpPage } from './features/auth/SignUpPage';
+import { PrivacyPage } from './features/privacy/PrivacyPage';
 import { SealedPage } from './features/sealed/SealedPage';
 import { SinglesPage } from './features/singles/SinglesPage';
 import { SummaryPage } from './features/summary/SummaryPage';
@@ -17,6 +18,7 @@ export function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignUpPage />} />
       <Route path="/reset" element={<ResetPasswordPage />} />
+      <Route path="/privacy" element={<PrivacyPage />} />
       <Route
         path="/password"
         element={
