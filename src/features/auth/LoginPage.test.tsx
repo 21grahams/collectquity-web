@@ -21,6 +21,9 @@ function renderLogin(overrides: Partial<AuthContextValue> = {}) {
     signOut: vi.fn(),
     signUp: vi.fn(),
     confirmSignUp: vi.fn(),
+    sendPasswordReset: vi.fn(),
+    verifyResetCode: vi.fn(),
+    setNewPassword: vi.fn(),
     resendSignUpCode: vi.fn(),
     ...overrides,
   };
@@ -77,10 +80,10 @@ describe('LoginPage', () => {
     expect(password).toHaveAttribute('type', 'password');
   });
 
-  it('has no sign-up or password-reset links (single user, sign-ups disabled)', () => {
+  it('links to sign-up and password reset', () => {
     renderLogin();
-    expect(screen.queryByText(/sign up/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/forgot/i)).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /create an account/i })).toHaveAttribute('href', '/signup');
+    expect(screen.getByRole('link', { name: /forgot password/i })).toHaveAttribute('href', '/reset');
   });
 });
 

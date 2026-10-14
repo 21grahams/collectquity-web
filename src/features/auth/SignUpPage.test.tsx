@@ -19,6 +19,9 @@ function renderSignUp(overrides: Partial<AuthContextValue> = {}) {
     signOut: vi.fn(),
     signUp: vi.fn().mockResolvedValue({ error: null, existing: false }),
     confirmSignUp: vi.fn().mockResolvedValue(null),
+    sendPasswordReset: vi.fn(),
+    verifyResetCode: vi.fn(),
+    setNewPassword: vi.fn(),
     resendSignUpCode: vi.fn().mockResolvedValue(null),
     ...overrides,
   };

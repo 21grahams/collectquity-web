@@ -1,21 +1,20 @@
 import type { FormEvent } from 'react';
 
-import { Alert, InputAdornment, Link, TextField, Typography } from '@mui/material';
+import { Alert, Link, Typography } from '@mui/material';
 import { useState } from 'react';
 import { Navigate, Link as RouterLink } from 'react-router';
 
-import { EyeButton } from '../../components/EyeButton';
 import { SaveButton } from '../../components/SaveButton';
 import { TAGLINE } from '../../lib/brand';
 import { validateLogin } from '../../lib/loginForm';
 import { useAuth } from './authContext';
 import { AuthLayout } from './AuthLayout';
+import { EmailField, PasswordField } from './fields';
 
 export function LoginPage() {
   const { session, signIn } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [attempted, setAttempted] = useState(false);
@@ -44,43 +43,11 @@ export function LoginPage() {
   return (
     <AuthLayout onSubmit={handleSubmit}>
       {error && <Alert severity="error">{error}</Alert>}
-      <TextField
-        label="Email"
-        type="email"
-        autoComplete="username"
-        inputMode="email"
-        autoCapitalize="none"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        error={!!shown.email}
-        helperText={shown.email}
-        required
-        fullWidth
-      />
-      <TextField
-        label="Password"
-        type={showPassword ? 'text' : 'password'}
-        autoComplete="current-password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        error={!!shown.password}
-        helperText={shown.password}
-        required
-        fullWidth
-        slotProps={{
-          input: {
-            endAdornment: (
-              <InputAdornment position="end" sx={{ mr: 0.5 }}>
-                <EyeButton
-                  revealed={showPassword}
-                  what="password"
-                  onClick={() => setShowPassword((s) => !s)}
-                />
-              </InputAdornment>
-            ),
-          },
-        }}
-      />
+      <EmailField value={email} onChange={setEmail} error={shown.email} />
+      <PasswordField value={password} onChange={setPassword} error={shown.password} />
+      <Link component={RouterLink} to="/reset" variant="body2" sx={{ alignSelf: 'flex-end' }}>
+        Forgot password?
+      </Link>
       <SaveButton
         type="submit"
         size="large"

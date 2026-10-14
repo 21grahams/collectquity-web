@@ -5,12 +5,16 @@ import { validateLogin } from './loginForm';
 export const MIN_PASSWORD_LENGTH = 8;
 export const CODE_LENGTH = 6;
 
+export function validateNewPassword(password: string): string | undefined {
+  if (!password) return 'Choose a password';
+  if (password.length < MIN_PASSWORD_LENGTH) return `Use at least ${MIN_PASSWORD_LENGTH} characters`;
+}
+
 export function validateSignUp(email: string, password: string): LoginErrors {
   const errors = validateLogin(email, password);
-  if (!password) errors.password = 'Choose a password';
-  else if (password.length < MIN_PASSWORD_LENGTH) {
-    errors.password = `Use at least ${MIN_PASSWORD_LENGTH} characters`;
-  }
+  delete errors.password;
+  const passwordError = validateNewPassword(password);
+  if (passwordError) errors.password = passwordError;
 
   return errors;
 }

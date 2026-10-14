@@ -12,6 +12,10 @@ export interface AuthContextValue {
   signUp: (email: string, password: string) => Promise<SignUpResult>;
   confirmSignUp: (email: string, code: string) => Promise<string | null>;
   resendSignUpCode: (email: string) => Promise<string | null>;
+  sendPasswordReset: (email: string) => Promise<string | null>;
+  /** Logs you in with the emailed reset code, so the new password can be saved. */
+  verifyResetCode: (email: string, code: string) => Promise<string | null>;
+  setNewPassword: (password: string) => Promise<string | null>;
 }
 
 /** existing: the email already has an account, so no code was sent. */
@@ -35,6 +39,9 @@ export function friendlyAuthError(message: string): string {
     return 'Confirm your email first: tap "Create an account" and sign up again to get a new code.';
   }
   if (/token has expired or is invalid/i.test(message)) return 'That code is wrong or has expired.';
+  if (/should be different from the old password/i.test(message)) {
+    return 'Choose a password different from your old one.';
+  }
   if (/fetch|network/i.test(message)) return `Can't reach ${APP_NAME}. Check your connection and try again.`;
 
   return message;

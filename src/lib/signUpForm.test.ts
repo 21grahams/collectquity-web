@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { cleanCode, isCompleteCode, validateSignUp } from './signUpForm';
+import { cleanCode, isCompleteCode, validateNewPassword, validateSignUp } from './signUpForm';
 
 describe('validateSignUp', () => {
   it('asks for a password of at least 8 characters', () => {
@@ -10,6 +10,13 @@ describe('validateSignUp', () => {
   });
   it('checks the email like the login form', () => {
     expect(validateSignUp('me@example', 'long enough').email).toBe('Enter a valid email');
+  });
+});
+
+describe('validateNewPassword', () => {
+  it('passes 8 or more characters', () => {
+    expect(validateNewPassword('12345678')).toBeUndefined();
+    expect(validateNewPassword('1234567')).toBe('Use at least 8 characters');
   });
 });
 
