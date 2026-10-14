@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import * as api from '../api';
 
 export const queryKeys = {
+  account: ['account'] as const,
   context: ['context'] as const,
   singles: ['singles'] as const,
   sealed: ['sealed'] as const,
@@ -15,6 +16,9 @@ export const queryKeys = {
   avatar: ['avatar'] as const,
   marketLinks: ['marketLinks'] as const,
 };
+
+export const useAccount = (enabled: boolean) =>
+  useQuery({ queryKey: queryKeys.account, queryFn: api.getAccount, enabled });
 
 export const useAppContext = () => useQuery({ queryKey: queryKeys.context, queryFn: api.getContext });
 

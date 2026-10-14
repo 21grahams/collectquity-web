@@ -49,6 +49,18 @@ function pausesAuto(queryClient: QueryClient, item: ItemRef) {
 
 const PAUSED = ' Auto updates paused for this item.';
 
+// No request id: once you've joined, redeeming again just answers 'joined', so retries are safe.
+export const useRedeemInvite = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (code: string) => api.redeemInvite(code, Intl.DateTimeFormat().resolvedOptions().timeZone),
+    onSuccess: async (result) => {
+      if (result === 'joined') await queryClient.invalidateQueries({ queryKey: queryKeys.account });
+    },
+  });
+};
+
 export const useAddSingle = () =>
   useSave(
     (v: WithId<{ input: api.SingleInput }>) => api.addSingle(v.requestId, v.input),

@@ -42,6 +42,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       clearStickyMemory();
       await cachePersister.removeClient();
     },
+    async signUp(email, password) {
+      const { data, error } = await supabase.auth.signUp({ email: email.trim(), password });
+      if (error) return { error: friendlyAuthError(error.message), existing: false };
+
+      // Supabase answers an already-registered email with a user that has no identities (and sends nothing).
+      return { error: null, existing: data.user?.identities?.length === 0 };
+    },
+    async confirmSignUp(email, code) {
+      const { error } = await supabase.auth.verifyOtp({ email: email.trim(), token: code, type: 'signup' });
+
+      return error ? friendlyAuthError(error.message) : null;
+    },
+    async resendSignUpCode(email) {
+      const { error } = await supabase.auth.resend({ type: 'signup', email: email.trim() });
+
+      return error ? friendlyAuthError(error.message) : null;
+    },
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

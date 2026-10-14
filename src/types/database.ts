@@ -6,20 +6,31 @@ export type Database = {
       app_users: {
         Row: {
           created_at: string;
+          invite_code: string | null;
           time_zone: string;
           user_id: string;
         };
         Insert: {
           created_at?: string;
+          invite_code?: string | null;
           time_zone?: string;
           user_id: string;
         };
         Update: {
           created_at?: string;
+          invite_code?: string | null;
           time_zone?: string;
           user_id?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'app_users_invite_code_fkey';
+            columns: ['invite_code'];
+            isOneToOne: false;
+            referencedRelation: 'invite_codes';
+            referencedColumns: ['code'];
+          },
+        ];
       };
       catalog_products: {
         Row: {
@@ -131,6 +142,42 @@ export type Database = {
           sold_price?: number | null;
           updated_at?: string;
           user_id?: string;
+        };
+        Relationships: [];
+      };
+      invite_attempts: {
+        Row: {
+          at: string;
+          user_id: string;
+        };
+        Insert: {
+          at?: string;
+          user_id: string;
+        };
+        Update: {
+          at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      invite_codes: {
+        Row: {
+          code: string;
+          created_at: string;
+          note: string;
+          uses_left: number;
+        };
+        Insert: {
+          code: string;
+          created_at?: string;
+          note?: string;
+          uses_left: number;
+        };
+        Update: {
+          code?: string;
+          created_at?: string;
+          note?: string;
+          uses_left?: number;
         };
         Relationships: [];
       };
@@ -780,6 +827,13 @@ export type Database = {
         };
         Returns: undefined;
       };
+      api_get_account: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          approved: boolean;
+          time_zone: string;
+        }[];
+      };
       api_get_context: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -916,6 +970,7 @@ export type Database = {
         }[];
       };
       api_move_sealed: { Args: { p_id: number; p_quantity: number; p_request_id: string }; Returns: string };
+      api_redeem_invite: { Args: { p_code: string; p_time_zone: string }; Returns: string };
       api_search_catalog: {
         Args: { p_kind: string; p_query: string };
         Returns: {

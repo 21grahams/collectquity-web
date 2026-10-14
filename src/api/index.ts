@@ -1,11 +1,13 @@
 // The only module that talks to Supabase.
 
 import type {
+  Account,
   AppContext,
   CatalogProduct,
   CompletedHold,
   GradedBasis,
   HoldStatus,
+  InviteResult,
   MarketLink,
   RetailerAccount,
   SealedItem,
@@ -51,6 +53,21 @@ function unwrap<T>({ data, error }: { data: T | null; error: { message: string }
 /** Generated types say number; the database can return null. */
 const n = (v: unknown): number | null => (v == null ? null : Number(v));
 const num = (v: unknown): number => Number(v ?? 0);
+
+export async function getAccount(): Promise<Account> {
+  const [row] = unwrap(await send(supabase.rpc('api_get_account')));
+  if (!row) throw new ApiError('No account returned');
+
+  return { approved: row.approved, timeZone: row.time_zone };
+}
+
+export async function redeemInvite(code: string, timeZone: string): Promise<InviteResult> {
+  const result = unwrap(
+    await send(supabase.rpc('api_redeem_invite', { p_code: code, p_time_zone: timeZone })),
+  );
+
+  return result as InviteResult;
+}
 
 export async function getContext(): Promise<AppContext> {
   const [row] = unwrap(await send(supabase.rpc('api_get_context')));

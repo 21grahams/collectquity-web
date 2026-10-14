@@ -4,6 +4,7 @@ import { AppShell } from './components/AppShell';
 import { AccountsPage } from './features/accounts/AccountsPage';
 import { LoginPage } from './features/auth/LoginPage';
 import { RequireAuth } from './features/auth/RequireAuth';
+import { SignUpPage } from './features/auth/SignUpPage';
 import { SealedPage } from './features/sealed/SealedPage';
 import { SinglesPage } from './features/singles/SinglesPage';
 import { SummaryPage } from './features/summary/SummaryPage';
@@ -12,6 +13,7 @@ export function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignUpPage />} />
       <Route
         element={
           <RequireAuth>

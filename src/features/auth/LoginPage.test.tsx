@@ -19,6 +19,9 @@ function renderLogin(overrides: Partial<AuthContextValue> = {}) {
     loading: false,
     signIn: vi.fn().mockResolvedValue(null),
     signOut: vi.fn(),
+    signUp: vi.fn(),
+    confirmSignUp: vi.fn(),
+    resendSignUpCode: vi.fn(),
     ...overrides,
   };
   render(

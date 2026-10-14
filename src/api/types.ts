@@ -26,6 +26,14 @@ interface ItemBase {
   quarterUnitValues: QuarterUnitValues;
 }
 
+export interface Account {
+  /** Redeemed an invite (or is the owner); unapproved logins see only the invite screen. */
+  approved: boolean;
+  timeZone: string | null;
+}
+
+export type InviteResult = 'joined' | 'invalid' | 'too_many';
+
 export interface Single extends ItemBase {
   pokemon: string;
   setName: string;
