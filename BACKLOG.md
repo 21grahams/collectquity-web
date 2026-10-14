@@ -5,20 +5,22 @@ What's next, in order. The old app is retired, so database work is open.
 - **Public beta, Pokémon-only (goal: a few weeks out, decided 2026-10-13).** An invite-only
   browser beta at collectquity.com before any App Store release, so testers can try the app and
   shape what comes next. Collections is the fast-follow right after (below). Steps:
-  1. **Decide on auth first: stay on Supabase Auth or move to Clerk.** The owner asked to look
-     into Clerk (recommended to them). Compare: Clerk gives polished ready-made sign-up/login
-     screens, social logins and MFA, and works with Supabase as a third-party sign-in (the
-     database rules read Clerk's user id). Supabase Auth is already in place, built in and free.
-     Check for Clerk: price at beta and later scale, whether its login flows work inside the
-     iPhone home-screen app (it keeps its own storage, so the app avoids login redirects and
-     email links today), and moving the owner's existing login over. Decide before step 2,
-     because Clerk's user ids are text, not Supabase's uuid, which sets the owner column's type.
+  1. ~~Decide on auth~~ **Decided 2026-10-14: stay on Supabase Auth** (no Clerk). Clerk mostly
+     adds ready-made screens; Supabase already covers email/password, Google and Apple sign-in
+     (web and native Swift) and free two-step login, with no rewrite of the data rules and no
+     second vendor. Testers use a regular browser; only the owner uses the home-screen app,
+     with email and password. The owner id stays Supabase's uuid.
   2. **Multi-user database.** Every table gets an owner; every rule becomes "you only see your
      own rows". Fix what assumes one user: the single Long Hold, short hold numbering, Summary
      totals, the daily jobs and history, market links. The catalog stays shared. The owner's
      data is assigned to their account (nothing changes for them).
   3. **Accounts:** sign-up with email confirmation, forgot password (none today), delete my
-     account, a privacy policy page.
+     account, a privacy policy page. Confirm and reset with 6-digit email codes, not links, so
+     everything happens inside the app. Send email through Resend (free tier 3,000/month,
+     ~100/day) from collectquity.com; Supabase's built-in email only reaches the project team.
+     Then **Google sign-in** (free Google login key), so the beta feels like the real product.
+     **Apple sign-in** once the owner enrolls in the paid Apple Developer Program ($99/year,
+     also needed for the App Store; today the account is the free kind).
   4. **Onboarding** for new users: a few questions and a Pokémon starting setup, landing on a
      blank slate.
   5. **Price-data costs:** the free tiers (JustTCG 100 requests/day and 1,000/month;
