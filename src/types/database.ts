@@ -6,14 +6,17 @@ export type Database = {
       app_users: {
         Row: {
           created_at: string;
+          time_zone: string;
           user_id: string;
         };
         Insert: {
           created_at?: string;
+          time_zone?: string;
           user_id: string;
         };
         Update: {
           created_at?: string;
+          time_zone?: string;
           user_id?: string;
         };
         Relationships: [];
@@ -101,6 +104,7 @@ export type Database = {
           profit: number | null;
           sold_price: number | null;
           updated_at: string;
+          user_id: string;
         };
         Insert: {
           completed_at?: string | null;
@@ -113,6 +117,7 @@ export type Database = {
           profit?: number | null;
           sold_price?: number | null;
           updated_at?: string;
+          user_id?: string;
         };
         Update: {
           completed_at?: string | null;
@@ -125,6 +130,7 @@ export type Database = {
           profit?: number | null;
           sold_price?: number | null;
           updated_at?: string;
+          user_id?: string;
         };
         Relationships: [];
       };
@@ -135,6 +141,7 @@ export type Database = {
           sealed_item_id: number | null;
           single_id: number | null;
           unit_value: number | null;
+          user_id: string;
         };
         Insert: {
           day: string;
@@ -142,6 +149,7 @@ export type Database = {
           sealed_item_id?: number | null;
           single_id?: number | null;
           unit_value?: number | null;
+          user_id?: string;
         };
         Update: {
           day?: string;
@@ -149,8 +157,23 @@ export type Database = {
           sealed_item_id?: number | null;
           single_id?: number | null;
           unit_value?: number | null;
+          user_id?: string;
         };
         Relationships: [
+          {
+            foreignKeyName: 'item_value_history_same_user_sealed';
+            columns: ['sealed_item_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'sealed_items';
+            referencedColumns: ['id', 'user_id'];
+          },
+          {
+            foreignKeyName: 'item_value_history_same_user_single';
+            columns: ['single_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'singles';
+            referencedColumns: ['id', 'user_id'];
+          },
           {
             foreignKeyName: 'item_value_history_sealed_item_id_fkey';
             columns: ['sealed_item_id'];
@@ -184,6 +207,7 @@ export type Database = {
           single_id: number | null;
           tcgplayer_id: string;
           updated_at: string;
+          user_id: string;
           market_value: number | null;
         };
         Insert: {
@@ -202,6 +226,7 @@ export type Database = {
           single_id?: number | null;
           tcgplayer_id: string;
           updated_at?: string;
+          user_id?: string;
         };
         Update: {
           created_at?: string;
@@ -219,8 +244,23 @@ export type Database = {
           single_id?: number | null;
           tcgplayer_id?: string;
           updated_at?: string;
+          user_id?: string;
         };
         Relationships: [
+          {
+            foreignKeyName: 'market_links_same_user_sealed';
+            columns: ['sealed_item_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'sealed_items';
+            referencedColumns: ['id', 'user_id'];
+          },
+          {
+            foreignKeyName: 'market_links_same_user_single';
+            columns: ['single_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'singles';
+            referencedColumns: ['id', 'user_id'];
+          },
           {
             foreignKeyName: 'market_links_sealed_item_id_fkey';
             columns: ['sealed_item_id'];
@@ -245,6 +285,7 @@ export type Database = {
           sealed_item_id: number | null;
           single_id: number | null;
           unit_value: number;
+          user_id: string;
         };
         Insert: {
           checked_on: string;
@@ -253,6 +294,7 @@ export type Database = {
           sealed_item_id?: number | null;
           single_id?: number | null;
           unit_value: number;
+          user_id?: string;
         };
         Update: {
           checked_on?: string;
@@ -261,8 +303,23 @@ export type Database = {
           sealed_item_id?: number | null;
           single_id?: number | null;
           unit_value?: number;
+          user_id?: string;
         };
         Relationships: [
+          {
+            foreignKeyName: 'price_checks_same_user_sealed';
+            columns: ['sealed_item_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'sealed_items';
+            referencedColumns: ['id', 'user_id'];
+          },
+          {
+            foreignKeyName: 'price_checks_same_user_single';
+            columns: ['single_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'singles';
+            referencedColumns: ['id', 'user_id'];
+          },
           {
             foreignKeyName: 'price_checks_sealed_item_id_fkey';
             columns: ['sealed_item_id'];
@@ -285,18 +342,21 @@ export type Database = {
           created_at: string;
           request_id: string;
           response: NonNullable<Json>;
+          user_id: string;
         };
         Insert: {
           action: string;
           created_at?: string;
           request_id: string;
           response: NonNullable<Json>;
+          user_id?: string;
         };
         Update: {
           action?: string;
           created_at?: string;
           request_id?: string;
           response?: NonNullable<Json>;
+          user_id?: string;
         };
         Relationships: [];
       };
@@ -313,6 +373,7 @@ export type Database = {
           phone_last4: string;
           retailer: string;
           updated_at: string;
+          user_id: string;
         };
         Insert: {
           card_last2?: string;
@@ -326,6 +387,7 @@ export type Database = {
           phone_last4?: string;
           retailer: string;
           updated_at?: string;
+          user_id?: string;
         };
         Update: {
           card_last2?: string;
@@ -339,6 +401,7 @@ export type Database = {
           phone_last4?: string;
           retailer?: string;
           updated_at?: string;
+          user_id?: string;
         };
         Relationships: [];
       };
@@ -355,6 +418,7 @@ export type Database = {
           quantity: number;
           total_cost: number;
           updated_at: string;
+          user_id: string;
         };
         Insert: {
           created_at?: string;
@@ -368,6 +432,7 @@ export type Database = {
           quantity: number;
           total_cost?: number;
           updated_at?: string;
+          user_id?: string;
         };
         Update: {
           created_at?: string;
@@ -381,6 +446,7 @@ export type Database = {
           quantity?: number;
           total_cost?: number;
           updated_at?: string;
+          user_id?: string;
         };
         Relationships: [
           {
@@ -389,6 +455,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'holds';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'sealed_items_same_user_hold';
+            columns: ['hold_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'holds';
+            referencedColumns: ['id', 'user_id'];
           },
         ];
       };
@@ -407,6 +480,7 @@ export type Database = {
           set_name: string;
           total_cost: number;
           updated_at: string;
+          user_id: string;
           single_display_name: string | null;
         };
         Insert: {
@@ -423,6 +497,7 @@ export type Database = {
           set_name?: string;
           total_cost?: number;
           updated_at?: string;
+          user_id?: string;
         };
         Update: {
           condition?: string;
@@ -438,6 +513,7 @@ export type Database = {
           set_name?: string;
           total_cost?: number;
           updated_at?: string;
+          user_id?: string;
         };
         Relationships: [];
       };
@@ -456,6 +532,7 @@ export type Database = {
           single_id: number | null;
           sold_at: string;
           sold_price: number;
+          user_id: string;
         };
         Insert: {
           category: string;
@@ -471,6 +548,7 @@ export type Database = {
           single_id?: number | null;
           sold_at?: string;
           sold_price: number;
+          user_id?: string;
         };
         Update: {
           category?: string;
@@ -486,8 +564,23 @@ export type Database = {
           single_id?: number | null;
           sold_at?: string;
           sold_price?: number;
+          user_id?: string;
         };
         Relationships: [
+          {
+            foreignKeyName: 'sold_log_same_user_sealed';
+            columns: ['sealed_item_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'sealed_items';
+            referencedColumns: ['id', 'user_id'];
+          },
+          {
+            foreignKeyName: 'sold_log_same_user_single';
+            columns: ['single_id', 'user_id'];
+            isOneToOne: false;
+            referencedRelation: 'singles';
+            referencedColumns: ['id', 'user_id'];
+          },
           {
             foreignKeyName: 'sold_log_sealed_item_id_fkey';
             columns: ['sealed_item_id'];
@@ -515,6 +608,7 @@ export type Database = {
           portfolio_value: number;
           singles_spent: number;
           singles_value: number;
+          user_id: string;
         };
         Insert: {
           current_short_spent: number;
@@ -526,6 +620,7 @@ export type Database = {
           portfolio_value: number;
           singles_spent: number;
           singles_value: number;
+          user_id?: string;
         };
         Update: {
           current_short_spent?: number;
@@ -537,6 +632,7 @@ export type Database = {
           portfolio_value?: number;
           singles_spent?: number;
           singles_value?: number;
+          user_id?: string;
         };
         Relationships: [];
       };
@@ -873,8 +969,8 @@ export type Database = {
         };
         Returns: undefined;
       };
-      app_timezone: { Args: Record<PropertyKey, never>; Returns: string };
-      app_today: { Args: Record<PropertyKey, never>; Returns: string };
+      app_timezone: { Args: { p_user?: string }; Returns: string };
+      app_today: { Args: { p_user?: string }; Returns: string };
       catalog_card_name: { Args: { p_name: string; p_number: string }; Returns: string };
       catalog_search_text: { Args: { p_text: string }; Returns: string };
       catalog_set_name: { Args: { p_name: string }; Returns: string };
@@ -937,6 +1033,7 @@ export type Database = {
           profit: number | null;
           sold_price: number | null;
           updated_at: string;
+          user_id: string;
         };
         SetofOptions: {
           from: '*';
@@ -991,6 +1088,7 @@ export type Database = {
           quantity: number;
           total_cost: number;
           updated_at: string;
+          user_id: string;
         };
         SetofOptions: {
           from: '*';
@@ -1018,6 +1116,45 @@ export type Database = {
       short_hold_name: { Args: { p_number: number }; Returns: string };
       single_display_name: { Args: { s: Database['public']['Tables']['singles']['Row'] }; Returns: string };
       stale_item_message: { Args: Record<PropertyKey, never>; Returns: string };
+      summary_of: {
+        Args: { p_user: string };
+        Returns: {
+          completed_hold_count: number;
+          completed_holds_profit: number;
+          current_short_exit_80: number;
+          current_short_gain: number;
+          current_short_name: string;
+          current_short_profit_80: number;
+          current_short_spent: number;
+          current_short_value: number;
+          long_hold_exit_80: number;
+          long_hold_gain: number;
+          long_hold_has_sales: boolean;
+          long_hold_profit_80: number;
+          long_hold_sold_margin: number;
+          long_hold_sold_markup: number;
+          long_hold_sold_price: number;
+          long_hold_sold_profit: number;
+          long_hold_spent: number;
+          long_hold_value: number;
+          portfolio_exit_80: number;
+          portfolio_gain: number;
+          portfolio_profit_80: number;
+          portfolio_spent: number;
+          portfolio_value: number;
+          singles_exit_80: number;
+          singles_gain: number;
+          singles_has_sales: boolean;
+          singles_profit_80: number;
+          singles_sold_margin: number;
+          singles_sold_markup: number;
+          singles_sold_price: number;
+          singles_sold_profit: number;
+          singles_spent: number;
+          singles_value: number;
+          total_realized_profit: number;
+        }[];
+      };
     };
     Enums: {
       [_ in never]: never;

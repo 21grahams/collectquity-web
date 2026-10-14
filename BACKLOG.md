@@ -10,10 +10,10 @@ What's next, in order. The old app is retired, so database work is open.
      (web and native Swift) and free two-step login, with no rewrite of the data rules and no
      second vendor. Testers use a regular browser; only the owner uses the home-screen app,
      with email and password. The owner id stays Supabase's uuid.
-  2. **Multi-user database.** Every table gets an owner; every rule becomes "you only see your
-     own rows". Fix what assumes one user: the single Long Hold, short hold numbering, Summary
-     totals, the daily jobs and history, market links. The catalog stays shared. The owner's
-     data is assigned to their account (nothing changes for them).
+  2. ~~Multi-user database~~ **Done 2026-10-14.** Every row has an owner and users see only their
+     own (the app_users list still gates access); one Long Hold and short hold numbering per user;
+     the daily snapshot is per user. Each user has a time zone (default Denver) for "today" and
+     quarters; setting it from the browser at sign-up comes with steps 3–4.
   3. **Accounts:** sign-up with email confirmation, forgot password (none today), delete my
      account, a privacy policy page. Confirm and reset with 6-digit email codes, not links, so
      everything happens inside the app. Send email through Resend (free tier 3,000/month,
@@ -21,8 +21,22 @@ What's next, in order. The old app is retired, so database work is open.
      Then **Google sign-in** (free Google login key), so the beta feels like the real product.
      **Apple sign-in** once the owner enrolls in the paid Apple Developer Program ($99/year,
      also needed for the App Store; today the account is the free kind).
-  4. **Onboarding** for new users: a few questions and a Pokémon starting setup, landing on a
-     blank slate.
+  4. **Onboarding and sections per user.** Most people track two things, not the owner's three:
+     singles or sealed (or both), with no short/long split, and no retailer accounts. So each
+     user gets on/off settings: Singles, Sealed, "split sealed into short and long holds", and
+     Accounts. Onboarding asks (keep it short):
+     1. What do you collect? Pokémon (only choice), with Shoes, Coins… greyed out as "coming in
+        Beta V2".
+     2. What do you track? Singles, Sealed, or both.
+     3. Only if Sealed: split sealed into short-term flips and long-term holds? No (default) / Yes.
+
+     Accounts stays out of onboarding (off by default, a Settings switch). Without the split, all
+     sealed lives in the user's Long Hold but the screen just says "Sealed" (no Move, Short Hold
+     or Complete Hold). Summary shows only the tracked sections. Everything can be changed later
+     in Settings; turning a section off hides it, never deletes data. The owner's account gets
+     everything on. New users land on a blank slate. Later collections (shoes…) reuse this with
+     one product list plus Summary.
+
   5. **Price-data costs:** the free tiers (JustTCG 100 requests/day and 1,000/month;
      PokemonPriceTracker ~50 graded cards/day) won't cover many users. Products shared between
      users are fetched once, but plan a paid tier or a cap on auto-priced items per user.
