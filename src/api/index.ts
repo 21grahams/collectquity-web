@@ -11,6 +11,7 @@ import type {
   MarketLink,
   RetailerAccount,
   SealedItem,
+  Sections,
   Single,
   Summary,
 } from './types';
@@ -58,7 +59,27 @@ export async function getAccount(): Promise<Account> {
   const [row] = unwrap(await send(supabase.rpc('api_get_account')));
   if (!row) throw new ApiError('No account returned');
 
-  return { approved: row.approved, timeZone: row.time_zone };
+  return {
+    approved: row.approved,
+    timeZone: row.time_zone,
+    tracksSingles: row.tracks_singles,
+    tracksSealed: row.tracks_sealed,
+    splitsSealed: row.splits_sealed,
+    usesAccounts: row.uses_accounts,
+    onboarded: row.onboarded,
+  };
+}
+
+// No request id: saving the same choices twice changes nothing.
+export async function saveSections(sections: Sections): Promise<void> {
+  await save(
+    supabase.rpc('api_save_sections', {
+      p_tracks_singles: sections.tracksSingles,
+      p_tracks_sealed: sections.tracksSealed,
+      p_splits_sealed: sections.splitsSealed,
+      p_uses_accounts: sections.usesAccounts,
+    }),
+  );
 }
 
 export async function redeemInvite(code: string, timeZone: string): Promise<InviteResult> {

@@ -1,5 +1,5 @@
 import type { QueryClient, QueryKey } from '@tanstack/react-query';
-import type { AppContext, GradedBasis, MarketLink, SealedItem } from '../api/types';
+import type { AppContext, GradedBasis, MarketLink, SealedItem, Sections } from '../api/types';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -58,6 +58,15 @@ export const useRedeemInvite = () => {
     onSuccess: async (result) => {
       if (result === 'joined') await queryClient.invalidateQueries({ queryKey: queryKeys.account });
     },
+  });
+};
+
+export const useSaveSections = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (sections: Sections) => api.saveSections(sections),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.account }),
   });
 };
 

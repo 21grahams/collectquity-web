@@ -26,10 +26,20 @@ interface ItemBase {
   quarterUnitValues: QuarterUnitValues;
 }
 
-export interface Account {
+export interface Sections {
+  tracksSingles: boolean;
+  tracksSealed: boolean;
+  /** Sealed split into short-term flips and long-term holds (otherwise one simple Sealed list). */
+  splitsSealed: boolean;
+  usesAccounts: boolean;
+}
+
+export interface Account extends Sections {
   /** Redeemed an invite (or is the owner); unapproved logins see only the invite screen. */
   approved: boolean;
   timeZone: string | null;
+  /** Finished the onboarding questions. */
+  onboarded: boolean;
 }
 
 export type InviteResult = 'joined' | 'invalid' | 'too_many';

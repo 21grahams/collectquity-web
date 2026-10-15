@@ -5,22 +5,40 @@ export type Database = {
     Tables: {
       app_users: {
         Row: {
+          collection: string;
           created_at: string;
           invite_code: string | null;
+          onboarded_at: string | null;
+          splits_sealed: boolean;
           time_zone: string;
+          tracks_sealed: boolean;
+          tracks_singles: boolean;
           user_id: string;
+          uses_accounts: boolean;
         };
         Insert: {
+          collection?: string;
           created_at?: string;
           invite_code?: string | null;
+          onboarded_at?: string | null;
+          splits_sealed?: boolean;
           time_zone?: string;
+          tracks_sealed?: boolean;
+          tracks_singles?: boolean;
           user_id: string;
+          uses_accounts?: boolean;
         };
         Update: {
+          collection?: string;
           created_at?: string;
           invite_code?: string | null;
+          onboarded_at?: string | null;
+          splits_sealed?: boolean;
           time_zone?: string;
+          tracks_sealed?: boolean;
+          tracks_singles?: boolean;
           user_id?: string;
+          uses_accounts?: boolean;
         };
         Relationships: [
           {
@@ -832,7 +850,13 @@ export type Database = {
         Args: Record<PropertyKey, never>;
         Returns: {
           approved: boolean;
+          collection: string;
+          onboarded: boolean;
+          splits_sealed: boolean;
           time_zone: string;
+          tracks_sealed: boolean;
+          tracks_singles: boolean;
+          uses_accounts: boolean;
         }[];
       };
       api_get_context: {
@@ -972,6 +996,15 @@ export type Database = {
       };
       api_move_sealed: { Args: { p_id: number; p_quantity: number; p_request_id: string }; Returns: string };
       api_redeem_invite: { Args: { p_code: string; p_time_zone: string }; Returns: string };
+      api_save_sections: {
+        Args: {
+          p_splits_sealed: boolean;
+          p_tracks_sealed: boolean;
+          p_tracks_singles: boolean;
+          p_uses_accounts: boolean;
+        };
+        Returns: undefined;
+      };
       api_search_catalog: {
         Args: { p_kind: string; p_query: string };
         Returns: {

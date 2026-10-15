@@ -5,6 +5,7 @@ import { Navigate } from 'react-router';
 
 import { ErrorState } from '../../components/ListStates';
 import { useAccount } from '../../hooks/queries';
+import { OnboardingPage } from '../onboarding/OnboardingPage';
 import { useAuth } from './authContext';
 import { InvitePage } from './InvitePage';
 
@@ -37,6 +38,7 @@ export function RequireAuth({ children }: { children: ReactNode }) {
     );
   }
   if (!account.data.approved) return <InvitePage />;
+  if (!account.data.onboarded) return <OnboardingPage />;
 
   return <>{children}</>;
 }
