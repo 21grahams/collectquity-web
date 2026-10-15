@@ -13,10 +13,12 @@ import { tokens } from '../../theme/tokens';
 interface Props {
   item: SealedItem | null;
   currentShortHoldName: string | null;
+  /** "Sealed" when sealed isn't split into short and long holds. */
+  longHoldName: string;
   onClose: () => void;
 }
 
-export function MoveSheet({ item, currentShortHoldName, onClose }: Props) {
+export function MoveSheet({ item, currentShortHoldName, longHoldName, onClose }: Props) {
   const session = useSaveSession();
   const move = useMoveSealed();
   const [shown, setShown] = useState<SealedItem | null>(item);
@@ -29,7 +31,7 @@ export function MoveSheet({ item, currentShortHoldName, onClose }: Props) {
   }
 
   const fromLong = shown?.holdStatus === 'long';
-  const destination = fromLong ? (currentShortHoldName ?? 'Current Short Hold') : 'Long Hold';
+  const destination = fromLong ? (currentShortHoldName ?? 'Current Short Hold') : longHoldName;
 
   function submit() {
     if (!item) return;

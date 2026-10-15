@@ -254,6 +254,7 @@ export function SealedPage() {
       <MoveSheet
         item={moving}
         currentShortHoldName={context.data.currentShortHoldName}
+        longHoldName={splitsSealed ? 'Long Hold' : 'Sealed'}
         onClose={() => setMoving(null)}
       />
       <CompleteHoldSheet target={completing} onClose={() => setCompleting(null)} />
@@ -354,7 +355,7 @@ export function SealedPage() {
                     liveToday={updatedToday(findLink(marketLinks.data, { sealedItemId: item.id }), today)}
                     onEdit={() => setEditing(item)}
                     onRemove={() => setRemoving(item)}
-                    onMove={splitsSealed ? () => setMoving(item) : undefined}
+                    onMove={splitsSealed || item.holdStatus === 'current' ? () => setMoving(item) : undefined}
                     onSell={() =>
                       setSelling({
                         kind: 'sealed',

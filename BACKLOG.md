@@ -22,7 +22,7 @@ What's next, in order. The old app is retired, so database work is open.
      supabase.co address until a paid custom auth domain).
      **Apple sign-in** once the owner enrolls in the paid Apple Developer Program ($99/year,
      also needed for the App Store; today the account is the free kind).
-  4. **Onboarding and sections per user.** Most people track two things, not the owner's three:
+  4. ~~Onboarding and sections per user~~ **Done 2026-10-15.** Most people track two things, not the owner's three:
      singles or sealed (or both), with no short/long split, and no retailer accounts. So each
      user gets on/off settings: Singles, Sealed, "split sealed into short and long holds", and
      Accounts. Onboarding asks (keep it short):
@@ -45,13 +45,13 @@ What's next, in order. The old app is retired, so database work is open.
      the background. Revisit plans and limits at App Store time.
   6. **Invite-only access** (invite codes) so the beta's size and costs stay under control.
 
-- **Google's own sign-in button (next, before onboarding; decided 2026-10-15).** Today Google's
+- ~~Google's own sign-in button~~ **Done 2026-10-15** (Google now says "to continue to Collectquity"). Today Google's
   screen says "to continue to zjtiggbmkrouceaqgfdw.supabase.co" because sign-in returns through
   Supabase's address. Use Google's official button (Google Identity Services, ID token passed to
   Supabase's signInWithIdToken with a nonce) so it says collectquity.com. Free; the button uses
   Google's own design (dark style). The paid alternative (Supabase custom domain, about $35/month
   with Pro) waits until the App Store.
-- **Light mode (right after onboarding).** The app is dark-only today; add a light theme and a
+- **Light mode (next).** The app is dark-only today; add a light theme and a
   switch (follow the phone's setting by default). The design tokens in `src/theme/tokens.ts` make
   this mostly a second set of colors.
 - **Backups for a multi-user app.** Weekly backups go to the owner's Mac (`backups/`; newest 12 kept,

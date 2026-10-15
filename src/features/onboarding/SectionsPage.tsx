@@ -29,7 +29,7 @@ export function SectionsPage() {
   const unchanged = (Object.keys(choice) as (keyof Sections)[]).every((k) => choice[k] === current[k]);
   const shortHoldItems = (sealed.data ?? []).filter((i) => i.holdStatus === 'current').length;
   const hidingShortHold =
-    current.splitsSealed && !(choice.tracksSealed && choice.splitsSealed) && shortHoldItems > 0;
+    current.splitsSealed && choice.tracksSealed && !choice.splitsSealed && shortHoldItems > 0;
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -100,7 +100,8 @@ export function SectionsPage() {
       {hidingShortHold && (
         <Alert severity="info">
           Your current short hold has {shortHoldItems} {shortHoldItems === 1 ? 'item' : 'items'}. It stays on
-          the Sealed page until you complete it; new sealed items go to your Sealed list.
+          the Sealed page until you complete it or move its items to your Sealed list; new sealed items go
+          straight to your Sealed list.
         </Alert>
       )}
       {invalid && <Alert severity="info">Choose singles, sealed or both.</Alert>}

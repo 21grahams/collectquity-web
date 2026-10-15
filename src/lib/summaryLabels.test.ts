@@ -32,6 +32,12 @@ describe('realizedProfitLabel', () => {
         false,
       ),
     ).toBe('Realized Profit');
+    expect(
+      realizedProfitLabel(
+        { longHoldSales: sales(true), singlesSales: sales(false), completedHoldCount: 3 },
+        false,
+      ),
+    ).toBe('Realized Profit — Sealed + Short Holds 1–3');
   });
 });
 

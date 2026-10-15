@@ -197,7 +197,7 @@ export function SummaryPage() {
       )}
 
       <Panel borderColor={GREEN_BORDER}>
-        <Label>{realizedProfitLabel(s, showHolds)}</Label>
+        <Label>{realizedProfitLabel(s, splitsSealed)}</Label>
         <Box
           sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', mt: 1, mb: 1.5 }}
         >
