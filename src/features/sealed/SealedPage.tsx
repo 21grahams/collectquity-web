@@ -20,7 +20,13 @@ import { ItemCard } from '../../components/ItemCard';
 import { EmptyCollection, ErrorState, LoadingState } from '../../components/ListStates';
 import { PercentPicker } from '../../components/PercentPicker';
 import { StickyToolbar } from '../../components/StickyToolbar';
-import { useAppContext, useCompletedHolds, useMarketLinks, useSealed } from '../../hooks/queries';
+import {
+  useAppContext,
+  useCompletedHolds,
+  useMarketLinks,
+  useSealed,
+  useSections,
+} from '../../hooks/queries';
 import { useCollapsibleGroups } from '../../hooks/useCollapsibleGroups';
 import { useValuePercent } from '../../hooks/useStickyState';
 import { cardNumbers, pasFeesLabel, quarterBoxes, totals } from '../../lib/cardMath';
@@ -141,7 +147,8 @@ function SealedCard({
   onRemove: () => void;
   onQuarter: (quarter: 1 | 2 | 3 | 4) => void;
   onSell: () => void;
-  onMove: () => void;
+  /** Left out when sealed isn't split into short and long holds (nowhere to move to). */
+  onMove?: () => void;
 }) {
   const isLong = item.holdStatus === 'long';
 
@@ -171,7 +178,7 @@ function SealedCard({
           <>
             <IconAction label="Edit" icon={<EditOutlined />} onClick={onEdit} />
             {isLong && <IconAction label="Mark Sold" icon={<SellOutlined />} tone="green" onClick={onSell} />}
-            <IconAction label="Move" icon={<SwapHorizOutlined />} onClick={onMove} />
+            {onMove && <IconAction label="Move" icon={<SwapHorizOutlined />} onClick={onMove} />}
             <IconAction label="Remove" icon={<DeleteOutline />} tone="danger" onClick={onRemove} />
           </>
         )
@@ -193,7 +200,13 @@ export function SealedPage() {
   const [moving, setMoving] = useState<SealedItem | null>(null);
   const [completing, setCompleting] = useState<CompleteTarget | null>(null);
 
-  const groups = useMemo(() => groupSealed(sealed.data ?? []), [sealed.data]);
+  const { splitsSealed } = useSections();
+  // Without the split, everything sealed lives in the Long Hold and shows as one "Sealed" list.
+  const groups = useMemo(() => {
+    const all = groupSealed(sealed.data ?? []);
+
+    return splitsSealed ? all : all.filter((g) => g.status === 'long').map((g) => ({ ...g, name: 'Sealed' }));
+  }, [sealed.data, splitsSealed]);
   const currentGroup = groups.find((g) => g.status === 'current');
   const completedHolds = useCompletedHolds();
   const soldByHold = new Map((completedHolds.data ?? []).map((h) => [h.id, h]));
@@ -302,7 +315,9 @@ export function SealedPage() {
           </Box>
         )}
         <PercentPicker value={valuePct} onChange={setValuePct} />
-        <CollapseAllButton allCollapsed={allCollapsed} onClick={toggleAll} short={isPhone} />
+        {splitsSealed && (
+          <CollapseAllButton allCollapsed={allCollapsed} onClick={toggleAll} short={isPhone} />
+        )}
       </StickyToolbar>
 
       {groups.map((group) => {
@@ -334,7 +349,7 @@ export function SealedPage() {
                     liveToday={updatedToday(findLink(marketLinks.data, { sealedItemId: item.id }), today)}
                     onEdit={() => setEditing(item)}
                     onRemove={() => setRemoving(item)}
-                    onMove={() => setMoving(item)}
+                    onMove={splitsSealed ? () => setMoving(item) : undefined}
                     onSell={() =>
                       setSelling({
                         kind: 'sealed',

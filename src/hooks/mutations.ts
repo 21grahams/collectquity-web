@@ -1,5 +1,5 @@
 import type { QueryClient, QueryKey } from '@tanstack/react-query';
-import type { AppContext, GradedBasis, MarketLink, SealedItem, Sections } from '../api/types';
+import type { Account, AppContext, GradedBasis, MarketLink, SealedItem, Sections } from '../api/types';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -66,7 +66,15 @@ export const useSaveSections = () => {
 
   return useMutation({
     mutationFn: (sections: Sections) => api.saveSections(sections),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.account }),
+    // Applied right away, so leaving onboarding never waits on the re-check (which can fail quietly).
+    onSuccess: (_, sections) => {
+      queryClient.setQueryData<Account>(
+        queryKeys.account,
+        (a) => a && { ...a, ...sections, onboarded: true },
+      );
+
+      return queryClient.invalidateQueries({ queryKey: queryKeys.account });
+    },
   });
 };
 

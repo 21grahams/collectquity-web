@@ -19,6 +19,20 @@ describe('realizedProfitLabel', () => {
       realizedProfitLabel({ longHoldSales: sales(false), singlesSales: sales(false), completedHoldCount: 1 }),
     ).toBe('Realized Profit — Short Holds 1–1');
   });
+  it('calls sealed "Sealed" and skips short holds without the split', () => {
+    expect(
+      realizedProfitLabel(
+        { longHoldSales: sales(true), singlesSales: sales(false), completedHoldCount: 0 },
+        false,
+      ),
+    ).toBe('Realized Profit — Sealed');
+    expect(
+      realizedProfitLabel(
+        { longHoldSales: sales(false), singlesSales: sales(false), completedHoldCount: 0 },
+        false,
+      ),
+    ).toBe('Realized Profit');
+  });
 });
 
 describe('returnPct', () => {

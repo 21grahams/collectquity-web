@@ -9,7 +9,7 @@ import { FieldRow, MoneyInput, Segmented, Stepper, TextInput } from '../../compo
 import { SaveButton } from '../../components/SaveButton';
 import { CancelButton, Field, Sheet } from '../../components/Sheet';
 import { useAddSealed, useAddSingle, useEditSealed, useEditSingle } from '../../hooks/mutations';
-import { useMarketLinks, useSealed, useSingles } from '../../hooks/queries';
+import { useMarketLinks, useSealed, useSections, useSingles } from '../../hooks/queries';
 import { useSaveSession } from '../../hooks/useSaveSession';
 import {
   emptyItemForm,
@@ -62,6 +62,7 @@ export function ItemFormSheet({ kind, open, onClose, today, editing }: Props) {
   const editSingle = useEditSingle();
   const editSealed = useEditSealed();
   const marketLinks = useMarketLinks();
+  const { splitsSealed } = useSections();
   const [form, setForm] = useState<ItemFormValues>(() => emptyItemForm(today));
   const [original, setOriginal] = useState<ItemFormOriginal | null>(null);
   const [showTag, setShowTag] = useState(false);
@@ -151,10 +152,8 @@ export function ItemFormSheet({ kind, open, onClose, today, editing }: Props) {
       editSealed.mutate({ requestId: session.idFor(input), id: editing.id, input }, done);
     } else {
       const input = toSealedInput(form);
-      addSealed.mutate(
-        { requestId: session.idFor({ hold: form.hold, input }), hold: form.hold, input },
-        done,
-      );
+      const hold = splitsSealed ? form.hold : 'long';
+      addSealed.mutate({ requestId: session.idFor({ hold, input }), hold, input }, done);
     }
   }
 
@@ -177,7 +176,7 @@ export function ItemFormSheet({ kind, open, onClose, today, editing }: Props) {
         </>
       }
     >
-      {kind === 'sealed' && !isEdit && (
+      {kind === 'sealed' && !isEdit && splitsSealed && (
         <Field label="Hold Type">
           <Segmented
             value={form.hold}

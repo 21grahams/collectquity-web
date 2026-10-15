@@ -4,8 +4,9 @@ import StorefrontOutlined from '@mui/icons-material/StorefrontOutlined';
 import StyleOutlined from '@mui/icons-material/StyleOutlined';
 import { BottomNavigation, BottomNavigationAction } from '@mui/material';
 
+import { useSections } from '../hooks/queries';
 import { tokens } from '../theme/tokens';
-import { TABS } from './tabs';
+import { visibleTabs } from './tabs';
 
 const ICONS = {
   '/singles': <StyleOutlined />,
@@ -17,6 +18,8 @@ const ICONS = {
 export const BOTTOM_TABS_HEIGHT = 58;
 
 export function BottomTabs({ value, onChange }: { value: string | false; onChange: (path: string) => void }) {
+  const tabs = visibleTabs(useSections());
+
   return (
     <BottomNavigation
       showLabels
@@ -39,7 +42,7 @@ export function BottomTabs({ value, onChange }: { value: string | false; onChang
         },
       }}
     >
-      {TABS.map((t) => (
+      {tabs.map((t) => (
         <BottomNavigationAction key={t.path} value={t.path} label={t.label} icon={ICONS[t.path]} />
       ))}
     </BottomNavigation>

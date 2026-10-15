@@ -1,4 +1,4 @@
-import type { CatalogProduct } from '../api/types';
+import type { CatalogProduct, Sections } from '../api/types';
 
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
@@ -20,6 +20,24 @@ export const queryKeys = {
 // Approval almost never changes, so don't re-ask every time the app comes back to the front.
 export const useAccount = (enabled: boolean) =>
   useQuery({ queryKey: queryKeys.account, queryFn: api.getAccount, enabled, staleTime: 60 * 60 * 1000 });
+
+const ALL_SECTIONS: Sections = {
+  tracksSingles: true,
+  tracksSealed: true,
+  splitsSealed: true,
+  usesAccounts: true,
+};
+
+/** The parts of the app this user sees (their onboarding choices). */
+export function useSections(): Sections {
+  const { data } = useQuery({
+    queryKey: queryKeys.account,
+    queryFn: api.getAccount,
+    staleTime: 60 * 60 * 1000,
+  });
+
+  return data ?? ALL_SECTIONS;
+}
 
 export const useAppContext = () => useQuery({ queryKey: queryKeys.context, queryFn: api.getContext });
 

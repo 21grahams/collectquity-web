@@ -2,6 +2,7 @@ import { Box, Tab, Tabs, useMediaQuery } from '@mui/material';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router';
 
+import { useSections } from '../hooks/queries';
 import { useKeyboardOpen } from '../hooks/useKeyboardOpen';
 import { tokens } from '../theme/tokens';
 import { AvatarMenu } from './AvatarMenu';
@@ -10,13 +11,14 @@ import { OfflineBanner } from './OfflineBanner';
 import { PracticeBanner } from './PracticeBanner';
 import { PullToRefresh } from './PullToRefresh';
 import { ScrollTopButton } from './ScrollTopButton';
-import { TABS } from './tabs';
+import { visibleTabs } from './tabs';
 import { Wordmark } from './Wordmark';
 
 export function AppShell() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const current = TABS.find((t) => pathname.startsWith(t.path))?.path ?? false;
+  const tabs = visibleTabs(useSections());
+  const current = tabs.find((t) => pathname.startsWith(t.path))?.path ?? false;
   const isPhone = useMediaQuery('(max-width:599.95px)', { noSsr: true });
   // A bar pinned to the bottom rides up on the iPhone keyboard, so hide it while typing.
   const keyboardOpen = useKeyboardOpen();
@@ -136,7 +138,7 @@ export function AppShell() {
               '& .MuiTab-root.Mui-selected': { color: tokens.gold },
             }}
           >
-            {TABS.map((t) => (
+            {tabs.map((t) => (
               <Tab
                 key={t.path}
                 value={t.path}

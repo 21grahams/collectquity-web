@@ -6,7 +6,7 @@ import { Box } from '@mui/material';
 import { ErrorState, LoadingState } from '../../components/ListStates';
 import { PercentPicker } from '../../components/PercentPicker';
 import { StickyToolbar } from '../../components/StickyToolbar';
-import { useCompletedHolds, useSummary } from '../../hooks/queries';
+import { useCompletedHolds, useSections, useSummary } from '../../hooks/queries';
 import { useValuePercent } from '../../hooks/useStickyState';
 import { formatGain, formatMoney, formatRatioPct, formatSignedPct, gainLabel } from '../../lib/format';
 import { realizedProfitLabel, returnPct } from '../../lib/summaryLabels';
@@ -132,6 +132,8 @@ export function SummaryPage() {
   const summary = useSummary();
   const holds = useCompletedHolds();
   const [valuePct, setValuePct] = useValuePercent();
+  const { tracksSingles, tracksSealed, splitsSealed } = useSections();
+  const sealedName = splitsSealed ? 'Long Hold' : 'Sealed';
 
   if (!summary.data || !holds.data) {
     if (summary.isError) return <ErrorState error={summary.error} onRetry={() => summary.refetch()} />;
@@ -152,7 +154,8 @@ export function SummaryPage() {
       </StickyToolbar>
       <Panel>
         <Label color={valuePct < 100 ? tokens.gold : undefined}>
-          Portfolio Value{valuePct < 100 ? ` @ ${valuePct}%` : ''} — Singles + Long Hold
+          Portfolio Value{valuePct < 100 ? ` @ ${valuePct}%` : ''} —{' '}
+          {[tracksSingles && 'Singles', tracksSealed && sealedName].filter(Boolean).join(' + ')}
         </Label>
         <Box sx={{ fontFamily: fonts.mono, fontSize: 32, fontWeight: 500, color: tokens.gold }}>
           {formatMoney(atPct(p.value, valuePct))}
@@ -166,15 +169,29 @@ export function SummaryPage() {
         </Box>
       </Panel>
 
-      <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.25 }}>
-        <CategoryPanel title="Singles" box={s.singles} pct={valuePct} />
-        <CategoryPanel title="Long Hold Sealed" box={s.longHold} pct={valuePct} />
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: tracksSingles && tracksSealed ? '1fr 1fr' : '1fr',
+          gap: 1.25,
+        }}
+      >
+        {tracksSingles && <CategoryPanel title="Singles" box={s.singles} pct={valuePct} />}
+        {tracksSealed && (
+          <CategoryPanel
+            title={splitsSealed ? 'Long Hold Sealed' : 'Sealed'}
+            box={s.longHold}
+            pct={valuePct}
+          />
+        )}
       </Box>
 
-      <CategoryPanel title={`${cs.name ?? 'Current Short Hold'} — Tracking Only`} box={cs} pct={valuePct} />
+      {tracksSealed && splitsSealed && (
+        <CategoryPanel title={`${cs.name ?? 'Current Short Hold'} — Tracking Only`} box={cs} pct={valuePct} />
+      )}
 
       <Panel borderColor={GREEN_BORDER}>
-        <Label>{realizedProfitLabel(s)}</Label>
+        <Label>{realizedProfitLabel(s, splitsSealed)}</Label>
         <Box
           sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', mt: 1, mb: 1.5 }}
         >
@@ -190,11 +207,13 @@ export function SummaryPage() {
             {formatMoney(s.totalRealizedProfit)}
           </Box>
         </Box>
-        {s.singlesSales.hasSales && (
+        {tracksSingles && s.singlesSales.hasSales && (
           <PeriodBox title="Individual Card Sales" sales={s.singlesSales} highlight />
         )}
-        {s.longHoldSales.hasSales && <PeriodBox title="Long Hold Sales" sales={s.longHoldSales} highlight />}
-        {[...holds.data]
+        {tracksSealed && s.longHoldSales.hasSales && (
+          <PeriodBox title={`${sealedName} Sales`} sales={s.longHoldSales} highlight />
+        )}
+        {(splitsSealed ? [...holds.data] : [])
           .sort((a, b) => b.number - a.number)
           .map((h) => (
             <PeriodBox key={h.id} title={h.name} sales={h} />

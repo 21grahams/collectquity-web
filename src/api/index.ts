@@ -66,7 +66,8 @@ export async function getAccount(): Promise<Account> {
     tracksSealed: row.tracks_sealed,
     splitsSealed: row.splits_sealed,
     usesAccounts: row.uses_accounts,
-    onboarded: row.onboarded,
+    // Missing only if this app runs before the database knows about onboarding: don't send existing users there.
+    onboarded: row.onboarded ?? true,
   };
 }
 
