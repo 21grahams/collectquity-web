@@ -36,7 +36,10 @@ export function useSections(): Sections {
     staleTime: 60 * 60 * 1000,
   });
 
-  return data ?? ALL_SECTIONS;
+  if (!data) return ALL_SECTIONS;
+  const { tracksSingles, tracksSealed, splitsSealed, usesAccounts } = data;
+
+  return { tracksSingles, tracksSealed, splitsSealed, usesAccounts };
 }
 
 export const useAppContext = () => useQuery({ queryKey: queryKeys.context, queryFn: api.getContext });

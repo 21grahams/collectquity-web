@@ -145,6 +145,12 @@ export function SummaryPage() {
   const s = summary.data;
   const p = s.portfolio;
   const cs = s.currentShort;
+  // A section shows while it's tracked or still has data, so the parts always add up to the totals.
+  const has = (box: { spent: number; value: number }) => box.spent > 0 || box.value > 0;
+  const showSingles = tracksSingles || has(s.singles) || s.singlesSales.hasSales;
+  const showSealed = tracksSealed || has(s.longHold) || s.longHoldSales.hasSales;
+  const showShort = (tracksSealed && splitsSealed) || has(cs);
+  const showHolds = splitsSealed || s.completedHoldCount > 0;
   const portfolioGain = atPct(p.value, valuePct) - p.spent;
 
   return (
@@ -155,7 +161,7 @@ export function SummaryPage() {
       <Panel>
         <Label color={valuePct < 100 ? tokens.gold : undefined}>
           Portfolio Value{valuePct < 100 ? ` @ ${valuePct}%` : ''} —{' '}
-          {[tracksSingles && 'Singles', tracksSealed && sealedName].filter(Boolean).join(' + ')}
+          {[showSingles && 'Singles', showSealed && sealedName].filter(Boolean).join(' + ')}
         </Label>
         <Box sx={{ fontFamily: fonts.mono, fontSize: 32, fontWeight: 500, color: tokens.gold }}>
           {formatMoney(atPct(p.value, valuePct))}
@@ -172,12 +178,12 @@ export function SummaryPage() {
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: tracksSingles && tracksSealed ? '1fr 1fr' : '1fr',
+          gridTemplateColumns: showSingles && showSealed ? '1fr 1fr' : '1fr',
           gap: 1.25,
         }}
       >
-        {tracksSingles && <CategoryPanel title="Singles" box={s.singles} pct={valuePct} />}
-        {tracksSealed && (
+        {showSingles && <CategoryPanel title="Singles" box={s.singles} pct={valuePct} />}
+        {showSealed && (
           <CategoryPanel
             title={splitsSealed ? 'Long Hold Sealed' : 'Sealed'}
             box={s.longHold}
@@ -186,12 +192,12 @@ export function SummaryPage() {
         )}
       </Box>
 
-      {tracksSealed && splitsSealed && (
+      {showShort && (
         <CategoryPanel title={`${cs.name ?? 'Current Short Hold'} — Tracking Only`} box={cs} pct={valuePct} />
       )}
 
       <Panel borderColor={GREEN_BORDER}>
-        <Label>{realizedProfitLabel(s, splitsSealed)}</Label>
+        <Label>{realizedProfitLabel(s, showHolds)}</Label>
         <Box
           sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', mt: 1, mb: 1.5 }}
         >
@@ -207,13 +213,13 @@ export function SummaryPage() {
             {formatMoney(s.totalRealizedProfit)}
           </Box>
         </Box>
-        {tracksSingles && s.singlesSales.hasSales && (
+        {s.singlesSales.hasSales && (
           <PeriodBox title="Individual Card Sales" sales={s.singlesSales} highlight />
         )}
-        {tracksSealed && s.longHoldSales.hasSales && (
+        {s.longHoldSales.hasSales && (
           <PeriodBox title={`${sealedName} Sales`} sales={s.longHoldSales} highlight />
         )}
-        {(splitsSealed ? [...holds.data] : [])
+        {(showHolds ? [...holds.data] : [])
           .sort((a, b) => b.number - a.number)
           .map((h) => (
             <PeriodBox key={h.id} title={h.name} sales={h} />

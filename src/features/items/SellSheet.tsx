@@ -6,6 +6,7 @@ import { FieldRow, MoneyInput, ProfitDisplay, Select } from '../../components/fo
 import { SaveButton } from '../../components/SaveButton';
 import { CancelButton, Field, Sheet } from '../../components/Sheet';
 import { useSellLongHoldItem, useSellSingle } from '../../hooks/mutations';
+import { useSections } from '../../hooks/queries';
 import { useSaveSession } from '../../hooks/useSaveSession';
 import { formatMoney } from '../../lib/format';
 import { partialSaleNote, profitFor, validateSale } from '../../lib/sellForm';
@@ -36,7 +37,8 @@ export function SellSheet({ target, onClose }: { target: SellTarget | null; onCl
     session.reset();
   }
 
-  const listName = shown?.kind === 'single' ? 'Singles' : 'Long Hold';
+  const { splitsSealed } = useSections();
+  const listName = shown?.kind === 'single' ? 'Singles' : splitsSealed ? 'Long Hold' : 'Sealed';
 
   const profit = profitFor(soldPrice, (shown?.unitCost ?? 0) * quantity);
   const validation = validateSale(soldPrice, quantity, shown?.quantity ?? 0, shown?.unitCost ?? 0);

@@ -201,11 +201,16 @@ export function SealedPage() {
   const [completing, setCompleting] = useState<CompleteTarget | null>(null);
 
   const { splitsSealed } = useSections();
-  // Without the split, everything sealed lives in the Long Hold and shows as one "Sealed" list.
+  // Without the split, new sealed goes to the Long Hold, shown as one "Sealed" list. A current
+  // short hold that still has items stays visible (with Complete) until it's completed.
   const groups = useMemo(() => {
     const all = groupSealed(sealed.data ?? []);
 
-    return splitsSealed ? all : all.filter((g) => g.status === 'long').map((g) => ({ ...g, name: 'Sealed' }));
+    return splitsSealed
+      ? all
+      : all
+          .filter((g) => g.status === 'long' || (g.status === 'current' && g.items.length > 0))
+          .map((g) => (g.status === 'long' ? { ...g, name: 'Sealed' } : g));
   }, [sealed.data, splitsSealed]);
   const currentGroup = groups.find((g) => g.status === 'current');
   const completedHolds = useCompletedHolds();

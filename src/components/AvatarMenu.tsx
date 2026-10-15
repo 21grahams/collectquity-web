@@ -222,6 +222,15 @@ export function AvatarMenu() {
           </Box>
         </Box>
         <Divider sx={{ borderColor: tokens.border }} />
+        <MenuItem
+          onClick={() => {
+            setAnchor(null);
+            navigate('/sections');
+          }}
+          sx={{ fontSize: 15, minHeight: 44 }}
+        >
+          Sections
+        </MenuItem>
         {hasPassword && (
           <MenuItem
             onClick={() => {
