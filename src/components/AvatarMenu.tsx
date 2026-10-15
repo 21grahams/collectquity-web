@@ -13,6 +13,8 @@ import { APP_NAME, TAGLINE } from '../lib/brand';
 import { fonts, tokens } from '../theme/tokens';
 import { useNotify } from './notifyContext';
 
+const onPhone = /iPhone|Android.*Mobile/.test(navigator.userAgent);
+
 function formatBuiltAt(iso: string): string {
   return new Date(iso).toLocaleString('en-US', {
     timeZone: 'America/Denver',
@@ -252,7 +254,7 @@ export function AvatarMenu() {
             }}
             sx={{ fontSize: 15, minHeight: 44 }}
           >
-            Match phone setting
+            {onPhone ? 'Match phone setting' : 'Match system setting'}
           </MenuItem>
         )}
         <MenuItem
