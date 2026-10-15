@@ -13,10 +13,10 @@ import { EmailField, PasswordField } from './fields';
 import { GoogleButton } from './GoogleButton';
 
 export function LoginPage() {
-  const { session, signIn, redirectError } = useAuth();
+  const { session, signIn } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(redirectError);
+  const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [attempted, setAttempted] = useState(false);
 

@@ -11,8 +11,6 @@ import { cacheOwner, cachePersister } from '../../lib/queryClient';
 import { supabase } from '../../lib/supabase';
 import { AuthContext, friendlyAuthError } from './authContext';
 
-const GOOGLE_FAILED = "Google sign-in didn't finish. Try again, or use your email and password.";
-
 async function clearDeviceData(queryClient: QueryClient) {
   queryClient.clear();
   clearStickyMemory();
@@ -24,7 +22,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const [redirectError, setRedirectError] = useState<string | null>(null);
 
   // Each open tab also remembers who it last showed, since another tab may have already
   // updated the shared owner record before this tab hears about the change.
@@ -36,7 +33,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // back keeps theirs (it's their offline copy).
     function track(event: AuthChangeEvent | 'START', next: Session | null) {
       const userId = next?.user.id ?? null;
-      if (event === 'SIGNED_IN') setRedirectError(null);
       if (event === 'SIGNED_OUT') {
         void clearDeviceData(queryClient);
       } else if (userId) {
@@ -49,27 +45,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(next);
     }
 
-    async function start() {
-      const params = new URLSearchParams(window.location.search);
-      const code = params.get('code');
-      const failure = params.get('error_description') ?? params.get('error');
-      if (code || failure) {
-        // Back from Google: take the sign-in (or its error), then tidy the address bar.
-        window.history.replaceState(null, '', window.location.pathname + window.location.hash);
-        // A fixed message, never the address's own text, so a crafted link can't put words on the page.
-        if (code) {
-          const { error } = await supabase.auth.exchangeCodeForSession(code);
-          if (error) setRedirectError(GOOGLE_FAILED);
-        } else if (failure && !/access_denied/i.test(failure)) {
-          setRedirectError(GOOGLE_FAILED);
-        }
-      }
-      const { data } = await supabase.auth.getSession();
+    supabase.auth.getSession().then(({ data }) => {
       track('START', data.session);
       setLoading(false);
-    }
-
-    void start();
+    });
     const { data } = supabase.auth.onAuthStateChange((event, next) => track(event, next));
 
     return () => data.subscription.unsubscribe();
@@ -78,12 +57,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value: AuthContextValue = {
     session,
     loading,
-    redirectError,
-    async signInWithGoogle() {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: { redirectTo: window.location.origin + import.meta.env.BASE_URL },
-      });
+    async signInWithGoogle(idToken, nonce) {
+      const { error } = await supabase.auth.signInWithIdToken({ provider: 'google', token: idToken, nonce });
 
       return error ? friendlyAuthError(error.message) : null;
     },

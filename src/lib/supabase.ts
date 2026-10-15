@@ -21,11 +21,10 @@ export const supabase = createClient<Database>(
     auth: {
       persistSession: true,
       autoRefreshToken: true,
-      // Google sign-in comes back with ?code=…, which AuthProvider exchanges
-      // itself; letting supabase-js scan the URL would clash with the
-      // HashRouter's #/ routes.
+      // No magic links or OAuth redirects (Google sign-in uses Google's own
+      // button, which hands back an ID token), so never look for a session in
+      // the URL. This also keeps auth from clashing with the HashRouter's #/ routes.
       detectSessionInUrl: false,
-      flowType: 'pkce',
     },
   },
 );

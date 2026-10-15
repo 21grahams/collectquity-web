@@ -1,74 +1,76 @@
-import { Box, Button, Divider } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { Box, Divider, Typography } from '@mui/material';
+import { useEffect, useRef, useState } from 'react';
 
+import { GOOGLE_CLIENT_ID, loadGoogleIdentity, newNonce } from '../../lib/googleSignIn';
 import { useAuth } from './authContext';
 
-// The trip to Google and back lands in Safari instead of a home-screen app (they keep separate
-// storage), so the app offers email and password only there.
+// Google's sign-in window can't hand its result back to a home-screen app (it keeps separate
+// storage from Safari), and the one-time code needs a secure page (not the practice preview on
+// the Mac's network address), so those offer email and password only.
 const isHomeScreenApp =
   window.matchMedia?.('(display-mode: standalone)').matches ||
   (navigator as Navigator & { standalone?: boolean }).standalone === true;
+const available = !isHomeScreenApp && !!globalThis.crypto?.subtle;
 
-function GoogleMark() {
-  return (
-    <Box component="svg" viewBox="0 0 48 48" sx={{ width: 18, height: 18 }} aria-hidden>
-      <path
-        fill="#EA4335"
-        d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
-      />
-      <path
-        fill="#4285F4"
-        d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"
-      />
-      <path
-        fill="#FBBC05"
-        d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"
-      />
-      <path
-        fill="#34A853"
-        d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
-      />
-    </Box>
-  );
-}
-
-/** "Continue with Google" plus an "or" divider; renders nothing in the home-screen app. */
+/** Google's own "Continue with Google" button plus an "or" divider; nothing where it can't work. */
 export function GoogleButton({ onError }: { onError: (message: string) => void }) {
   const { signInWithGoogle } = useAuth();
-  const [leaving, setLeaving] = useState(false);
-
-  // Coming back with the browser's Back button restores this page as it was ("Opening Google…").
+  const slot = useRef<HTMLDivElement>(null);
+  const [failed, setFailed] = useState(false);
+  const [signingIn, setSigningIn] = useState(false);
+  // Google keeps the first callback it's given, so it reads the latest handlers through a ref.
+  const handlers = useRef({ signInWithGoogle, onError });
   useEffect(() => {
-    const reset = (e: PageTransitionEvent) => e.persisted && setLeaving(false);
-    window.addEventListener('pageshow', reset);
+    handlers.current = { signInWithGoogle, onError };
+  });
 
-    return () => window.removeEventListener('pageshow', reset);
+  useEffect(() => {
+    if (!available) return;
+    let cancelled = false;
+    // Blocked or very slow: drop the empty space rather than leave a gap above "or".
+    const giveUp = setTimeout(() => !slot.current?.childElementCount && setFailed(true), 8000);
+    (async () => {
+      try {
+        const [google, nonce] = await Promise.all([loadGoogleIdentity(), newNonce()]);
+        if (cancelled || !slot.current) return;
+        google.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          nonce: nonce.hashed,
+          callback: async ({ credential }) => {
+            setSigningIn(true);
+            const message = await handlers.current.signInWithGoogle(credential, nonce.plain);
+            setSigningIn(false);
+            if (message) handlers.current.onError(message);
+          },
+        });
+        google.renderButton(slot.current, {
+          theme: 'filled_black',
+          size: 'large',
+          text: 'continue_with',
+          shape: 'rectangular',
+          width: Math.min(400, slot.current.offsetWidth),
+        });
+      } catch {
+        if (!cancelled) setFailed(true);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      clearTimeout(giveUp);
+    };
   }, []);
 
-  if (isHomeScreenApp) return null;
-
-  async function go() {
-    setLeaving(true);
-    const message = await signInWithGoogle();
-    if (message) {
-      setLeaving(false);
-      onError(message);
-    }
-  }
+  if (!available || failed) return null;
 
   return (
     <>
-      <Button
-        variant="outlined"
-        color="inherit"
-        size="large"
-        startIcon={<GoogleMark />}
-        onClick={go}
-        disabled={leaving}
-        sx={{ textTransform: 'none' }}
-      >
-        {leaving ? 'Opening Google…' : 'Continue with Google'}
-      </Button>
+      <Box ref={slot} sx={{ minHeight: 44, display: 'flex', justifyContent: 'center' }} />
+      {signingIn && (
+        <Typography variant="body2" color="text.secondary" align="center">
+          Signing in…
+        </Typography>
+      )}
       <Divider sx={{ fontSize: 13, color: 'text.secondary' }}>or</Divider>
     </>
   );

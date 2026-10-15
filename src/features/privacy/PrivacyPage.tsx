@@ -89,7 +89,8 @@ export function PrivacyPage() {
           <li>Supabase: database, login and photo storage (USA).</li>
           <li>Resend: sends account emails, like your sign-up codes.</li>
           <li>
-            Google: only if you choose Continue with Google. Google shares your name, email and profile
+            Google: the Continue with Google button loads from Google on the login and sign-up screens, so
+            Google sees those visits. If you sign in with Google, it shares your name, email and profile
             picture, which our login provider stores with your account.
           </li>
           <li>GitHub Pages: serves the website.</li>

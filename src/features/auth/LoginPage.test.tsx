@@ -17,7 +17,6 @@ function renderLogin(overrides: Partial<AuthContextValue> = {}) {
   const value: AuthContextValue = {
     session: null,
     loading: false,
-    redirectError: null,
     signInWithGoogle: vi.fn().mockResolvedValue(null),
     signIn: vi.fn().mockResolvedValue(null),
     signOut: vi.fn(),
@@ -86,12 +85,6 @@ describe('LoginPage', () => {
     renderLogin();
     expect(screen.getByRole('link', { name: /create an account/i })).toHaveAttribute('href', '/signup');
     expect(screen.getByRole('link', { name: /forgot password/i })).toHaveAttribute('href', '/reset');
-  });
-  it('offers Google sign-in and shows a failed one on return', async () => {
-    const auth = renderLogin({ redirectError: 'Google sign-in failed.' });
-    expect(screen.getByText('Google sign-in failed.')).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: /continue with google/i }));
-    await waitFor(() => expect(auth.signInWithGoogle).toHaveBeenCalled());
   });
 });
 

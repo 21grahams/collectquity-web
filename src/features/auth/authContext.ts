@@ -7,9 +7,8 @@ import { APP_NAME } from '../../lib/brand';
 export interface AuthContextValue {
   session: Session | null;
   loading: boolean;
-  /** A sign-in with Google that came back with an error (or was cancelled). */
-  redirectError: string | null;
-  signInWithGoogle: () => Promise<string | null>;
+  /** Finishes "Sign in with Google" with the ID token Google's button returned. */
+  signInWithGoogle: (idToken: string, nonce: string) => Promise<string | null>;
   signIn: (email: string, password: string) => Promise<string | null>;
   signOut: () => Promise<void>;
   signUp: (email: string, password: string) => Promise<SignUpResult>;
