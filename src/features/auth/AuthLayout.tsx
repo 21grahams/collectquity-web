@@ -1,6 +1,6 @@
 import type { FormEvent, ReactNode } from 'react';
 
-import { Box, Stack } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 
 import { PracticeBanner } from '../../components/PracticeBanner';
 import { Wordmark } from '../../components/Wordmark';
@@ -8,9 +8,12 @@ import { Wordmark } from '../../components/Wordmark';
 /** The centered, logo-topped form shared by the screens you see before getting into the app. */
 export function AuthLayout({
   onSubmit,
+  tagline,
   children,
 }: {
   onSubmit: (e: FormEvent) => void;
+  /** Shown under the logo. */
+  tagline?: string;
   children: ReactNode;
 }) {
   return (
@@ -31,6 +34,11 @@ export function AuthLayout({
           <PracticeBanner />
           <Box sx={{ textAlign: 'center', mb: 1 }}>
             <Wordmark />
+            {tagline && (
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                {tagline}
+              </Typography>
+            )}
           </Box>
           {children}
         </Stack>

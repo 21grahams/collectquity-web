@@ -42,7 +42,7 @@ export function LoginPage() {
   }
 
   return (
-    <AuthLayout onSubmit={handleSubmit}>
+    <AuthLayout onSubmit={handleSubmit} tagline={TAGLINE}>
       {error && <Alert severity="error">{error}</Alert>}
       <GoogleButton onError={setError} />
       <EmailField value={email} onChange={setEmail} error={shown.email} />
@@ -64,9 +64,8 @@ export function LoginPage() {
           Create an account
         </Link>
       </Typography>
-      <Typography variant="caption" color="text.secondary" align="center">
-        {TAGLINE} ·{' '}
-        <Link component={RouterLink} to="/privacy" color="inherit">
+      <Typography variant="caption" align="center" sx={{ pt: 1 }}>
+        <Link component={RouterLink} to="/privacy" color="text.secondary">
           Privacy
         </Link>
       </Typography>
