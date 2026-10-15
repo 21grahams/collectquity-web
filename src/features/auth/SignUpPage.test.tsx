@@ -15,6 +15,8 @@ function renderSignUp(overrides: Partial<AuthContextValue> = {}) {
   const value: AuthContextValue = {
     session: null,
     loading: false,
+    redirectError: null,
+    signInWithGoogle: vi.fn().mockResolvedValue(null),
     signIn: vi.fn(),
     signOut: vi.fn(),
     signUp: vi.fn().mockResolvedValue({ error: null, existing: false }),

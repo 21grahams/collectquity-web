@@ -9,6 +9,7 @@ import { CODE_LENGTH, isCompleteCode, validateSignUp } from '../../lib/signUpFor
 import { useAuth } from './authContext';
 import { AuthLayout } from './AuthLayout';
 import { CodeField, EmailField, PasswordField } from './fields';
+import { GoogleButton } from './GoogleButton';
 
 export function SignUpPage() {
   const { session, signUp, confirmSignUp, resendSignUpCode } = useAuth();
@@ -110,6 +111,7 @@ export function SignUpPage() {
           </Link>
         </Alert>
       )}
+      <GoogleButton onError={setError} />
       <EmailField value={email} onChange={setEmail} error={shown.email} />
       <PasswordField
         isNew

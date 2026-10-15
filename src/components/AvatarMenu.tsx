@@ -30,6 +30,8 @@ export function AvatarMenu() {
   const [deleting, setDeleting] = useState(false);
   const navigate = useNavigate();
   const email = session?.user.email ?? '';
+  // Google-only logins have no password to change.
+  const hasPassword = !!session?.user.identities?.some((i) => i.provider === 'email');
   const open = anchor != null;
   const notify = useNotify();
   const avatar = useAvatarUrl();
@@ -133,7 +135,7 @@ export function AvatarMenu() {
             Remove photo
           </MenuItem>
         )}
-        {email && (
+        {hasPassword && (
           <MenuItem
             onClick={() => {
               setAnchor(null);

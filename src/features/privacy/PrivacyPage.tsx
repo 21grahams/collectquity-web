@@ -88,6 +88,10 @@ export function PrivacyPage() {
         <ul>
           <li>Supabase: database, login and photo storage (USA).</li>
           <li>Resend: sends account emails, like your sign-up codes.</li>
+          <li>
+            Google: only if you choose Continue with Google. Google shares your name, email and profile
+            picture, which our login provider stores with your account.
+          </li>
           <li>GitHub Pages: serves the website.</li>
           <li>Porkbun: the collectquity.com domain and email forwarding.</li>
           <li>

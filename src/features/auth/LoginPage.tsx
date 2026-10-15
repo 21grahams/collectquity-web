@@ -10,12 +10,13 @@ import { validateLogin } from '../../lib/loginForm';
 import { useAuth } from './authContext';
 import { AuthLayout } from './AuthLayout';
 import { EmailField, PasswordField } from './fields';
+import { GoogleButton } from './GoogleButton';
 
 export function LoginPage() {
-  const { session, signIn } = useAuth();
+  const { session, signIn, redirectError } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(redirectError);
   const [submitting, setSubmitting] = useState(false);
   const [attempted, setAttempted] = useState(false);
 
@@ -43,6 +44,7 @@ export function LoginPage() {
   return (
     <AuthLayout onSubmit={handleSubmit}>
       {error && <Alert severity="error">{error}</Alert>}
+      <GoogleButton onError={setError} />
       <EmailField value={email} onChange={setEmail} error={shown.email} />
       <PasswordField value={password} onChange={setPassword} error={shown.password} />
       <Link component={RouterLink} to="/reset" variant="body2" sx={{ alignSelf: 'flex-end' }}>

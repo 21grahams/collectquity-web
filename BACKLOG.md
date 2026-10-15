@@ -18,7 +18,8 @@ What's next, in order. The old app is retired, so database work is open.
      account, a privacy policy page. Confirm and reset with 6-digit email codes, not links, so
      everything happens inside the app. Send email through Resend (free tier 3,000/month,
      ~100/day) from collectquity.com; Supabase's built-in email only reaches the project team.
-     Then **Google sign-in** (free Google login key), so the beta feels like the real product.
+     **Google sign-in** done 2026-10-14 (hidden in the home-screen app; Google's screen names the
+     supabase.co address until a paid custom auth domain).
      **Apple sign-in** once the owner enrolls in the paid Apple Developer Program ($99/year,
      also needed for the App Store; today the account is the free kind).
   4. **Onboarding and sections per user.** Most people track two things, not the owner's three:
@@ -37,9 +38,11 @@ What's next, in order. The old app is retired, so database work is open.
      everything on. New users land on a blank slate. Later collections (shoes…) reuse this with
      one product list plus Summary.
 
-  5. **Price-data costs:** the free tiers (JustTCG 100 requests/day and 1,000/month;
-     PokemonPriceTracker ~50 graded cards/day) won't cover many users. Products shared between
-     users are fetched once, but plan a paid tier or a cap on auto-priced items per user.
+  5. ~~Price-data costs~~ **Done 2026-10-14.** Per-user limits (2,000 singles, 1,000 sealed, 500
+     auto-priced items; only items still in the collection count). The daily job looks each
+     product up once for everyone who owns it, stays inside the free plans (9 JustTCG requests and
+     45 graded lookups a run), serves whoever waited longest first, saves as it goes and runs in
+     the background. Revisit plans and limits at App Store time.
   6. **Invite-only access** (invite codes) so the beta's size and costs stay under control.
 
 - **Backups for a multi-user app.** Weekly backups go to the owner's Mac (`backups/`; newest 12 kept,
