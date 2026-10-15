@@ -53,6 +53,10 @@ What's next, in order. The old app is retired, so database work is open.
 - **Before any App Store release: trademark attorney check** on "Collectquity" (renamed
   2026-10-12; domain collectquity.com). Neighbors to show them: SoleSavy's COLLECT (Class 9),
   Collectable, Collecticity. Pair the name with the plain tagline and avoid investment language.
+- **Desktop tab bar (low).** The page content is 800px wide on desktop (2026-10-15), but the top
+  tab bar still stretches across the whole screen; match it to the content width.
+- **Six-figure amounts on cards (low).** Beside card art on small phones the money row fits up
+  to "$99,999.99"; $100,000+ amounts would need another size step or a stacked layout.
 - **App icon (low).** Since 2026-10-13 the icon is a gold ring "C" with a padlock ("for now");
   revisit for a final design before any App Store release.
 - **Price charts (in a few weeks, once history builds up).** Daily history is recorded since
@@ -62,6 +66,10 @@ What's next, in order. The old app is retired, so database work is open.
   cost over time with Singles / Long Hold / Short Hold / All. No mini charts on list cards
   (clutter, slower lists). Use a chart library that fits MUI (e.g. MUI X Charts). Maybe check
   whether JustTCG offers past prices to backfill (PokemonPriceTracker history costs credits).
+  **Part b (owner, important):** expanding a card should also spotlight the market value and its
+  price history, since the auto-updating value is the app's standout. Also add a small "▲ $4
+  today" daily change under each card's market value (daily history makes this possible). Cards
+  already show the market value bold and larger, with a blue dot when it auto-updated today.
 - **Edit a completed hold (low priority, database).** Completed holds are read-only in the app
   (their sale is recorded at completion, so editing or removing their items would make Sealed and
   Summary disagree). If a past hold ever needs correcting, add a proper edit for the hold itself:

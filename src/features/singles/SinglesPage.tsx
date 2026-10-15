@@ -20,7 +20,7 @@ import { useAppContext, useMarketLinks, useSingles } from '../../hooks/queries';
 import { useStickyState, useValuePercent } from '../../hooks/useStickyState';
 import { cardNumbers, cardsLabel, pasFeesLabel, quarterBoxes, totals } from '../../lib/cardMath';
 import { formatDate, formatGain, formatMoney, formatSignedPct, gainLabel } from '../../lib/format';
-import { findLink, isAuto } from '../../lib/marketLink';
+import { findLink, isAuto, updatedToday } from '../../lib/marketLink';
 import { activeFilterCount, emptyFilters, filterOptions, filterSingles } from '../../lib/singlesFilter';
 import { fonts, tokens } from '../../theme/tokens';
 import { ItemFormSheet } from '../items/ItemFormSheet';
@@ -281,6 +281,7 @@ export function SinglesPage() {
                 market={marketLine({ singleId: s.id }, cardTitle(s), s.quantity)}
                 autoValue={isAuto(marketLinks.data, { singleId: s.id })}
                 image={findLink(marketLinks.data, { singleId: s.id })?.imageUrl}
+                liveToday={updatedToday(findLink(marketLinks.data, { singleId: s.id }), today)}
                 quarters={quarterBoxes(s.quarterUnitValues, s.quantity, s.totalCost, context.data.year)}
                 onQuarterClick={(q) =>
                   setQuarterTarget({

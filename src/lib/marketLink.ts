@@ -47,3 +47,14 @@ export function isAuto(
 
   return !!link && !link.pinned;
 }
+
+/** Auto-updated with a fresh price today (shown as a small "live" dot on the card). */
+export function updatedToday(link: MarketLink | undefined, today: string) {
+  return (
+    !!link &&
+    !link.pinned &&
+    link.lastStatus === 'updated' &&
+    !!link.lastRunAt &&
+    denverDay(link.lastRunAt) === today
+  );
+}

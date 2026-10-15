@@ -25,7 +25,7 @@ import { useCollapsibleGroups } from '../../hooks/useCollapsibleGroups';
 import { useValuePercent } from '../../hooks/useStickyState';
 import { cardNumbers, pasFeesLabel, quarterBoxes, totals } from '../../lib/cardMath';
 import { formatDate, formatGain, formatMoney, gainLabel } from '../../lib/format';
-import { findLink, isAuto } from '../../lib/marketLink';
+import { findLink, isAuto, updatedToday } from '../../lib/marketLink';
 import { groupSealed, groupSummary, soldSummary } from '../../lib/sealedGroups';
 import { fonts, tokens } from '../../theme/tokens';
 import { ItemFormSheet } from '../items/ItemFormSheet';
@@ -128,6 +128,7 @@ function SealedCard({
   market,
   autoValue,
   image,
+  liveToday,
 }: {
   item: SealedItem;
   year: number;
@@ -135,6 +136,7 @@ function SealedCard({
   market: ReactNode;
   autoValue: boolean;
   image: string | null | undefined;
+  liveToday: boolean;
   onEdit: () => void;
   onRemove: () => void;
   onQuarter: (quarter: 1 | 2 | 3 | 4) => void;
@@ -158,6 +160,7 @@ function SealedCard({
       market={item.holdStatus === 'historical' ? undefined : market}
       autoValue={item.holdStatus !== 'historical' && autoValue}
       image={image}
+      liveToday={item.holdStatus !== 'historical' && liveToday}
       quarters={
         isLong ? quarterBoxes(item.quarterUnitValues, item.quantity, item.totalCost, year) : undefined
       }
@@ -328,6 +331,7 @@ export function SealedPage() {
                     market={marketLine(item)}
                     autoValue={isAuto(marketLinks.data, { sealedItemId: item.id })}
                     image={findLink(marketLinks.data, { sealedItemId: item.id })?.imageUrl}
+                    liveToday={updatedToday(findLink(marketLinks.data, { sealedItemId: item.id }), today)}
                     onEdit={() => setEditing(item)}
                     onRemove={() => setRemoving(item)}
                     onMove={() => setMoving(item)}

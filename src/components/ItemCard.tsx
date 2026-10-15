@@ -26,6 +26,8 @@ interface ItemCardProps {
   actions?: ReactNode;
   /** Catalog art for linked items, shown down the card's left side. */
   image?: string | null;
+  /** The market value got a fresh automatic price today. */
+  liveToday?: boolean;
 }
 
 const BORDER: Record<CardNumbers['tone'], string> = {
@@ -103,9 +105,9 @@ function QuarterGrid({
   );
 }
 
-function Gain({ amount }: { amount: number }) {
+function Gain({ amount, size }: { amount: number; size: number }) {
   return (
-    <Box sx={{ ...mono, fontSize: 13, color: amount >= 0 ? tokens.green : tokens.red }}>
+    <Box sx={{ ...mono, fontSize: size, color: amount >= 0 ? tokens.green : tokens.red }}>
       {formatGain(amount)}
     </Box>
   );
@@ -133,13 +135,26 @@ function GainPill({ pct, tone, hasCost }: { pct: number; tone: CardNumbers['tone
   );
 }
 
+// Each column as wide as its contents, spread edge to edge (Cost left, Market Value middle, Gain
+// right), each label centered over its number.
 const ledger = {
   display: 'grid',
-  gridTemplateColumns: '1fr 1fr 1.3fr',
+  gridTemplateColumns: 'auto auto auto',
+  justifyContent: 'space-between',
   columnGap: 1.5,
   alignItems: 'baseline',
+  '& > *': { justifySelf: 'center', textAlign: 'center' },
 };
 const money = { ...mono, fontSize: 14, color: tokens.text } as const;
+// Beside card art the row is narrow, so long amounts step down a size to fit small phones
+// (judged by the amount as shown, e.g. "$10,000.00").
+const steps = (amount: number, sizes: [number, number, number]) => {
+  const digits = formatMoney(Math.abs(amount)).replace(/\D/g, '').length;
+
+  return digits >= 7 ? sizes[2] : digits >= 6 ? sizes[1] : sizes[0];
+};
+const valueSize = (amount: number) => steps(amount, [15, 13, 11.5]);
+const sideSize = (amount: number) => steps(amount, [13, 12, 11]);
 const each = { ...mono, fontSize: 11, color: tokens.text3, mt: '2px' } as const;
 
 export function ItemCard({
@@ -156,6 +171,7 @@ export function ItemCard({
   onQuarterClick,
   actions,
   image,
+  liveToday = false,
 }: ItemCardProps) {
   const notify = useNotify();
   const many = quantity > 1;
@@ -208,7 +224,11 @@ export function ItemCard({
   const bodyRows = (
     <>
       <Box
-        sx={{ ...divider, ...ledger, ...(narrow && { gridTemplateColumns: '1fr 1.25fr 1fr', columnGap: 1 }) }}
+        sx={{
+          ...divider,
+          ...ledger,
+          ...(narrow && { columnGap: 0.5 }),
+        }}
       >
         <Box sx={label}>Cost</Box>
         <Box
@@ -221,14 +241,32 @@ export function ItemCard({
           {valuePct < 100 ? `Market @ ${valuePct}%` : 'Market Value'}
         </Box>
         <Box sx={label}>{gainLabel(numbers.gain)}</Box>
-        <Box sx={{ ...money, mt: 0.5, ...(narrow && { fontSize: 13 }) }}>
+        <Box sx={{ ...money, mt: 0.5, ...(narrow && { fontSize: sideSize(numbers.totalCost) }) }}>
           {formatMoney(numbers.totalCost)}
         </Box>
-        <Box sx={{ ...money, mt: 0.5, ...(narrow && { fontSize: 13 }) }}>
+        <Box
+          sx={{
+            ...money,
+            mt: 0.5,
+            fontWeight: 500,
+            fontSize: { xs: narrow ? valueSize(numbers.totalValue) : 16, sm: 18 },
+            display: 'flex',
+            alignItems: 'center',
+            gap: narrow ? '4px' : '6px',
+          }}
+        >
           {formatMoney(numbers.totalValue)}
+          {liveToday && (
+            <Box
+              role="img"
+              aria-label="Updated today"
+              title="Updated today"
+              sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: tokens.blue, flexShrink: 0 }}
+            />
+          )}
         </Box>
         <Box sx={{ mt: 0.5 }}>
-          <Gain amount={numbers.gain} />
+          <Gain amount={numbers.gain} size={narrow ? sideSize(numbers.gain) : 13} />
         </Box>
         {many && (
           <>
