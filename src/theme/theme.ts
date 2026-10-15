@@ -1,18 +1,27 @@
 import { createTheme } from '@mui/material/styles';
 
-import { fonts, tokens } from './tokens';
+import { colors, colorVars, fonts, tokens } from './tokens';
+
+// MUI needs real colors (not CSS variables) to work out hovers and contrast.
+const palette = (mode: keyof typeof colors) => {
+  const c = colors[mode];
+
+  return {
+    primary: { main: c.gold, contrastText: colors.dark.bg },
+    success: { main: c.green },
+    error: { main: c.red },
+    info: { main: c.blue },
+    background: { default: c.bg, paper: c.surface },
+    text: { primary: c.text, secondary: c.text2, disabled: c.text3 },
+    divider: c.border,
+  };
+};
 
 export const theme = createTheme({
-  palette: {
-    mode: 'dark',
-    primary: { main: tokens.gold, contrastText: tokens.bg },
-    success: { main: tokens.green },
-    error: { main: tokens.red },
-    info: { main: tokens.blue },
-    background: { default: tokens.bg, paper: tokens.surface },
-    text: { primary: tokens.text, secondary: tokens.text2, disabled: tokens.text3 },
-    divider: tokens.border,
-  },
+  // MUI marks the page with data-theme="light" or "dark" (following the phone unless chosen).
+  cssVariables: { colorSchemeSelector: 'data-theme' },
+  colorSchemes: { dark: { palette: palette('dark') }, light: { palette: palette('light') } },
+  defaultColorScheme: 'dark',
   shape: { borderRadius: tokens.radius },
   typography: {
     fontFamily: fonts.body,
@@ -27,6 +36,8 @@ export const theme = createTheme({
   components: {
     MuiCssBaseline: {
       styleOverrides: {
+        ':root, [data-theme="dark"]': { ...colorVars('dark'), colorScheme: 'dark' },
+        '[data-theme="light"]': { ...colorVars('light'), colorScheme: 'light' },
         body: { backgroundColor: tokens.bg, color: tokens.text },
       },
     },

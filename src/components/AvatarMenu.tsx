@@ -1,5 +1,6 @@
 import PhotoCameraOutlined from '@mui/icons-material/PhotoCameraOutlined';
 import { Box, Divider, Menu, MenuItem } from '@mui/material';
+import { useColorScheme } from '@mui/material/styles';
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 
@@ -58,6 +59,7 @@ export function AvatarMenu() {
   const [signingOut, setSigningOut] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const navigate = useNavigate();
+  const { mode, setMode } = useColorScheme();
   const email = session?.user.email ?? '';
   // Google-only logins have no password to change.
   const hasPassword = !!session?.user.identities?.some((i) => i.provider === 'email');
@@ -240,6 +242,17 @@ export function AvatarMenu() {
             sx={{ fontSize: 15, minHeight: 44 }}
           >
             Change password
+          </MenuItem>
+        )}
+        {mode !== 'system' && (
+          <MenuItem
+            onClick={() => {
+              setAnchor(null);
+              setMode('system');
+            }}
+            sx={{ fontSize: 15, minHeight: 44 }}
+          >
+            Match phone setting
           </MenuItem>
         )}
         <MenuItem

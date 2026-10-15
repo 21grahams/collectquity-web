@@ -50,7 +50,13 @@ const applyUpdate = registerSW({
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ThemeProvider theme={theme}>
+    <ThemeProvider
+      theme={theme}
+      defaultMode="system"
+      modeStorageKey="collectquity-mode"
+      noSsr
+      disableTransitionOnChange
+    >
       <CssBaseline />
       <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
         {/* HashRouter (#/singles) so GitHub Pages needs no server rewrites. */}

@@ -51,7 +51,7 @@ What's next, in order. The old app is retired, so database work is open.
   Supabase's signInWithIdToken with a nonce) so it says collectquity.com. Free; the button uses
   Google's own design (dark style). The paid alternative (Supabase custom domain, about $35/month
   with Pro) waits until the App Store.
-- **Light mode (next).** The app is dark-only today; add a light theme and a
+- ~~Light mode~~ **Done 2026-10-15** (follows the phone; sun/moon button in the header). The app is dark-only today; add a light theme and a
   switch (follow the phone's setting by default). The design tokens in `src/theme/tokens.ts` make
   this mostly a second set of colors.
 - **Backups for a multi-user app.** Weekly backups go to the owner's Mac (`backups/`; newest 12 kept,

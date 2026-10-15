@@ -12,6 +12,7 @@ import { PracticeBanner } from './PracticeBanner';
 import { PullToRefresh } from './PullToRefresh';
 import { ScrollTopButton } from './ScrollTopButton';
 import { visibleTabs } from './tabs';
+import { ThemeToggle } from './ThemeToggle';
 import { Wordmark } from './Wordmark';
 
 export function AppShell() {
@@ -125,7 +126,10 @@ export function AppShell() {
           }}
         >
           <Wordmark />
-          <AvatarMenu />
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
+            <ThemeToggle />
+            <AvatarMenu />
+          </Box>
         </Box>
         {!isPhone && (
           <Tabs
