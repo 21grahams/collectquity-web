@@ -109,12 +109,14 @@ function GroupHeader({
   );
 }
 
-/** Under Long Hold's and the current hold's header while open: cost and gain at the picked percentage. */
 function itemsCaption(items: readonly SealedItem[], splitsSealed: boolean): string {
   const units = items.reduce((n, i) => n + i.quantity, 0);
+  const noun = units === 1 ? 'item' : 'items';
+  // The entries count gives way to "Long Hold" so the caption stays on one line.
+  if (splitsSealed) return `${units} ${noun} · Long Hold`;
   const entries = units === items.length ? '' : ` (${items.length} entries)`;
 
-  return `${units} ${units === 1 ? 'item' : 'items'}${entries}${splitsSealed ? ' in Long Hold' : ''}`;
+  return `${units} ${noun}${entries}`;
 }
 
 function CostGainLine({ group, valuePct }: { group: SealedGroup; valuePct: number }) {
