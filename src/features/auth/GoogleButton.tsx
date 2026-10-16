@@ -65,7 +65,12 @@ export function GoogleButton({ onError }: { onError: (message: string) => void }
 
   return (
     <>
-      <Box ref={slot} sx={{ minHeight: 44, display: 'flex', justifyContent: 'center' }} />
+      {/* Google's button is a light page in a frame; a frame whose color scheme differs from the
+          page around it gets an opaque white backdrop, so this spot is marked light too. */}
+      <Box
+        ref={slot}
+        sx={{ minHeight: 44, display: 'flex', justifyContent: 'center', colorScheme: 'light' }}
+      />
       {signingIn && (
         <Typography variant="body2" color="text.secondary" align="center">
           Signing in…
