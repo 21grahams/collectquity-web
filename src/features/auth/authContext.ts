@@ -2,7 +2,7 @@ import type { Session } from '@supabase/supabase-js';
 
 import { createContext, useContext } from 'react';
 
-import { APP_NAME } from '../../lib/brand';
+import { CONNECTION_MESSAGE, isConnectionError } from '../../lib/errors';
 
 export interface AuthContextValue {
   session: Session | null;
@@ -44,7 +44,7 @@ export function friendlyAuthError(message: string): string {
   if (/should be different from the old password/i.test(message)) {
     return 'Choose a password different from your old one.';
   }
-  if (/fetch|network/i.test(message)) return `Can't reach ${APP_NAME}. Check your connection and try again.`;
+  if (isConnectionError(message)) return CONNECTION_MESSAGE;
 
   return message;
 }

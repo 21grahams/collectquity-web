@@ -16,10 +16,15 @@ import type {
   Summary,
 } from './types';
 
+import { friendlyConnectionError } from '../lib/errors';
 import { supabase } from '../lib/supabase';
 
 export class ApiError extends Error {
   override name = 'ApiError';
+
+  constructor(message: string) {
+    super(friendlyConnectionError(message));
+  }
 }
 
 type Response<T> = { data: T | null; error: { message: string } | null };
