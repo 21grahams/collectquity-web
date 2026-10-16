@@ -336,6 +336,11 @@ export function SealedPage() {
           title="No sealed product yet"
           action="Add your first sealed product"
           onAdd={() => setAddOpen(true)}
+          note={
+            !splitsSealed && completedHolds.data?.length
+              ? 'Your past short holds are on the Summary tab.'
+              : undefined
+          }
         />
         {addSheet}
       </>

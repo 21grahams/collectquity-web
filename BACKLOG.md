@@ -66,6 +66,9 @@ What's next, in order. The old app is retired, so database work is open.
   tab bar still stretches across the whole screen; match it to the content width.
 - **Six-figure amounts on cards (low).** Beside card art on small phones the money row fits up
   to "$99,999.99"; $100,000+ amounts would need another size step or a stacked layout.
+- **"—" for markup with no cost (low).** When a sale's cost is $0 (e.g. pulled cards), markup
+  can't be worked out and shows "0.0%" (the database returns 0). Show "—" instead on Summary's
+  sales cards and Short Holds rows.
 - **Account menu keyboard access (low).** Since 2026-10-15 the photo actions sit in the menu's
   header (avatar + "Change photo · Remove" links), which arrow-key menu navigation skips. Fine
   for touch and mouse; make them keyboard-reachable if desktop keyboard use matters.

@@ -47,10 +47,12 @@ export function EmptyCollection({
   title,
   action,
   onAdd,
+  note,
 }: {
   title: string;
   action: string;
   onAdd: () => void;
+  note?: string;
 }) {
   return (
     <Box
@@ -90,6 +92,7 @@ export function EmptyCollection({
         +
       </Box>
       <Box sx={{ fontSize: 13, color: tokens.text3 }}>{action}</Box>
+      {note && <Box sx={{ fontSize: 13, color: tokens.text3, mt: 2 }}>{note}</Box>}
     </Box>
   );
 }
