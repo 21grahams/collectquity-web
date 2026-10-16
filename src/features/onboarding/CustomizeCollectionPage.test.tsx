@@ -6,7 +6,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import * as api from '../../api';
 import { theme } from '../../theme/theme';
-import { SectionsPage } from './SectionsPage';
+import { CustomizeCollectionPage } from './CustomizeCollectionPage';
 
 vi.mock('../../lib/supabase', () => ({ supabase: {} }));
 vi.mock('../../components/notifyContext', () => ({ useNotify: () => vi.fn() }));
@@ -34,14 +34,14 @@ async function renderPage() {
     <ThemeProvider theme={theme}>
       <QueryClientProvider client={client}>
         <MemoryRouter>
-          <SectionsPage />
+          <CustomizeCollectionPage />
         </MemoryRouter>
       </QueryClientProvider>
     </ThemeProvider>,
   );
 }
 
-describe('SectionsPage', () => {
+describe('CustomizeCollectionPage', () => {
   it('explains what happens to the current short hold when the split is turned off, then saves', async () => {
     await renderPage();
     fireEvent.click(screen.getByRole('button', { name: /one sealed list/i }));

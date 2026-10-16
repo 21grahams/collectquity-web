@@ -250,7 +250,7 @@ export function ItemFormSheet({ kind, open, onClose, today, editing }: Props) {
         <Field label="Total Cost Paid">
           <MoneyInput {...text('cost')} />
         </Field>
-        <Field label="PAS Fees (Optional)" error={shown.feeUnits}>
+        <Field label="Fees / Taxes (Optional)" error={shown.feeUnits}>
           <Box sx={{ display: 'flex', gap: 1 }}>
             <MoneyInput {...text('fees')} style={{ flex: 1, minWidth: 0 }} />
             <Box sx={{ width: 104, flexShrink: 0 }}>

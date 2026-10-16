@@ -276,7 +276,7 @@ export function ItemCard({
           </>
         )}
       </Box>
-      {feesLabel && <Box sx={{ ...finePrint, mt: 0.75 }}>Includes PAS fees: {feesLabel}</Box>}
+      {feesLabel && <Box sx={{ ...finePrint, mt: 0.75 }}>Includes fees / taxes: {feesLabel}</Box>}
       {market}
     </>
   );

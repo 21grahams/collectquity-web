@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
 
 import { Box, Link, Typography } from '@mui/material';
-import { useLocation, useNavigate } from 'react-router';
 
 import { Wordmark } from '../../components/Wordmark';
+import { useGoBack } from '../../hooks/useGoBack';
 import { APP_NAME } from '../../lib/brand';
 import { tokens } from '../../theme/tokens';
 
@@ -23,10 +23,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 }
 
 export function PrivacyPage() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  // Opened straight from a link there's nothing to go back to, so go to the start instead.
-  const back = () => (location.key === 'default' ? navigate('/') : navigate(-1));
+  const back = useGoBack();
 
   return (
     <Box

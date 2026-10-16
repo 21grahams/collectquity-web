@@ -118,6 +118,7 @@ export function OnboardingPage() {
         <Button
           size="small"
           color="inherit"
+          sx={{ alignSelf: 'center' }}
           onClick={() => setStep(step === 'split' ? 'track' : 'collection')}
         >
           Back

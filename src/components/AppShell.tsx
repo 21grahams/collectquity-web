@@ -125,7 +125,15 @@ export function AppShell() {
             gap: 1,
           }}
         >
-          <Wordmark />
+          <Box
+            component="button"
+            type="button"
+            aria-label="Collectquity, home"
+            onClick={() => tabs[0] && goTo(tabs[0].path)}
+            sx={{ p: 0, border: 0, background: 'none', cursor: 'pointer', display: 'flex' }}
+          >
+            <Wordmark />
+          </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
             <ThemeToggle />
             <AvatarMenu />

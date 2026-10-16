@@ -144,7 +144,7 @@ describe('editing (formFromItem + original)', () => {
     expect(input.unitValue).toBe(150);
   });
 
-  it('splits PAS fees back out of the stored total for singles', () => {
+  it('splits fees / taxes back out of the stored total for singles', () => {
     const marill = {
       id: 1,
       pokemon: 'Marill',

@@ -1,11 +1,12 @@
 import type { FormEvent } from 'react';
 
-import { Alert, Link, Typography } from '@mui/material';
+import { Alert, Button, Link, Typography } from '@mui/material';
 import { useState } from 'react';
-import { Navigate, Link as RouterLink } from 'react-router';
+import { Link as RouterLink } from 'react-router';
 
 import { useNotify } from '../../components/notifyContext';
 import { SaveButton } from '../../components/SaveButton';
+import { useGoBack } from '../../hooks/useGoBack';
 import { validateNewPassword } from '../../lib/signUpForm';
 import { useAuth } from './authContext';
 import { AuthLayout } from './AuthLayout';
@@ -19,9 +20,7 @@ export function ChangePasswordPage() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [attempted, setAttempted] = useState(false);
-  const [done, setDone] = useState(false);
-
-  if (done) return <Navigate to="/" replace />;
+  const goBack = useGoBack();
 
   const passwordError =
     validateNewPassword(password) ??
@@ -46,7 +45,7 @@ export function ChangePasswordPage() {
     else if (saveError) setError(saveError);
     else {
       notify('Password changed', 'success');
-      setDone(true);
+      goBack();
     }
   }
 
@@ -83,11 +82,10 @@ export function ChangePasswordPage() {
         <Link component={RouterLink} to="/reset">
           Reset with an email code
         </Link>
-        {' · '}
-        <Link component={RouterLink} to="/">
-          Cancel
-        </Link>
       </Typography>
+      <Button size="small" color="inherit" sx={{ alignSelf: 'center' }} onClick={goBack}>
+        Cancel
+      </Button>
     </AuthLayout>
   );
 }

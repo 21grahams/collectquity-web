@@ -1,28 +1,26 @@
 import type { FormEvent } from 'react';
 import type { Sections } from '../../api/types';
 
-import { Alert, Link, Stack, Typography } from '@mui/material';
+import { Alert, Button, Stack, Typography } from '@mui/material';
 import { useState } from 'react';
-import { Navigate, Link as RouterLink } from 'react-router';
 
 import { useNotify } from '../../components/notifyContext';
 import { SaveButton } from '../../components/SaveButton';
 import { useSaveSections } from '../../hooks/mutations';
 import { useSealed, useSections } from '../../hooks/queries';
+import { useGoBack } from '../../hooks/useGoBack';
 import { AuthLayout } from '../auth/AuthLayout';
 import { OptionCard } from './OptionCard';
 
 /** Change what you track after onboarding. Turning a section off only hides it. */
-export function SectionsPage() {
+export function CustomizeCollectionPage() {
   const current = useSections();
   const sealed = useSealed();
   const save = useSaveSections();
   const notify = useNotify();
   const [choice, setChoice] = useState<Sections>(current);
   const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState(false);
-
-  if (done) return <Navigate to="/" replace />;
+  const goBack = useGoBack();
 
   const set = (patch: Partial<Sections>) => setChoice((c) => ({ ...c, ...patch }));
   const invalid = !choice.tracksSingles && !choice.tracksSealed;
@@ -37,8 +35,8 @@ export function SectionsPage() {
     setError(null);
     try {
       await save.mutateAsync({ ...choice, splitsSealed: choice.tracksSealed && choice.splitsSealed });
-      notify('Sections saved', 'success');
-      setDone(true);
+      notify('Saved', 'success');
+      goBack();
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     }
@@ -47,10 +45,9 @@ export function SectionsPage() {
   return (
     <AuthLayout onSubmit={handleSubmit}>
       <Typography variant="h6" align="center">
-        Sections
+        Customize your collection
       </Typography>
 
-      <SectionTitle>What do you track?</SectionTitle>
       <Stack spacing={1.25}>
         <OptionCard
           title="Singles"
@@ -117,11 +114,9 @@ export function SectionsPage() {
         label="Save"
         pendingLabel="Saving…"
       />
-      <Typography variant="body2" align="center">
-        <Link component={RouterLink} to="/">
-          Cancel
-        </Link>
-      </Typography>
+      <Button size="small" color="inherit" sx={{ alignSelf: 'center' }} onClick={goBack}>
+        Cancel
+      </Button>
     </AuthLayout>
   );
 }

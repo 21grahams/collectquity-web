@@ -17,7 +17,7 @@ interface ItemBase {
   id: number;
   quantity: number;
   purchaseDate: string | null;
-  /** Total cost paid, PAS fees included. */
+  /** Total cost paid, fees / taxes included. */
   totalCost: number;
   fees: number;
   feeUnits: number;

@@ -22,7 +22,7 @@ export interface ItemFormValues {
   name: string;
   quantity: number;
   purchaseDate: string;
-  /** Total cost paid, before PAS fees. */
+  /** Total cost paid, before fees / taxes. */
   cost: string;
   /** Per item; with a quantity of 1 that's also the total. */
   market: string;

@@ -41,6 +41,13 @@ function Face({ photo, email, onBroken }: { photo: string | null; email: string;
 }
 
 // Small text, but a finger-sized hit area (the negative margin keeps the line height unchanged).
+// MUI adds space around a divider that follows a menu item (but not other blocks); none here, so the
+// gaps stay even.
+const divider = { borderColor: tokens.border, '&&&': { my: 0 } } as const;
+
+// Rare, account-level items: smaller, grouped at the bottom.
+const small = { fontSize: 13, minHeight: 38 } as const;
+
 const linkButton = {
   py: 1,
   px: 0.75,
@@ -225,27 +232,16 @@ export function AvatarMenu() {
             </Box>
           </Box>
         </Box>
-        <Divider sx={{ borderColor: tokens.border }} />
+        <Divider sx={divider} />
         <MenuItem
           onClick={() => {
             setAnchor(null);
-            navigate('/sections');
+            navigate('/customize');
           }}
           sx={{ fontSize: 15, minHeight: 44 }}
         >
-          Sections
+          Customize collection
         </MenuItem>
-        {hasPassword && (
-          <MenuItem
-            onClick={() => {
-              setAnchor(null);
-              navigate('/password');
-            }}
-            sx={{ fontSize: 15, minHeight: 44 }}
-          >
-            Change password
-          </MenuItem>
-        )}
         {mode !== 'system' && (
           <MenuItem
             onClick={() => {
@@ -258,16 +254,6 @@ export function AvatarMenu() {
           </MenuItem>
         )}
         <MenuItem
-          onClick={() => {
-            setAnchor(null);
-            navigate('/privacy');
-          }}
-          sx={{ fontSize: 15, minHeight: 44 }}
-        >
-          Privacy policy
-        </MenuItem>
-        <Divider sx={{ borderColor: tokens.border }} />
-        <MenuItem
           disabled={signingOut}
           onClick={async () => {
             setSigningOut(true);
@@ -277,7 +263,7 @@ export function AvatarMenu() {
         >
           {signingOut ? 'Logging out…' : 'Log out'}
         </MenuItem>
-        <Divider sx={{ borderColor: tokens.border }} />
+        <Divider sx={divider} />
         <Box sx={{ px: 2, pt: 1.25, pb: 0.5, fontSize: 11, color: tokens.text3 }}>
           {APP_NAME} · {TAGLINE}
           <br />
@@ -286,9 +272,29 @@ export function AvatarMenu() {
         <MenuItem
           onClick={() => {
             setAnchor(null);
+            navigate('/privacy');
+          }}
+          sx={small}
+        >
+          Privacy policy
+        </MenuItem>
+        {hasPassword && (
+          <MenuItem
+            onClick={() => {
+              setAnchor(null);
+              navigate('/password');
+            }}
+            sx={small}
+          >
+            Change password
+          </MenuItem>
+        )}
+        <MenuItem
+          onClick={() => {
+            setAnchor(null);
             setDeleting(true);
           }}
-          sx={{ color: tokens.red, fontSize: 12, minHeight: 36, pb: 1 }}
+          sx={{ ...small, color: tokens.red, mb: 0.5 }}
         >
           Delete account
         </MenuItem>
