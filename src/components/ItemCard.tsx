@@ -148,13 +148,13 @@ const ledger = {
 const money = { ...mono, fontSize: 14, color: tokens.text } as const;
 // Beside card art the row is narrow, so long amounts step down a size to fit small phones
 // (judged by the amount as shown, e.g. "$10,000.00").
-const steps = (amount: number, sizes: [number, number, number]) => {
+const steps = (amount: number, sizes: [number, number, number, number]) => {
   const digits = formatMoney(Math.abs(amount)).replace(/\D/g, '').length;
 
-  return digits >= 7 ? sizes[2] : digits >= 6 ? sizes[1] : sizes[0];
+  return digits >= 8 ? sizes[3] : digits >= 7 ? sizes[2] : digits >= 6 ? sizes[1] : sizes[0];
 };
-const valueSize = (amount: number) => steps(amount, [15, 13, 11.5]);
-const sideSize = (amount: number) => steps(amount, [13, 12, 11]);
+const valueSize = (amount: number) => steps(amount, [15, 13, 11.5, 10.5]);
+const sideSize = (amount: number) => steps(amount, [13, 12, 11, 10]);
 const each = { ...mono, fontSize: 11, color: tokens.text3, mt: '2px' } as const;
 
 export function ItemCard({

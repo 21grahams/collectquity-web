@@ -84,6 +84,7 @@ function CategoryPanel({ title, box, pct }: { title: string; box: SummaryBox; pc
   );
 }
 
+const cents = (n: number) => Math.round(n * 100) / 100;
 const signedMoney = (n: number) => (n < 0 ? `−${formatMoney(-n)}` : formatMoney(n));
 
 function StatGrid({
@@ -130,8 +131,9 @@ function StatGrid({
       }}
     >
       {stat('Sold', formatMoney(sales.soldPrice))}
-      {stat('Markup', formatRatioPct(sales.markup))}
-      {stat('Margin', formatRatioPct(sales.margin))}
+      {/* With no cost (e.g. pulled cards) markup can't be worked out; the database returns 0. */}
+      {stat('Markup', cents(sales.soldPrice - sales.profit) > 0 ? formatRatioPct(sales.markup) : '—')}
+      {stat('Margin', sales.soldPrice > 0 ? formatRatioPct(sales.margin) : '—')}
       {profitColumn && (
         <Box
           sx={{

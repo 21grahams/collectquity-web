@@ -43,7 +43,13 @@ What's next, in order. The old app is retired, so database work is open.
      product up once for everyone who owns it, stays inside the free plans (9 JustTCG requests and
      45 graded lookups a run), serves whoever waited longest first, saves as it goes and runs in
      the background. Revisit plans and limits at App Store time.
-  6. **Invite-only access** (invite codes) so the beta's size and costs stay under control.
+  6. ~~Invite-only access~~ **Done 2026-10-16.** 8 one-use codes created (one per friend, name in
+     the code's note); more can be added the same way.
+
+- **Desktop layout (next).** On big screens the app is a 900px column with wide empty sides.
+  Use the width, e.g. two columns of cards. (Tried lining the header up with the column on
+  2026-10-16; it made the empty space more obvious, so the full-width header stays.) Next up
+  while price history builds and beta testers try the app.
 
 - ~~Google's own sign-in button~~ **Done 2026-10-15** (Google now says "to continue to Collectquity"). Today Google's
   screen says "to continue to zjtiggbmkrouceaqgfdw.supabase.co" because sign-in returns through
@@ -62,13 +68,6 @@ What's next, in order. The old app is retired, so database work is open.
 - **Before any App Store release: trademark attorney check** on "Collectquity" (renamed
   2026-10-12; domain collectquity.com). Neighbors to show them: SoleSavy's COLLECT (Class 9),
   Collectable, Collecticity. Pair the name with the plain tagline and avoid investment language.
-- **Desktop tab bar (low).** The page content is 800px wide on desktop (2026-10-15), but the top
-  tab bar still stretches across the whole screen; match it to the content width.
-- **Six-figure amounts on cards (low).** Beside card art on small phones the money row fits up
-  to "$99,999.99"; $100,000+ amounts would need another size step or a stacked layout.
-- **"—" for markup with no cost (low).** When a sale's cost is $0 (e.g. pulled cards), markup
-  can't be worked out and shows "0.0%" (the database returns 0). Show "—" instead on Summary's
-  sales cards and Short Holds rows.
 - **Account menu keyboard access (low).** Since 2026-10-15 the photo actions sit in the menu's
   header (avatar + "Change photo · Remove" links), which arrow-key menu navigation skips. Fine
   for touch and mouse; make them keyboard-reachable if desktop keyboard use matters.
