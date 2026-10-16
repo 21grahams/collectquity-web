@@ -1,7 +1,7 @@
 import type { ChangeEvent } from 'react';
 import type { SinglesFilters } from '../../lib/singlesFilter';
 
-import { Button } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { useState } from 'react';
 
 import { Field, Sheet } from '../../components/Sheet';
@@ -29,8 +29,49 @@ const inputSx = {
   fontSize: 16, // 16px+ so iOS doesn't zoom on focus
   outline: 'none',
   WebkitAppearance: 'none' as const,
-  colorScheme: 'dark' as const,
 };
+// An empty date input on iPhone has nothing inside to give it height, so it shrinks; it also
+// centers its date unlike the other fields.
+const dateSx = {
+  ...inputSx,
+  display: 'block',
+  minHeight: 46,
+  '&::-webkit-date-and-time-value': { textAlign: 'left' },
+};
+
+/** Computers show "mm/dd/yyyy" in an empty date box; iPhones show nothing, so this adds "Any date". */
+function DateFilter({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+}) {
+  return (
+    <Box sx={{ position: 'relative' }}>
+      <Box component="input" type="date" sx={dateSx} value={value} onChange={onChange} />
+      {!value && (
+        <Box
+          aria-hidden
+          sx={{
+            display: 'none',
+            // Only iPhone/iPad Safari (WebKit on iOS) understands this, so other browsers keep their own text.
+            '@supports (-webkit-touch-callout: none)': { display: 'block' },
+            position: 'absolute',
+            left: 14,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            fontSize: 16,
+            color: tokens.text3,
+            pointerEvents: 'none',
+          }}
+        >
+          Any date
+        </Box>
+      )}
+    </Box>
+  );
+}
 
 export function SinglesFilterSheet({ open, onClose, filters, onApply, options }: Props) {
   const [draft, setDraft] = useState(filters);
@@ -88,10 +129,10 @@ export function SinglesFilterSheet({ open, onClose, filters, onApply, options }:
       <Field label="Condition">{select('condition', 'All Conditions')}</Field>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <Field label="Purchased From">
-          <input type="date" style={inputSx} value={draft.dateFrom} onChange={set('dateFrom')} />
+          <DateFilter value={draft.dateFrom} onChange={set('dateFrom')} />
         </Field>
         <Field label="Purchased To">
-          <input type="date" style={inputSx} value={draft.dateTo} onChange={set('dateTo')} />
+          <DateFilter value={draft.dateTo} onChange={set('dateTo')} />
         </Field>
       </div>
     </Sheet>

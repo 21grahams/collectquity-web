@@ -18,7 +18,6 @@ const selectSx = {
   fontSize: 16,
   outline: 'none',
   WebkitAppearance: 'none' as const,
-  colorScheme: 'dark' as const,
 };
 
 /** Emits "NM" / "PSA 10", or "" until a complete choice is made. */

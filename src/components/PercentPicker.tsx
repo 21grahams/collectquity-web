@@ -30,7 +30,6 @@ export function PercentPicker({ value, onChange }: { value: number; onChange: (p
           appearance: 'none',
           textAlign: 'center',
           textAlignLast: 'center',
-          colorScheme: 'dark',
           outline: 'none',
           '&:focus-visible': { borderColor: tokens.gold },
         }}

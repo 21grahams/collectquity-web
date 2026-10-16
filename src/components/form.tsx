@@ -16,7 +16,6 @@ const inputSx = {
   fontSize: 16,
   outline: 'none',
   WebkitAppearance: 'none',
-  colorScheme: 'dark',
   '&:focus': { borderColor: tokens.gold },
   '&:disabled': { opacity: 0.6 },
   '&::placeholder': { color: tokens.text3 },
