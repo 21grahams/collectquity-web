@@ -370,7 +370,7 @@ export function SealedPage() {
           </Box>
         )}
         <PercentPicker value={valuePct} onChange={setValuePct} />
-        {splitsSealed && headed.length > 0 && (
+        {headed.length > 1 && (
           <CollapseAllButton allCollapsed={allCollapsed} onClick={toggleAll} short={isPhone} />
         )}
       </StickyToolbar>
