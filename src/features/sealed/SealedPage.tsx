@@ -20,6 +20,7 @@ import { ItemCard } from '../../components/ItemCard';
 import { EmptyCollection, ErrorState, LoadingState } from '../../components/ListStates';
 import { PercentPicker } from '../../components/PercentPicker';
 import { StickyToolbar } from '../../components/StickyToolbar';
+import { SummaryTiles } from '../../components/SummaryTiles';
 import {
   useAppContext,
   useCompletedHolds,
@@ -109,6 +110,13 @@ function GroupHeader({
 }
 
 /** Under Long Hold's and the current hold's header while open: cost and gain at the picked percentage. */
+function itemsCaption(items: readonly SealedItem[], splitsSealed: boolean): string {
+  const units = items.reduce((n, i) => n + i.quantity, 0);
+  const entries = units === items.length ? '' : ` (${items.length} entries)`;
+
+  return `${units} ${units === 1 ? 'item' : 'items'}${entries}${splitsSealed ? ' in Long Hold' : ''}`;
+}
+
 function CostGainLine({ group, valuePct }: { group: SealedGroup; valuePct: number }) {
   const t = totals(group.items, { valuePct });
 
@@ -213,13 +221,17 @@ export function SealedPage() {
           .map((g) => (g.status === 'long' ? { ...g, name: 'Sealed' } : g));
   }, [sealed.data, splitsSealed]);
   const currentGroup = groups.find((g) => g.status === 'current');
+  const longGroup = groups.find((g) => g.status === 'long');
+  // With one sealed list it reads like Singles: no header to collapse. Only a short hold still in
+  // progress (left from before switching to one list) keeps its own group below.
+  const headed = splitsSealed ? groups : groups.filter((g) => g.status !== 'long');
   const completedHolds = useCompletedHolds();
   const soldByHold = new Map((completedHolds.data ?? []).map((h) => [h.id, h]));
   const [valuePct, setValuePct] = useValuePercent();
   const isPhone = useMediaQuery('(max-width:599.95px)', { noSsr: true });
   const { isCollapsed, toggle, allCollapsed, toggleAll } = useCollapsibleGroups(
     'ui:sealed',
-    groups.map((g) => g.holdId),
+    headed.map((g) => g.holdId),
     { persist: true },
   );
 
@@ -231,6 +243,9 @@ export function SealedPage() {
   }
 
   const today = context.data.today;
+  // The tiles count the Sealed list (the Long Hold) only, like the portfolio on Summary, and show
+  // while it has items; a short hold keeps its own Cost/Gain line in its group.
+  const listTotals = totals(longGroup?.items ?? []);
   const marketLine = (item: SealedItem) => {
     const link = findLink(marketLinks.data, { sealedItemId: item.id });
 
@@ -245,6 +260,40 @@ export function SealedPage() {
       )
     );
   };
+
+  const card = (item: SealedItem) => (
+    <SealedCard
+      key={item.id}
+      item={item}
+      year={context.data.year}
+      valuePct={valuePct}
+      market={marketLine(item)}
+      autoValue={isAuto(marketLinks.data, { sealedItemId: item.id })}
+      image={findLink(marketLinks.data, { sealedItemId: item.id })?.imageUrl}
+      liveToday={updatedToday(findLink(marketLinks.data, { sealedItemId: item.id }), today)}
+      onEdit={() => setEditing(item)}
+      onRemove={() => setRemoving(item)}
+      onMove={splitsSealed || item.holdStatus === 'current' ? () => setMoving(item) : undefined}
+      onSell={() =>
+        setSelling({
+          kind: 'sealed',
+          id: item.id,
+          name: item.name,
+          quantity: item.quantity,
+          unitCost: cardNumbers(item).unitCost,
+        })
+      }
+      onQuarter={(quarter) =>
+        setQuarterTarget({
+          item: { sealedItemId: item.id },
+          name: item.name,
+          quarter,
+          quantity: item.quantity,
+          unitValue: item.quarterUnitValues[quarter - 1] ?? null,
+        })
+      }
+    />
+  );
 
   const addSheet = (
     <>
@@ -321,12 +370,25 @@ export function SealedPage() {
           </Box>
         )}
         <PercentPicker value={valuePct} onChange={setValuePct} />
-        {splitsSealed && (
+        {splitsSealed && headed.length > 0 && (
           <CollapseAllButton allCollapsed={allCollapsed} onClick={toggleAll} short={isPhone} />
         )}
       </StickyToolbar>
 
-      {groups.map((group) => {
+      {longGroup && (
+        <SummaryTiles
+          full={listTotals}
+          valuePct={valuePct}
+          caption={itemsCaption(longGroup.items, splitsSealed)}
+        />
+      )}
+      {!splitsSealed && longGroup && (
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 1.5 }}>
+          {longGroup.items.map(card)}
+        </Box>
+      )}
+
+      {headed.map((group) => {
         const groupCollapsed = isCollapsed(group.holdId);
 
         return (
@@ -338,45 +400,11 @@ export function SealedPage() {
               valuePct={valuePct}
               sold={soldByHold.get(group.holdId)}
             />
-            {!groupCollapsed && group.status !== 'historical' && (
+            {!groupCollapsed && group.status === 'current' && (
               <CostGainLine group={group} valuePct={valuePct} />
             )}
             {!groupCollapsed && (
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                {group.items.map((item) => (
-                  <SealedCard
-                    key={item.id}
-                    item={item}
-                    year={context.data.year}
-                    valuePct={valuePct}
-                    market={marketLine(item)}
-                    autoValue={isAuto(marketLinks.data, { sealedItemId: item.id })}
-                    image={findLink(marketLinks.data, { sealedItemId: item.id })?.imageUrl}
-                    liveToday={updatedToday(findLink(marketLinks.data, { sealedItemId: item.id }), today)}
-                    onEdit={() => setEditing(item)}
-                    onRemove={() => setRemoving(item)}
-                    onMove={splitsSealed || item.holdStatus === 'current' ? () => setMoving(item) : undefined}
-                    onSell={() =>
-                      setSelling({
-                        kind: 'sealed',
-                        id: item.id,
-                        name: item.name,
-                        quantity: item.quantity,
-                        unitCost: cardNumbers(item).unitCost,
-                      })
-                    }
-                    onQuarter={(quarter) =>
-                      setQuarterTarget({
-                        item: { sealedItemId: item.id },
-                        name: item.name,
-                        quarter,
-                        quantity: item.quantity,
-                        unitValue: item.quarterUnitValues[quarter - 1] ?? null,
-                      })
-                    }
-                  />
-                ))}
-              </Box>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>{group.items.map(card)}</Box>
             )}
           </Box>
         );

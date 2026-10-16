@@ -16,13 +16,14 @@ import { ItemCard } from '../../components/ItemCard';
 import { EmptyCollection, EmptyState, ErrorState, LoadingState } from '../../components/ListStates';
 import { PercentPicker } from '../../components/PercentPicker';
 import { StickyToolbar } from '../../components/StickyToolbar';
+import { SummaryTiles } from '../../components/SummaryTiles';
 import { useAppContext, useMarketLinks, useSingles } from '../../hooks/queries';
 import { useStickyState, useValuePercent } from '../../hooks/useStickyState';
 import { cardNumbers, cardsLabel, pasFeesLabel, quarterBoxes, totals } from '../../lib/cardMath';
-import { formatDate, formatGain, formatMoney, formatSignedPct, gainLabel } from '../../lib/format';
+import { formatDate } from '../../lib/format';
 import { findLink, isAuto, updatedToday } from '../../lib/marketLink';
 import { activeFilterCount, emptyFilters, filterOptions, filterSingles } from '../../lib/singlesFilter';
-import { fonts, tokens } from '../../theme/tokens';
+import { tokens } from '../../theme/tokens';
 import { ItemFormSheet } from '../items/ItemFormSheet';
 import { MarketLine } from '../items/MarketLine';
 import { MarketSheet } from '../items/MarketSheet';
@@ -68,40 +69,6 @@ function cardTitle(single: Single): string {
   return single.setName ? `${single.pokemon} – ${single.setName}` : single.pokemon;
 }
 
-function SummaryTile({
-  label,
-  value,
-  color,
-  sub,
-  labelColor = tokens.text3,
-}: {
-  label: string;
-  value: string;
-  color: string;
-  sub: string;
-  labelColor?: string;
-}) {
-  return (
-    <Box
-      sx={{
-        backgroundColor: tokens.surface,
-        border: `1px solid ${tokens.border}`,
-        borderRadius: `${tokens.radius}px`,
-        p: 1.75,
-        minWidth: 0,
-      }}
-    >
-      <Box
-        sx={{ fontSize: 10, letterSpacing: '2px', textTransform: 'uppercase', color: labelColor, mb: 0.75 }}
-      >
-        {label}
-      </Box>
-      <Box sx={{ fontFamily: fonts.mono, fontSize: 22, fontWeight: 500, color }}>{value}</Box>
-      <Box sx={{ fontFamily: fonts.mono, fontSize: 11, color: tokens.text3, mt: '3px' }}>{sub}</Box>
-    </Box>
-  );
-}
-
 export function SinglesPage() {
   const singles = useSingles();
   const context = useAppContext();
@@ -129,7 +96,7 @@ export function SinglesPage() {
     return <LoadingState />;
   }
 
-  const sum = totals(shown, { valuePct });
+  const sum = totals(shown);
   const today = context.data.today;
   const marketLine = (item: { singleId: number }, name: string, quantity: number) => {
     const link = findLink(marketLinks.data, item);
@@ -252,21 +219,7 @@ export function SinglesPage() {
         </EmptyState>
       ) : (
         <>
-          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.25, mt: 1, mb: 2.5 }}>
-            <SummaryTile
-              label={valuePct < 100 ? `Market @ ${valuePct}%` : 'Market Value'}
-              labelColor={valuePct < 100 ? tokens.gold : undefined}
-              value={formatMoney(sum.totalValue)}
-              color={tokens.gold}
-              sub={cardsLabel(shown, all)}
-            />
-            <SummaryTile
-              label={gainLabel(sum.gain)}
-              value={formatGain(sum.gain)}
-              color={sum.gain >= 0 ? tokens.green : tokens.red}
-              sub={`${formatSignedPct(sum.gainPct)} return`}
-            />
-          </Box>
+          <SummaryTiles full={sum} valuePct={valuePct} caption={cardsLabel(shown, all)} />
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             {shown.map((s) => (
               <ItemCard
