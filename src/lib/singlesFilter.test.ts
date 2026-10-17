@@ -2,7 +2,7 @@ import type { Single } from '../api/types';
 
 import { describe, expect, it } from 'vitest';
 
-import { activeFilterCount, emptyFilters, filterOptions, filterSingles } from './singlesFilter';
+import { activeFilterCount, emptyFilters, filterOptions, filterSingles, sameFilters } from './singlesFilter';
 
 function single(overrides: Partial<Single>): Single {
   return {
@@ -82,5 +82,15 @@ describe('activeFilterCount and filterOptions', () => {
       setName: ['151', 'Base', 'Southern Islands'],
       condition: ['LP', 'NM', 'PSA 10'],
     });
+  });
+});
+
+describe('sameFilters', () => {
+  it('is true only when every filter matches', () => {
+    expect(sameFilters(emptyFilters, { ...emptyFilters })).toBe(true);
+    expect(sameFilters(emptyFilters, { ...emptyFilters, condition: 'NM' })).toBe(false);
+    expect(
+      sameFilters({ ...emptyFilters, dateFrom: '2026-01-01' }, { ...emptyFilters, dateFrom: '2026-01-01' }),
+    ).toBe(true);
   });
 });

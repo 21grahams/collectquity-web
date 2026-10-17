@@ -4,6 +4,7 @@ import type { AccountFormValues } from '../../lib/accountForm';
 import { Box } from '@mui/material';
 import { useId, useState } from 'react';
 
+import { sheetButtonSx } from '../../components/buttonStyles';
 import { FieldRow, Segmented, TextArea, TextInput } from '../../components/form';
 import { SaveButton } from '../../components/SaveButton';
 import { CancelButton, Field, Sheet } from '../../components/Sheet';
@@ -88,7 +89,7 @@ export function AccountSheet({ open, editing, retailers, onClose }: Props) {
             label={isEdit ? 'Save Changes' : 'Add Account'}
             pendingLabel={isEdit ? 'Saving…' : 'Adding…'}
             onClick={submit}
-            sx={{ py: 1.5, fontSize: 15 }}
+            sx={sheetButtonSx}
           />
         </>
       }

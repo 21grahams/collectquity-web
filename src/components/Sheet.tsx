@@ -4,6 +4,7 @@ import { Box, Button, Drawer } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 
 import { fonts, tokens } from '../theme/tokens';
+import { sheetButtonSx } from './buttonStyles';
 
 interface SheetProps {
   open: boolean;
@@ -173,7 +174,7 @@ export function Field({
 
 export function CancelButton({ onClick }: { onClick: () => void }) {
   return (
-    <Button variant="outlined" color="inherit" onClick={onClick} sx={{ py: 1.5, px: 2.5, fontSize: 15 }}>
+    <Button variant="outlined" color="inherit" onClick={onClick} sx={{ ...sheetButtonSx, px: 2.5 }}>
       Cancel
     </Button>
   );

@@ -3,6 +3,7 @@ import type { SealedItem } from '../../api/types';
 import { Box } from '@mui/material';
 import { useState } from 'react';
 
+import { sheetButtonSx } from '../../components/buttonStyles';
 import { Stepper } from '../../components/form';
 import { SaveButton } from '../../components/SaveButton';
 import { CancelButton, Field, Sheet } from '../../components/Sheet';
@@ -53,7 +54,7 @@ export function MoveSheet({ item, currentShortHoldName, longHoldName, onClose }:
             label="Move"
             pendingLabel="Moving…"
             onClick={submit}
-            sx={{ py: 1.5, fontSize: 15 }}
+            sx={sheetButtonSx}
           />
         </>
       }

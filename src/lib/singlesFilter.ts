@@ -16,6 +16,9 @@ export const emptyFilters: SinglesFilters = {
   dateTo: '',
 };
 
+export const sameFilters = (a: SinglesFilters, b: SinglesFilters) =>
+  (Object.keys(emptyFilters) as (keyof SinglesFilters)[]).every((k) => a[k] === b[k]);
+
 export const newestFirst = <T extends { id: number }>(items: readonly T[]): T[] =>
   [...items].sort((a, b) => b.id - a.id);
 

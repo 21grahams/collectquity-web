@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { sheetButtonSx } from '../../components/buttonStyles';
 import { MoneyInput } from '../../components/form';
 import { SaveButton } from '../../components/SaveButton';
 import { CancelButton, Field, Sheet } from '../../components/Sheet';
@@ -63,7 +64,7 @@ export function QuarterSheet({ target, onClose }: { target: QuarterTarget | null
             pending={setQuarter.isPending}
             label="Save"
             onClick={submit}
-            sx={{ py: 1.5, fontSize: 15 }}
+            sx={sheetButtonSx}
           />
         </>
       }

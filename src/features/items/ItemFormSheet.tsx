@@ -5,6 +5,7 @@ import { Box } from '@mui/material';
 import { useMemo, useState } from 'react';
 
 import { AutocompleteInput } from '../../components/AutocompleteInput';
+import { sheetButtonSx } from '../../components/buttonStyles';
 import { FieldRow, MoneyInput, Segmented, Stepper, TextInput } from '../../components/form';
 import { SaveButton } from '../../components/SaveButton';
 import { CancelButton, Field, Sheet } from '../../components/Sheet';
@@ -171,7 +172,7 @@ export function ItemFormSheet({ kind, open, onClose, today, editing }: Props) {
             label={isEdit ? 'Save Changes' : 'Add to Collection'}
             pendingLabel={isEdit ? 'Saving…' : 'Adding…'}
             onClick={submit}
-            sx={{ py: 1.5, fontSize: 15 }}
+            sx={sheetButtonSx}
           />
         </>
       }

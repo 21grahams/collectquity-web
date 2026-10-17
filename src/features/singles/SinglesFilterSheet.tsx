@@ -4,8 +4,9 @@ import type { SinglesFilters } from '../../lib/singlesFilter';
 import { Box, Button } from '@mui/material';
 import { useState } from 'react';
 
+import { sheetButtonSx } from '../../components/buttonStyles';
 import { Field, Sheet } from '../../components/Sheet';
-import { emptyFilters } from '../../lib/singlesFilter';
+import { emptyFilters, sameFilters } from '../../lib/singlesFilter';
 import { tokens } from '../../theme/tokens';
 
 interface Props {
@@ -105,6 +106,8 @@ export function SinglesFilterSheet({ open, onClose, filters, onApply, options }:
           <Button
             variant="outlined"
             color="inherit"
+            sx={{ ...sheetButtonSx, px: 2.5 }}
+            disabled={sameFilters(filters, emptyFilters) && sameFilters(draft, emptyFilters)}
             onClick={() => {
               onApply(emptyFilters);
               onClose();
@@ -114,6 +117,8 @@ export function SinglesFilterSheet({ open, onClose, filters, onApply, options }:
           </Button>
           <Button
             variant="contained"
+            sx={sheetButtonSx}
+            disabled={sameFilters(draft, filters)}
             onClick={() => {
               onApply(draft);
               onClose();
