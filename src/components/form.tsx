@@ -1,4 +1,10 @@
-import type { InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from 'react';
+import type {
+  FocusEvent,
+  InputHTMLAttributes,
+  ReactNode,
+  SelectHTMLAttributes,
+  TextareaHTMLAttributes,
+} from 'react';
 
 import { Box } from '@mui/material';
 
@@ -29,16 +35,39 @@ export function TextArea(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return <Box component="textarea" sx={{ ...inputSx, resize: 'vertical' }} {...props} />;
 }
 
-export function MoneyInput(props: InputHTMLAttributes<HTMLInputElement>) {
+export function MoneyInput({ style, placeholder = '0.00', ...props }: InputHTMLAttributes<HTMLInputElement>) {
+  // No "$" in front of a word placeholder like "Auto".
+  const dollar = !!props.value || /^[\d.]+$/.test(placeholder);
+
   return (
-    <TextInput
-      type="text"
-      inputMode="decimal"
-      placeholder="0.00"
-      autoComplete="off"
-      onFocus={(e) => e.target.select()}
-      {...props}
-    />
+    <Box sx={{ position: 'relative' }} style={style}>
+      {dollar && (
+        <Box
+          aria-hidden
+          sx={{
+            position: 'absolute',
+            left: 13,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            fontSize: 16,
+            color: tokens.text3,
+            pointerEvents: 'none',
+          }}
+        >
+          $
+        </Box>
+      )}
+      <Box
+        component="input"
+        type="text"
+        inputMode="decimal"
+        autoComplete="off"
+        placeholder={placeholder}
+        onFocus={(e: FocusEvent<HTMLInputElement>) => e.target.select()}
+        sx={{ ...inputSx, display: 'block', ...(dollar && { pl: '26px' }) }}
+        {...props}
+      />
+    </Box>
   );
 }
 

@@ -4,7 +4,7 @@ import { Box } from '@mui/material';
 import { useState } from 'react';
 
 import { Segmented } from '../../components/form';
-import { GRADERS, GRADES, parseCondition, RAW_CONDITIONS } from '../../lib/condition';
+import { GRADERS, GRADES, parseCondition, RAW_CONDITION_INFO, RAW_CONDITIONS } from '../../lib/condition';
 import { fonts, tokens } from '../../theme/tokens';
 
 const selectSx = {
@@ -27,6 +27,9 @@ export function ConditionPicker({ value, onChange }: { value: string; onChange: 
   const [grader, setGrader] = useState<Grader | ''>(initial?.kind === 'graded' ? initial.grader : '');
   const [grade, setGrade] = useState(initial?.kind === 'graded' ? initial.grade : '');
   const [rawChoice, setRawChoice] = useState(initial?.kind === 'raw' ? initial.code : '');
+
+  const picked = parseCondition(value);
+  const rawInfo = kind === 'raw' && picked?.kind === 'raw' ? RAW_CONDITION_INFO[picked.code] : undefined;
 
   const emitGraded = (g: Grader | '', n: string) => onChange(g && n ? `${g} ${n}` : '');
 
@@ -57,6 +60,7 @@ export function ConditionPicker({ value, onChange }: { value: string; onChange: 
                   component="button"
                   type="button"
                   aria-pressed={selected}
+                  title={RAW_CONDITION_INFO[code].name}
                   onClick={() => {
                     setRawChoice(code);
                     onChange(code);
@@ -76,6 +80,21 @@ export function ConditionPicker({ value, onChange }: { value: string; onChange: 
                 </Box>
               );
             })}
+            <Box
+              aria-live="polite"
+              sx={{ gridColumn: '1 / -1', fontSize: 13, color: tokens.text3, mt: 0.25 }}
+            >
+              {rawInfo ? (
+                <>
+                  <Box component="span" sx={{ color: tokens.text2 }}>
+                    {rawInfo.name}:
+                  </Box>{' '}
+                  {rawInfo.meaning}
+                </>
+              ) : (
+                'Best to worst: Near Mint to Damaged. Tap one to see what it means.'
+              )}
+            </Box>
           </Box>
         ) : (
           <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>

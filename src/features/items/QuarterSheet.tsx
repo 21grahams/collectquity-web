@@ -5,7 +5,7 @@ import { SaveButton } from '../../components/SaveButton';
 import { CancelButton, Field, Sheet } from '../../components/Sheet';
 import { useSetQuarterPrice } from '../../hooks/mutations';
 import { useSaveSession } from '../../hooks/useSaveSession';
-import { marketLabel } from '../../lib/itemForm';
+import { marketLabel, toInputText } from '../../lib/itemForm';
 
 export interface QuarterTarget {
   item: { singleId: number } | { sealedItemId: number };
@@ -14,8 +14,6 @@ export interface QuarterTarget {
   quantity: number;
   unitValue: number | null;
 }
-
-const toInputText = (n: number) => String(Math.round(n * 100) / 100);
 
 export function QuarterSheet({ target, onClose }: { target: QuarterTarget | null; onClose: () => void }) {
   const session = useSaveSession();

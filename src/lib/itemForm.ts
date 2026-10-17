@@ -93,7 +93,7 @@ export interface ItemFormOriginal {
   unitValue: number | null;
 }
 
-const toInputText = (n: number) => String(Math.round(n * 100) / 100);
+export const toInputText = (n: number) => (Math.round(n * 100) / 100).toFixed(2);
 
 export function formFromItem(item: Single | SealedItem, today: string, link?: MarketLink): ItemFormOriginal {
   const baseCost = item.totalCost - item.fees;

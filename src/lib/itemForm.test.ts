@@ -164,7 +164,7 @@ describe('editing (formFromItem + original)', () => {
     expect(values).toMatchObject({
       pokemon: 'Marill',
       condition: 'LP',
-      cost: '170',
+      cost: '170.00',
       fees: '6.78',
       feeUnits: 2,
     });
