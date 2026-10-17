@@ -101,6 +101,7 @@ export function SinglesFilterSheet({ open, onClose, filters, onApply, options }:
       open={open}
       onClose={onClose}
       title="Filter Cards"
+      closeButton
       footer={
         <>
           <Button

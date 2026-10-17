@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 
-import { Box, Button, Drawer } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import { Box, Button, Drawer, IconButton } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 
 import { fonts, tokens } from '../theme/tokens';
@@ -13,6 +14,8 @@ interface SheetProps {
   subtitle?: ReactNode;
   children: ReactNode;
   footer?: ReactNode;
+  /** An ✕ beside the title, for sheets with no Cancel button: every sheet needs a visible way out. */
+  closeButton?: boolean;
 }
 
 const CLOSE_FRACTION = 1 / 3; // dragged this far down the sheet's height closes it
@@ -55,7 +58,7 @@ function useDragToClose(onClose: () => void) {
   };
 }
 
-export function Sheet({ open, onClose, title, subtitle, children, footer }: SheetProps) {
+export function Sheet({ open, onClose, title, subtitle, children, footer, closeButton }: SheetProps) {
   // iOS scrolls the page under the sheet to make room for the keyboard and
   // never scrolls it back, so put the page back where it was on close.
   const [savedScroll, setSavedScroll] = useState(0);
@@ -107,8 +110,27 @@ export function Sheet({ open, onClose, title, subtitle, children, footer }: Shee
         <Box
           sx={{ width: 36, height: 4, borderRadius: 2, backgroundColor: tokens.border, mx: 'auto', mb: 2.5 }}
         />
-        <Box sx={{ fontFamily: fonts.serif, fontSize: 20, color: tokens.gold, mb: subtitle ? 0.5 : 2.5 }}>
-          {title}
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 1,
+            mb: subtitle ? 0.5 : 2.5,
+          }}
+        >
+          <Box sx={{ fontFamily: fonts.serif, fontSize: 20, color: tokens.gold }}>{title}</Box>
+          {closeButton && (
+            <IconButton
+              aria-label="Close"
+              onClick={onClose}
+              // The header drags the sheet; without this the drag would swallow the tap.
+              onPointerDown={(e) => e.stopPropagation()}
+              sx={{ mr: -1, my: -1, color: tokens.text2, cursor: 'pointer' }}
+            >
+              <CloseIcon />
+            </IconButton>
+          )}
         </Box>
         {subtitle && <Box sx={{ fontSize: 13, color: tokens.text2, mb: 2.5 }}>{subtitle}</Box>}
       </Box>
