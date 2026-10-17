@@ -48,8 +48,12 @@ What's next, in order. The old app is retired, so database work is open.
 
 - **Desktop layout (next).** On big screens the app is a 900px column with wide empty sides.
   Use the width, e.g. two columns of cards. (Tried lining the header up with the column on
-  2026-10-16; it made the empty space more obvious, so the full-width header stays.) Next up
-  while price history builds and beta testers try the app.
+  2026-10-16; it made the empty space more obvious, so the full-width header stays.) Also on big
+  screens: show sheets (Add, Edit, Sell, Filter…) as centered dialogs instead of a 600px panel
+  attached to the bottom; phones keep the full-width bottom sheet. Keep refining the Add/Edit
+  form there too: it still feels busy (2026-10-16 it got name and set full width, date + qty on
+  one row, and fees / tag behind "+ More"). Next up while price history builds and beta testers
+  try the app.
 
 - ~~Google's own sign-in button~~ **Done 2026-10-15** (Google now says "to continue to Collectquity"). Today Google's
   screen says "to continue to zjtiggbmkrouceaqgfdw.supabase.co" because sign-in returns through

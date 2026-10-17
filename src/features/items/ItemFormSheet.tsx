@@ -66,7 +66,7 @@ export function ItemFormSheet({ kind, open, onClose, today, editing }: Props) {
   const { splitsSealed } = useSections();
   const [form, setForm] = useState<ItemFormValues>(() => emptyItemForm(today));
   const [original, setOriginal] = useState<ItemFormOriginal | null>(null);
-  const [showTag, setShowTag] = useState(false);
+  const [showMore, setShowMore] = useState(false);
   const [wasOpen, setWasOpen] = useState(open);
   const [attempted, setAttempted] = useState(false);
   const [openCount, setOpenCount] = useState(0);
@@ -86,7 +86,9 @@ export function ItemFormSheet({ kind, open, onClose, today, editing }: Props) {
         : null;
       setOriginal(prefill);
       setForm(prefill?.values ?? emptyItemForm(today));
-      setShowTag(!!prefill?.values.extra);
+      setShowMore(
+        !!prefill && (!!prefill.values.fees || prefill.values.feeUnits > 0 || !!prefill.values.extra),
+      );
       setOpenCount((n) => n + 1);
       setAttempted(false);
       session.reset();
@@ -132,6 +134,26 @@ export function ItemFormSheet({ kind, open, onClose, today, editing }: Props) {
   });
 
   const pending = addSingle.isPending || addSealed.isPending || editSingle.isPending || editSealed.isPending;
+
+  const qtyField = (
+    <Field label="Qty">
+      <Stepper value={form.quantity} min={1} onChange={(n) => set('quantity', n)} ariaLabel="quantity" />
+    </Field>
+  );
+  const dateField = (
+    <Field label="Purchase Date">
+      <TextInput type="date" {...text('purchaseDate')} />
+    </Field>
+  );
+  const hasExtras = !!form.fees || form.feeUnits > 0 || !!form.extra.trim();
+  // Never hide something filled in (or a fee error) behind "More".
+  const moreOpen = showMore || hasExtras || !!shown.feeUnits;
+  const dateAndQty = (
+    <FieldRow columns="3fr minmax(112px, 1fr)">
+      {dateField}
+      {qtyField}
+    </FieldRow>
+  );
 
   const unchanged = original != null && JSON.stringify(form) === JSON.stringify(original.values);
 
@@ -190,8 +212,8 @@ export function ItemFormSheet({ kind, open, onClose, today, editing }: Props) {
         </Field>
       )}
 
-      <FieldRow columns="1fr 112px">
-        {kind === 'single' ? (
+      {kind === 'single' ? (
+        <>
           <Field label="Pokémon" error={shown.pokemon}>
             <AutocompleteInput
               placeholder="e.g. Charizard ex"
@@ -203,7 +225,22 @@ export function ItemFormSheet({ kind, open, onClose, today, editing }: Props) {
               onPickProduct={pickProduct}
             />
           </Field>
-        ) : (
+          <Field label="Set" error={shown.setName}>
+            <AutocompleteInput
+              placeholder="e.g. Obsidian Flames"
+              value={form.setName}
+              onChange={(v) => set('setName', v)}
+              options={suggestions.setName}
+            />
+          </Field>
+          {catalogLink}
+          {dateAndQty}
+          <Field label="Condition" error={shown.condition}>
+            <ConditionPicker key={openCount} value={form.condition} onChange={(c) => set('condition', c)} />
+          </Field>
+        </>
+      ) : (
+        <>
           <Field label="Product Name" error={shown.name}>
             <AutocompleteInput
               placeholder="e.g. Prismatic Evolutions ETB"
@@ -214,47 +251,27 @@ export function ItemFormSheet({ kind, open, onClose, today, editing }: Props) {
               onPickProduct={pickProduct}
             />
           </Field>
-        )}
-        <Field label="Qty">
-          <Stepper value={form.quantity} min={1} onChange={(n) => set('quantity', n)} ariaLabel="quantity" />
-        </Field>
-      </FieldRow>
-      {kind === 'sealed' && catalogLink}
-
-      {kind === 'single' && (
-        <>
-          <Field label="Set" error={shown.setName}>
-            <AutocompleteInput
-              placeholder="e.g. Obsidian Flames"
-              value={form.setName}
-              onChange={(v) => set('setName', v)}
-              options={suggestions.setName}
-            />
-          </Field>
           {catalogLink}
-          <Field label="Condition" error={shown.condition}>
-            <ConditionPicker key={openCount} value={form.condition} onChange={(c) => set('condition', c)} />
-          </Field>
+          {dateAndQty}
         </>
       )}
 
       <FieldRow>
-        <Field label="Purchase Date">
-          <TextInput type="date" {...text('purchaseDate')} />
+        <Field label="Total Cost Paid">
+          <MoneyInput {...text('cost')} />
         </Field>
         <Field label={marketLabel(form.quantity)} error={shown.market}>
           <MoneyInput placeholder={form.link ? 'Auto' : '0.00'} {...text('market')} />
         </Field>
       </FieldRow>
 
-      <FieldRow>
-        <Field label="Total Cost Paid">
-          <MoneyInput {...text('cost')} />
-        </Field>
-        <Field label="Fees / Taxes (Optional)" error={shown.feeUnits}>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <MoneyInput {...text('fees')} style={{ flex: 1, minWidth: 0 }} />
-            <Box sx={{ width: 104, flexShrink: 0 }}>
+      {moreOpen && (
+        <>
+          <FieldRow>
+            <Field label="Fees / Taxes">
+              <MoneyInput {...text('fees')} />
+            </Field>
+            <Field label="Units w/ fee" error={shown.feeUnits}>
               <Stepper
                 value={form.feeUnits}
                 min={0}
@@ -262,27 +279,10 @@ export function ItemFormSheet({ kind, open, onClose, today, editing }: Props) {
                 onChange={(n) => set('feeUnits', n)}
                 ariaLabel="units with fee"
               />
-            </Box>
-          </Box>
-          <Box
-            sx={{
-              fontSize: 9,
-              color: tokens.text3,
-              letterSpacing: '0.5px',
-              textTransform: 'uppercase',
-              mt: 0.5,
-              textAlign: 'right',
-            }}
-          >
-            Units w/ fee
-          </Box>
-        </Field>
-      </FieldRow>
-
-      {kind === 'single' &&
-        (showTag ? (
-          <>
-            <Field label="Tag (Optional)">
+            </Field>
+          </FieldRow>
+          {kind === 'single' && (
+            <Field label="Tag">
               <TextInput
                 placeholder="e.g. PULLED"
                 autoCapitalize="characters"
@@ -290,18 +290,15 @@ export function ItemFormSheet({ kind, open, onClose, today, editing }: Props) {
                 {...text('extra')}
               />
             </Field>
-            <LinkButton
-              onClick={() => {
-                setShowTag(false);
-                set('extra', '');
-              }}
-            >
-              − Remove tag
-            </LinkButton>
-          </>
-        ) : (
-          <LinkButton onClick={() => setShowTag(true)}>+ Add tag</LinkButton>
-        ))}
+          )}
+        </>
+      )}
+      {/* Fees and tags are rarely used, so they wait behind "More"; it only folds back up while empty. */}
+      {!hasExtras && !shown.feeUnits && (
+        <Box sx={{ textAlign: 'center' }}>
+          <LinkButton onClick={() => setShowMore(!showMore)}>{showMore ? '− Less' : '+ More'}</LinkButton>
+        </Box>
+      )}
     </Sheet>
   );
 }

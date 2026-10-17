@@ -25,6 +25,8 @@ const inputSx = {
   '&:focus': { borderColor: tokens.gold },
   '&:disabled': { opacity: 0.6 },
   '&::placeholder': { color: tokens.text3 },
+  // iPhone centers a date input's text; keep it left like every other field.
+  '&::-webkit-date-and-time-value': { textAlign: 'left' },
 } as const;
 
 export function TextInput(props: InputHTMLAttributes<HTMLInputElement>) {
