@@ -1,8 +1,9 @@
-import { Box, Modal } from '@mui/material';
+import { Box } from '@mui/material';
 import { useState } from 'react';
 
 import { artUrl } from '../lib/cardArt';
 import { tokens } from '../theme/tokens';
+import { ArtViewer } from './ArtViewer';
 
 /** The item's catalog art; tapping it shows it full-screen, tapping again closes. */
 export function CardArt({ url, width, height }: { url: string; width: number; height: number }) {
@@ -36,33 +37,7 @@ export function CardArt({ url, width, height }: { url: string; width: number; he
           sx={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
         />
       </Box>
-      <Modal
-        open={open}
-        onClose={() => setOpen(false)}
-        slotProps={{ backdrop: { sx: { backgroundColor: 'rgba(0,0,0,0.88)' } } }}
-      >
-        <Box
-          onClick={() => setOpen(false)}
-          sx={{
-            position: 'fixed',
-            inset: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            p: 3,
-            outline: 'none',
-            cursor: 'zoom-out',
-          }}
-        >
-          <Box
-            component="img"
-            src={artUrl(url, 'full')}
-            alt=""
-            referrerPolicy="no-referrer"
-            sx={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', borderRadius: '12px' }}
-          />
-        </Box>
-      </Modal>
+      <ArtViewer url={url} open={open} onClose={() => setOpen(false)} />
     </>
   );
 }

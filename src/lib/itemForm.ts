@@ -12,6 +12,7 @@ export interface FormLink {
   printing: string | null;
   /** Empty when unknown (a link saved earlier); the printing then can't be changed without re-picking. */
   printings: string[];
+  imageUrl: string | null;
 }
 
 export interface ItemFormValues {
@@ -53,6 +54,7 @@ export const linkFromProduct = (p: CatalogProduct): FormLink => ({
   productName: p.productName,
   printing: p.kind === 'single' && p.printings.length === 1 ? p.printings[0]! : null,
   printings: p.kind === 'single' ? p.printings : [],
+  imageUrl: p.imageUrl,
 });
 
 export const needsPrinting = (link: FormLink | null) => !!link && !link.printing && link.printings.length > 1;
@@ -114,6 +116,7 @@ export function formFromItem(item: Single | SealedItem, today: string, link?: Ma
           productName: link.productName,
           printing: link.printing,
           printings: [],
+          imageUrl: link.imageUrl,
         }
       : null,
   };

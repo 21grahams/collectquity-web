@@ -2,12 +2,16 @@ import type { PopperProps } from '@mui/material';
 import type { InputHTMLAttributes } from 'react';
 import type { CatalogProduct } from '../api/types';
 
-import { Autocomplete, Box } from '@mui/material';
+import OpenInFullRounded from '@mui/icons-material/OpenInFullRounded';
+import { Autocomplete, Box, Button } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 
 import { useCatalogSearch } from '../hooks/queries';
 import { matchSuggestions } from '../lib/suggestions';
 import { tokens } from '../theme/tokens';
+import { ArtViewer } from './ArtViewer';
+import { sheetButtonSx } from './buttonStyles';
 import { TextInput } from './form';
 
 type Option = string | CatalogProduct;
@@ -65,29 +69,75 @@ type Props = Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange'> &
   onPickProduct?: (product: CatalogProduct) => void;
 };
 
-function ProductOption({ product }: { product: CatalogProduct }) {
+const productDetails = (p: CatalogProduct) => [p.number, p.setName].filter(Boolean).join(' · ');
+
+function ProductOption({ product, onPreview }: { product: CatalogProduct; onPreview: () => void }) {
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, py: 0.5, minWidth: 0 }}>
+      {/* Tapping the picture enlarges it; anywhere else on the row picks the product. Screen readers
+          can't use a button inside a list option, so it's hidden from them; without a picture it's
+          plain, so a tap there still picks the row. */}
       <Box
-        component="img"
-        src={product.imageUrl ?? undefined}
-        alt=""
-        referrerPolicy="no-referrer"
-        loading="lazy"
+        {...(product.imageUrl && {
+          component: 'button' as const,
+          type: 'button' as const,
+          tabIndex: -1,
+          onClick: (e: React.MouseEvent) => {
+            e.stopPropagation();
+            onPreview();
+          },
+        })}
+        aria-hidden
         sx={{
-          width: 30,
-          height: 42,
-          objectFit: 'contain',
+          position: 'relative',
           flexShrink: 0,
-          borderRadius: '3px',
-          backgroundColor: tokens.surface,
+          p: '4px',
+          m: '-4px',
+          border: 'none',
+          background: 'none',
+          cursor: product.imageUrl ? 'zoom-in' : 'inherit',
+          WebkitTapHighlightColor: 'transparent',
         }}
-      />
+      >
+        <Box
+          component="img"
+          src={product.imageUrl ?? undefined}
+          alt=""
+          referrerPolicy="no-referrer"
+          loading="lazy"
+          sx={{
+            width: 30,
+            height: 42,
+            objectFit: 'contain',
+            display: 'block',
+            borderRadius: '3px',
+            backgroundColor: tokens.surface,
+          }}
+        />
+        {product.imageUrl && (
+          <Box
+            aria-hidden
+            sx={{
+              position: 'absolute',
+              right: 0,
+              bottom: 0,
+              width: 16,
+              height: 16,
+              borderRadius: '50%',
+              display: 'grid',
+              placeItems: 'center',
+              backgroundColor: tokens.surface2,
+              border: `1px solid ${tokens.border}`,
+              color: tokens.text2,
+            }}
+          >
+            <OpenInFullRounded sx={{ fontSize: 9 }} />
+          </Box>
+        )}
+      </Box>
       <Box sx={{ minWidth: 0 }}>
         <Box sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{product.name}</Box>
-        <Box sx={{ fontSize: 12, color: tokens.text2 }}>
-          {[product.number, product.setName].filter(Boolean).join(' · ')}
-        </Box>
+        <Box sx={{ fontSize: 12, color: tokens.text2 }}>{productDetails(product)}</Box>
       </Box>
     </Box>
   );
@@ -103,14 +153,26 @@ export function AutocompleteInput({
   ...inputProps
 }: Props) {
   const [focused, setFocused] = useState(false);
+  const [listOpen, setListOpen] = useState(false);
+  const [preview, setPreview] = useState<CatalogProduct | null>(null);
   const { products, searching } = useCatalogSearch(catalog ?? 'single', value, focused && !!catalog);
   const { anchor, room } = useRoomBelow(focused);
+  // The preview has to be gone before the field takes focus back, or it pulls the focus into
+  // itself; doing both in the same tap keeps the iPhone keyboard coming back up.
+  const closePreview = () => {
+    flushSync(() => setPreview(null));
+    anchor.current?.querySelector('input')?.focus();
+  };
 
   return (
     <Box ref={anchor}>
       <Autocomplete<Option, false, true, true>
         freeSolo
         disableClearable
+        // The preview takes focus; the list stays open behind it for "Back".
+        open={listOpen}
+        onOpen={() => setListOpen(true)}
+        onClose={() => !preview && setListOpen(false)}
         blurOnSelect="touch"
         options={[...options, ...products]}
         inputValue={value}
@@ -138,7 +200,7 @@ export function AutocompleteInput({
         }}
         renderOption={({ key, ...props }, o) => (
           <li key={key} {...props}>
-            {typeof o === 'string' ? o : <ProductOption product={o} />}
+            {typeof o === 'string' ? o : <ProductOption product={o} onPreview={() => setPreview(o)} />}
           </li>
         )}
         renderInput={(params) => (
@@ -154,7 +216,7 @@ export function AutocompleteInput({
               }}
               onBlur={(e) => {
                 params.slotProps.htmlInput.onBlur?.(e);
-                setFocused(false);
+                if (!preview) setFocused(false);
               }}
             />
             {value && (
@@ -200,6 +262,43 @@ export function AutocompleteInput({
           },
         }}
       />
+      {preview?.imageUrl && (
+        <ArtViewer
+          url={preview.imageUrl}
+          open
+          onClose={closePreview}
+          restoreFocus={false}
+          caption={
+            <>
+              <div>{preview.name}</div>
+              <Box sx={{ color: 'rgba(255,255,255,0.7)', fontSize: 13 }}>{productDetails(preview)}</Box>
+            </>
+          }
+          actions={
+            <>
+              <Button
+                variant="outlined"
+                sx={{ ...sheetButtonSx, px: 2.5, color: '#fff', borderColor: 'rgba(255,255,255,0.5)' }}
+                onClick={closePreview}
+              >
+                Back
+              </Button>
+              <Button
+                variant="contained"
+                sx={{ ...sheetButtonSx, flex: 1 }}
+                onClick={() => {
+                  onPickProduct?.(preview);
+                  setPreview(null);
+                  setListOpen(false);
+                  setFocused(false);
+                }}
+              >
+                {preview.kind === 'single' ? 'Use this card' : 'Use this product'}
+              </Button>
+            </>
+          }
+        />
+      )}
     </Box>
   );
 }
