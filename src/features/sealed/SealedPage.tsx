@@ -257,6 +257,7 @@ export function SealedPage() {
           link={link}
           today={today}
           quantity={item.quantity}
+          valued={item.unitValue != null}
           onClick={() => setMarketTarget({ item: { sealedItemId: item.id }, name: item.name, link })}
         />
       )

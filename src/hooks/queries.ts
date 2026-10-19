@@ -89,7 +89,8 @@ export function useCatalogSearch(kind: CatalogProduct['kind'], text: string, ena
   });
 
   return {
-    products: query.length >= 2 ? (result.data ?? []) : [],
+    // A field without catalog search must never show results cached by one that has it.
+    products: enabled && query.length >= 2 ? (result.data ?? []) : [],
     searching: enabled && (typed !== query || (active && result.isFetching)),
   };
 }

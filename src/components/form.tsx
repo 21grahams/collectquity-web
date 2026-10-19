@@ -37,7 +37,15 @@ export function TextArea(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return <Box component="textarea" sx={{ ...inputSx, resize: 'vertical' }} {...props} />;
 }
 
-export function MoneyInput({ style, placeholder = '0.00', ...props }: InputHTMLAttributes<HTMLInputElement>) {
+export function MoneyInput({
+  style,
+  placeholder = '0.00',
+  autoValue = false,
+  ...props
+}: InputHTMLAttributes<HTMLInputElement> & {
+  /** The placeholder is an automatic value (blue, like auto values elsewhere), not a hint. */
+  autoValue?: boolean;
+}) {
   // No "$" in front of a word placeholder like "Auto".
   const dollar = !!props.value || /^[\d.]+$/.test(placeholder);
 
@@ -52,7 +60,7 @@ export function MoneyInput({ style, placeholder = '0.00', ...props }: InputHTMLA
             top: '50%',
             transform: 'translateY(-50%)',
             fontSize: 16,
-            color: tokens.text3,
+            color: autoValue && !props.value ? tokens.blue : tokens.text3,
             pointerEvents: 'none',
           }}
         >
@@ -66,7 +74,12 @@ export function MoneyInput({ style, placeholder = '0.00', ...props }: InputHTMLA
         autoComplete="off"
         placeholder={placeholder}
         onFocus={(e: FocusEvent<HTMLInputElement>) => e.target.select()}
-        sx={{ ...inputSx, display: 'block', ...(dollar && { pl: '26px' }) }}
+        sx={{
+          ...inputSx,
+          display: 'block',
+          ...(dollar && { pl: '26px' }),
+          ...(autoValue && { '&::placeholder': { color: tokens.blue, opacity: 1 } }),
+        }}
         {...props}
       />
     </Box>

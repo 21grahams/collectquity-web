@@ -3,10 +3,12 @@ import type { CatalogProduct, MarketLink } from '../api/types';
 import { describe, expect, it } from 'vitest';
 
 import {
+  catalogEstimate,
   emptyItemForm,
   formFromItem,
   linkFromProduct,
   marketLabel,
+  marketPreview,
   toSealedInput,
   toSingleInput,
   validateItemForm,
@@ -181,6 +183,7 @@ describe('catalog links', () => {
     productName: 'Charizard ex - 125/197',
     printings: ['Holofoil'],
     imageUrl: null,
+    prices: { Holofoil: 24.5 },
   };
   const valid = { ...base, pokemon: 'Charizard ex', setName: 'Obsidian Flames', condition: 'NM' };
 
@@ -205,6 +208,38 @@ describe('catalog links', () => {
       unitValue: null,
       link: { tcgplayerId: '509879', printing: 'Holofoil' },
     });
+  });
+
+  it("estimates from today's price until the morning run, but not for graded cards", () => {
+    expect(catalogEstimate(linkFromProduct(charizard), 'NM')).toBe(24.5);
+    expect(catalogEstimate(linkFromProduct(charizard), 'HP')).toBe(24.5);
+    expect(catalogEstimate(linkFromProduct(charizard), 'PSA 10')).toBeNull();
+    const two = linkFromProduct({
+      ...charizard,
+      printings: ['Normal', 'Reverse Holofoil'],
+      prices: { Normal: 1, 'Reverse Holofoil': 3 },
+    });
+    expect(catalogEstimate(two, 'NM')).toBeNull();
+    expect(catalogEstimate({ ...two, printing: 'Reverse Holofoil' }, 'NM')).toBe(3);
+    const etb = linkFromProduct({ ...charizard, kind: 'sealed', number: null, prices: { Normal: 50 } });
+    expect(catalogEstimate(etb, '')).toBe(50);
+    expect(catalogEstimate({ ...etb, prices: { Normal: 50, 'Reverse Holofoil': 9 } }, '')).toBe(50);
+    expect(catalogEstimate({ ...etb, prices: { '1st Edition': 900, Unlimited: 90 } }, '')).toBeNull();
+    expect(catalogEstimate({ ...etb, prices: null }, '')).toBeNull();
+  });
+
+  it('explains the market value field for a linked item', () => {
+    const link = linkFromProduct(charizard);
+    expect(marketPreview(link, 'NM')).toMatchObject({ placeholder: '24.50', estimate: 24.5 });
+    expect(marketPreview(link, 'NM')!.note).toMatch(/^Today's Near Mint market price/);
+    expect(marketPreview(link, 'HP')!.note).toMatch(/^Near Mint price for now · your HP price tomorrow/);
+    expect(marketPreview(link, 'PSA 10')).toMatchObject({ placeholder: 'Auto', estimate: null });
+    const two = linkFromProduct({ ...charizard, printings: ['Normal', 'Holofoil'] });
+    expect(marketPreview(two, 'NM')).toMatchObject({ placeholder: 'Pick a printing', estimate: null });
+    const etb = linkFromProduct({ ...charizard, kind: 'sealed', number: null, prices: { Normal: 50 } });
+    expect(marketPreview(etb, '')!.note).toMatch(/^Today's market price/);
+    expect(marketPreview({ ...link, prices: null }, 'NM')).toBeNull();
+    expect(marketPreview({ ...link, prices: {} }, 'NM')!.note).toMatch(/^No market price today/);
   });
 
   it('adding without a pick sends no link', () => {

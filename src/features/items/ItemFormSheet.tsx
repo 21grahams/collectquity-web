@@ -17,6 +17,7 @@ import {
   formFromItem,
   linkFromProduct,
   marketLabel,
+  marketPreview,
   toSealedInput,
   toSingleInput,
   validateItemForm,
@@ -67,6 +68,8 @@ export function ItemFormSheet({ kind, open, onClose, today, editing }: Props) {
   const [form, setForm] = useState<ItemFormValues>(() => emptyItemForm(today));
   const [original, setOriginal] = useState<ItemFormOriginal | null>(null);
   const [showMore, setShowMore] = useState(false);
+  // The set came from picking a card (not typed), so it goes when the Pokémon is cleared.
+  const [pickedSet, setPickedSet] = useState(false);
   const [wasOpen, setWasOpen] = useState(open);
   const [attempted, setAttempted] = useState(false);
   const [openCount, setOpenCount] = useState(0);
@@ -89,6 +92,7 @@ export function ItemFormSheet({ kind, open, onClose, today, editing }: Props) {
       setShowMore(
         !!prefill && (!!prefill.values.fees || prefill.values.feeUnits > 0 || !!prefill.values.extra),
       );
+      setPickedSet(!!prefill?.values.link);
       setOpenCount((n) => n + 1);
       setAttempted(false);
       session.reset();
@@ -113,18 +117,30 @@ export function ItemFormSheet({ kind, open, onClose, today, editing }: Props) {
   const invalid = Object.keys(errors).length > 0;
   const shown = attempted ? errors : {};
 
-  const pickProduct = (p: CatalogProduct) =>
-    setForm((f) => ({
-      ...f,
-      ...(p.kind === 'single' ? { pokemon: p.name, setName: p.setName } : { name: p.name }),
-      link: linkFromProduct(p),
-    }));
+  const pickProduct = (p: CatalogProduct) => {
+    if (p.kind === 'single') setPickedSet(true);
+    setForm((f) => {
+      const was = original?.values.link;
+      // Switching an item to another product replaces an untouched value with the new estimate
+      // on save; clearing it here shows that instead of a value that's about to change.
+      const switched = !!original && (!was || was.tcgplayerId !== p.tcgplayerId);
+
+      return {
+        ...f,
+        ...(p.kind === 'single' ? { pokemon: p.name, setName: p.setName } : { name: p.name }),
+        link: linkFromProduct(p),
+        ...(switched && f.market === original.values.market && { market: '' }),
+      };
+    });
+  };
+  // When adding, a typed value went with the removed pick; when editing it's the item's saved value.
+  const unlinked = original ? { link: null } : { link: null, market: '' };
   const catalogLink = (
     <CatalogLink
       link={form.link}
       named={!!(kind === 'single' ? form.pokemon : form.name).trim()}
       printingError={shown.printing}
-      onChange={(link) => set('link', link)}
+      onChange={(link) => setForm((f) => ({ ...f, ...(link ? { link } : unlinked) }))}
     />
   );
 
@@ -145,6 +161,10 @@ export function ItemFormSheet({ kind, open, onClose, today, editing }: Props) {
       <TextInput type="date" {...text('purchaseDate')} />
     </Field>
   );
+  const preview = form.market.trim()
+    ? null
+    : marketPreview(form.link, kind === 'single' ? form.condition : '');
+  const autoShown = preview?.estimate != null;
   const hasExtras = !!form.fees || form.feeUnits > 0 || !!form.extra.trim();
   // Never hide something filled in (or a fee error) behind "More".
   const moreOpen = showMore || hasExtras || !!shown.feeUnits;
@@ -219,7 +239,16 @@ export function ItemFormSheet({ kind, open, onClose, today, editing }: Props) {
               placeholder="e.g. Charizard ex"
               autoCapitalize="words"
               value={form.pokemon}
-              onChange={(v) => set('pokemon', v)}
+              onChange={(v) =>
+                // A picked card's set and match go with its Pokémon (a typed set stays); its value
+                // goes too, so the next pick can show its own.
+                setForm((f) => ({
+                  ...f,
+                  pokemon: v,
+                  ...(!v.trim() && f.link && unlinked),
+                  ...(!v.trim() && pickedSet && { setName: '' }),
+                }))
+              }
               options={suggestions.pokemon}
               catalog="single"
               onPickProduct={pickProduct}
@@ -229,7 +258,10 @@ export function ItemFormSheet({ kind, open, onClose, today, editing }: Props) {
             <AutocompleteInput
               placeholder="e.g. Obsidian Flames"
               value={form.setName}
-              onChange={(v) => set('setName', v)}
+              onChange={(v) => {
+                setPickedSet(false);
+                setForm((f) => ({ ...f, setName: v, ...(!v.trim() && f.link && unlinked) }));
+              }}
               options={suggestions.setName}
             />
           </Field>
@@ -245,7 +277,7 @@ export function ItemFormSheet({ kind, open, onClose, today, editing }: Props) {
             <AutocompleteInput
               placeholder="e.g. Prismatic Evolutions ETB"
               value={form.name}
-              onChange={(v) => set('name', v)}
+              onChange={(v) => setForm((f) => ({ ...f, name: v, ...(!v.trim() && f.link && unlinked) }))}
               options={suggestions.name}
               catalog="sealed"
               onPickProduct={pickProduct}
@@ -260,10 +292,27 @@ export function ItemFormSheet({ kind, open, onClose, today, editing }: Props) {
         <Field label="Total Cost Paid">
           <MoneyInput {...text('cost')} />
         </Field>
-        <Field label={marketLabel(form.quantity)} error={shown.market}>
-          <MoneyInput placeholder={form.link ? 'Auto' : '0.00'} {...text('market')} />
+        <Field
+          label={marketLabel(form.quantity)}
+          error={shown.market}
+          labelColor={autoShown ? tokens.blue : undefined}
+        >
+          <MoneyInput
+            placeholder={preview?.placeholder ?? (form.link ? 'Auto' : '0.00')}
+            autoValue={autoShown}
+            aria-describedby={preview ? 'market-note' : undefined}
+            {...text('market')}
+          />
         </Field>
       </FieldRow>
+      {preview && (
+        <Box
+          id="market-note"
+          sx={{ fontSize: 12, color: autoShown ? tokens.blue : tokens.text3, mt: -0.75, mb: 1.75 }}
+        >
+          {preview.note}
+        </Box>
+      )}
 
       {moreOpen && (
         <>

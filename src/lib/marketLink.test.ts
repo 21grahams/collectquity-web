@@ -42,6 +42,9 @@ describe('marketStatus', () => {
     expect(marketStatus(link({ lastRunAt: null, lastStatus: null }), '2026-10-12')).toBe(
       'Auto · first update tomorrow morning',
     );
+    expect(marketStatus(link({ lastRunAt: null, lastStatus: null }), '2026-10-12', true)).toBe(
+      'Auto · exact price tomorrow morning',
+    );
     expect(marketStatus(link({ pinned: true }), '2026-10-12')).toBe('Manual · auto paused');
   });
 });

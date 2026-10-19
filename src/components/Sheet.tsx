@@ -156,10 +156,12 @@ export function Sheet({ open, onClose, title, subtitle, children, footer, closeB
 export function Field({
   label,
   error,
+  labelColor = tokens.text2,
   children,
 }: {
   label: string;
   error?: string | null;
+  labelColor?: string;
   children: ReactNode;
 }) {
   return (
@@ -178,7 +180,7 @@ export function Field({
           fontSize: 11,
           letterSpacing: '1.5px',
           textTransform: 'uppercase',
-          color: tokens.text2,
+          color: labelColor,
           mb: 0.75,
         }}
       >

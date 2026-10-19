@@ -12,10 +12,12 @@ interface Props {
   link: MarketLink;
   today: string;
   quantity: number;
+  /** The item has a market value, e.g. the catalog estimate before its first morning run. */
+  valued: boolean;
   onClick: () => void;
 }
 
-export function MarketLine({ link, today, quantity, onClick }: Props) {
+export function MarketLine({ link, today, quantity, valued, onClick }: Props) {
   const Icon = link.pinned ? PushPinOutlined : AutorenewRounded;
   const ea = quantity > 1 ? ' ea' : '';
   const reference = (value: number | null, active: boolean) => (
@@ -48,7 +50,7 @@ export function MarketLine({ link, today, quantity, onClick }: Props) {
     <Box sx={{ mt: 0.75 }}>
       <Box component="button" type="button" onClick={onClick} aria-label="Market price settings" sx={line}>
         <Icon sx={{ fontSize: 13, color: link.pinned ? tokens.text3 : tokens.blue }} />
-        {marketStatus(link, today)}
+        {marketStatus(link, today, valued)}
       </Box>
       {isGradedLink(link) && (
         <Box

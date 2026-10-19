@@ -265,6 +265,7 @@ export async function searchCatalog(query: string, kind: CatalogProduct['kind'])
     productName: r.product_name,
     printings: r.printings ?? [],
     imageUrl: r.image_url ?? null,
+    prices: (r.prices as Record<string, number> | null) ?? {},
   }));
 }
 

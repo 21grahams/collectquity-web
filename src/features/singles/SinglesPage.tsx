@@ -98,7 +98,7 @@ export function SinglesPage() {
 
   const sum = totals(shown);
   const today = context.data.today;
-  const marketLine = (item: { singleId: number }, name: string, quantity: number) => {
+  const marketLine = (item: { singleId: number }, name: string, quantity: number, valued: boolean) => {
     const link = findLink(marketLinks.data, item);
 
     return (
@@ -107,6 +107,7 @@ export function SinglesPage() {
           link={link}
           today={today}
           quantity={quantity}
+          valued={valued}
           onClick={() => setMarketTarget({ item, name, link })}
         />
       )
@@ -231,7 +232,7 @@ export function SinglesPage() {
                 valuePct={valuePct}
                 numbers={cardNumbers(s, { valuePct })}
                 feesLabel={pasFeesLabel(s.fees, s.feeUnits)}
-                market={marketLine({ singleId: s.id }, cardTitle(s), s.quantity)}
+                market={marketLine({ singleId: s.id }, cardTitle(s), s.quantity, s.unitValue != null)}
                 autoValue={isAuto(marketLinks.data, { singleId: s.id })}
                 image={findLink(marketLinks.data, { singleId: s.id })?.imageUrl}
                 liveToday={updatedToday(findLink(marketLinks.data, { singleId: s.id }), today)}

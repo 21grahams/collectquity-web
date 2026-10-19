@@ -17,6 +17,7 @@ const charmander: CatalogProduct = {
   productName: 'Charmander',
   printings: ['Normal', 'Reverse Holofoil'],
   imageUrl: null,
+  prices: {},
 };
 const catalog = vi.hoisted(() => ({ results: [] as CatalogProduct[], searching: false }));
 vi.mock('../hooks/queries', () => ({

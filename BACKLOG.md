@@ -72,6 +72,29 @@ What's next, in order. The old app is retired, so database work is open.
 - **Before any App Store release: trademark attorney check** on "Collectquity" (renamed
   2026-10-12; domain collectquity.com). Neighbors to show them: SoleSavy's COLLECT (Class 9),
   Collectable, Collecticity. Pair the name with the plain tagline and avoid investment language.
+- **Set field as a second way to pick (later).** With a Pokémon filled in, typing in Set could
+  search the catalog for that Pokémon in that set ("Charizard" + "Base" → Base Set Charizard) and
+  link it, instead of only suggesting set names you've used before.
+- **"Last opened" per user (soon).** Today only fresh logins and changes show up, and the app
+  keeps people logged in, so it's unclear who opens it weekly, the key beta question. Record the
+  date each user last opened the app (private, no tracking service), and maybe a small owner-only
+  query or view of weekly activity. Mention it in the privacy policy.
+- **Instant exact prices (later, "Option A").** Since 2026-10-19 a linked item gets TCGplayer's
+  market price (roughly Near Mint) right away and the exact price for its condition or grade the
+  next morning. Later: look up the exact price the moment an item is added (a second or two
+  after the estimate), sharing results between users and batching bulk adds. Needs paid data
+  plans (PokemonPriceTracker Business $99/month for commercial use; JustTCG plans unknown); do it
+  when the beta shows weekly use, or at App Store time.
+- **Confirm commercial terms for every price source** (TCGCSV, JustTCG, PokemonPriceTracker)
+  before charging money or talking to a buyer; free tiers are fine for the beta.
+- **Make the web repo private (soon).** `collectquity-web` is public, so anyone can read the
+  whole frontend. GitHub Pages from a private repo needs GitHub Pro (about $4/month).
+- **CSV export.** Download your collection and sales as a spreadsheet: data you can take with you,
+  handy at tax time, and something buyers like to see. Cheap to build.
+- **Wishlist.** Items you want but don't own yet; works for any collection type. Later: tell me
+  when one drops below a price.
+- **Tax report (later).** A yearly realized-profit report built on the export, once people are
+  actually selling.
 - **Account menu keyboard access (low).** Since 2026-10-15 the photo actions sit in the menu's
   header (avatar + "Change photo · Remove" links), which arrow-key menu navigation skips. Fine
   for touch and mouse; make them keyboard-reachable if desktop keyboard use matters.
@@ -113,6 +136,10 @@ What's next, in order. The old app is retired, so database work is open.
   tap with no password, since a password would add friction 20–30×/day).
 
 ## Parked (only if beta testers ask)
+
+- **Card scanner.** Every collector app has one, but it's hard to build well and a likely buyer
+  (e.g. Collectr) already has one; our edge is the money tracking. Set completion and binders are
+  skipped on purpose: they don't fit a money-first, any-collection app (decided 2026-10-18).
 
 - **Your own item photos.** Catalog art on linked cards (since 2026-10-13) already gives the
   image the owner wanted, so uploads are on hold. Pick back up only if testers ask for photos of

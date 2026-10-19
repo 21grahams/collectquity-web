@@ -50,6 +50,35 @@ export type Database = {
           },
         ];
       };
+      catalog_prices: {
+        Row: {
+          market_price: number;
+          priced_on: string;
+          printing: string;
+          tcgplayer_id: string;
+        };
+        Insert: {
+          market_price: number;
+          priced_on: string;
+          printing: string;
+          tcgplayer_id: string;
+        };
+        Update: {
+          market_price?: number;
+          priced_on?: string;
+          printing?: string;
+          tcgplayer_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'catalog_prices_tcgplayer_id_fkey';
+            columns: ['tcgplayer_id'];
+            isOneToOne: false;
+            referencedRelation: 'catalog_products';
+            referencedColumns: ['tcgplayer_id'];
+          },
+        ];
+      };
       catalog_products: {
         Row: {
           group_id: number;
@@ -1012,6 +1041,7 @@ export type Database = {
           kind: string;
           name: string;
           number: string;
+          prices: Json;
           printings: string[];
           product_name: string;
           set_name: string;
@@ -1060,7 +1090,9 @@ export type Database = {
       };
       app_timezone: { Args: { p_user?: string }; Returns: string };
       app_today: { Args: { p_user?: string }; Returns: string };
+      apply_catalog_estimate: { Args: { p_sealed_item_id: number; p_single_id: number }; Returns: undefined };
       catalog_card_name: { Args: { p_name: string; p_number: string }; Returns: string };
+      catalog_estimate: { Args: { p_printing: string; p_tcgplayer_id: string }; Returns: number };
       catalog_search_text: { Args: { p_text: string }; Returns: string };
       catalog_set_name: { Args: { p_name: string }; Returns: string };
       complete_short_hold: { Args: { p_profit: number; p_sold_price: number }; Returns: string };
@@ -1136,6 +1168,7 @@ export type Database = {
         Args: { p_from?: string; p_sealed_item_id: number; p_single_id: number; p_to?: string };
         Returns: number;
       };
+      link_key: { Args: { p_sealed_item_id: number; p_single_id: number }; Returns: string };
       long_hold_id: { Args: Record<PropertyKey, never>; Returns: number };
       market_job_secrets: { Args: Record<PropertyKey, never>; Returns: Json };
       market_links_to_refresh: {
@@ -1154,6 +1187,7 @@ export type Database = {
       quarter_end: { Args: { p_quarter: number; p_year: number }; Returns: string };
       quarter_of: { Args: { p_date: string }; Returns: number };
       quarter_start: { Args: { p_quarter: number; p_year: number }; Returns: string };
+      record_catalog_prices: { Args: { p_prices: Json }; Returns: number };
       record_catalog_set: { Args: { p_products: Json; p_set: Json }; Returns: number };
       record_daily_values: { Args: Record<PropertyKey, never>; Returns: number };
       record_market_prices: { Args: { p_results: Json }; Returns: number };

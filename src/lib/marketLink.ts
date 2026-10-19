@@ -8,9 +8,11 @@ function denverDay(timestamp: string): string {
 }
 
 /** "Auto · updated today", "Manual · auto paused", … for the line under a card's numbers. */
-export function marketStatus(link: MarketLink, today: string): string {
+export function marketStatus(link: MarketLink, today: string, valued = false): string {
   if (link.pinned) return 'Manual · auto paused';
-  if (!link.lastRunAt || !link.lastStatus) return 'Auto · first update tomorrow morning';
+  if (!link.lastRunAt || !link.lastStatus) {
+    return valued ? 'Auto · exact price tomorrow morning' : 'Auto · first update tomorrow morning';
+  }
   const day = denverDay(link.lastRunAt);
   const when = day === today ? 'today' : formatDate(day).slice(0, 5);
 

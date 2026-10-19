@@ -94,6 +94,8 @@ export interface CatalogProduct {
   /** e.g. Normal, Holofoil, Reverse Holofoil. */
   printings: string[];
   imageUrl: string | null;
+  /** Today's TCGplayer market price by printing, for an instant estimate. */
+  prices: Record<string, number>;
 }
 
 export interface RetailerAccount {
