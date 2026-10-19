@@ -8,9 +8,8 @@ import { useState } from 'react';
 import { ArtViewer } from '../../components/ArtViewer';
 import { Segmented } from '../../components/form';
 import { Field } from '../../components/Sheet';
+import { shortPrinting } from '../../lib/catalogPrices';
 import { tokens } from '../../theme/tokens';
-
-const shortPrinting = (p: string) => p.replace('Holofoil', 'Holo').replace('1st Edition', '1st Ed.');
 
 interface Props {
   link: FormLink | null;

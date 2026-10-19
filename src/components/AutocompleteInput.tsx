@@ -8,8 +8,9 @@ import { useEffect, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 
 import { useCatalogSearch } from '../hooks/queries';
+import { lowestPrice, pricesByPrinting } from '../lib/catalogPrices';
 import { matchSuggestions } from '../lib/suggestions';
-import { tokens } from '../theme/tokens';
+import { fonts, tokens } from '../theme/tokens';
 import { ArtViewer } from './ArtViewer';
 import { sheetButtonSx } from './buttonStyles';
 import { TextInput } from './form';
@@ -72,8 +73,10 @@ type Props = Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange'> &
 const productDetails = (p: CatalogProduct) => [p.number, p.setName].filter(Boolean).join(' · ');
 
 function ProductOption({ product, onPreview }: { product: CatalogProduct; onPreview: () => void }) {
+  const price = lowestPrice(product.prices);
+
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, py: 0.5, minWidth: 0 }}>
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, py: 0.5, minWidth: 0, width: '100%' }}>
       {/* Tapping the picture enlarges it; anywhere else on the row picks the product. Screen readers
           can't use a button inside a list option, so it's hidden from them; without a picture it's
           plain, so a tap there still picks the row. */}
@@ -135,10 +138,26 @@ function ProductOption({ product, onPreview }: { product: CatalogProduct; onPrev
           </Box>
         )}
       </Box>
-      <Box sx={{ minWidth: 0 }}>
+      <Box sx={{ minWidth: 0, flex: 1 }}>
         <Box sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{product.name}</Box>
         <Box sx={{ fontSize: 12, color: tokens.text2 }}>{productDetails(product)}</Box>
       </Box>
+      {price && (
+        <Box
+          sx={{
+            fontFamily: fonts.mono,
+            fontSize: 13,
+            color: tokens.blue,
+            flexShrink: 0,
+            whiteSpace: 'nowrap',
+            pl: 1,
+            ml: 'auto',
+            textAlign: 'right',
+          }}
+        >
+          {price.from ? `from ${price.amount}` : price.amount}
+        </Box>
+      )}
     </Box>
   );
 }
@@ -157,6 +176,7 @@ export function AutocompleteInput({
   const [preview, setPreview] = useState<CatalogProduct | null>(null);
   const { products, searching } = useCatalogSearch(catalog ?? 'single', value, focused && !!catalog);
   const { anchor, room } = useRoomBelow(focused);
+  const previewPrices = preview && (pricesByPrinting(preview.prices) ?? lowestPrice(preview.prices)?.amount);
   // The preview has to be gone before the field takes focus back, or it pulls the focus into
   // itself; doing both in the same tap keeps the iPhone keyboard coming back up.
   const closePreview = () => {
@@ -272,6 +292,9 @@ export function AutocompleteInput({
             <>
               <div>{preview.name}</div>
               <Box sx={{ color: 'rgba(255,255,255,0.7)', fontSize: 13 }}>{productDetails(preview)}</Box>
+              {previewPrices && (
+                <Box sx={{ fontFamily: fonts.mono, fontSize: 13, mt: 0.5 }}>{previewPrices}</Box>
+              )}
             </>
           }
           actions={
