@@ -77,6 +77,11 @@ What's next, in order. The old app is retired, so database work is open.
   link it, instead of only suggesting set names you've used before.
 - ~~"Last opened" per user~~ **Done 2026-10-19** with an owner-only Admin page (account menu):
   invites used, who opened the app this week, join dates, counts, and creating invite codes.
+- **Clean up abandoned sign-ups (later).** A weekly job deleting logins that never confirmed their
+  email (the 6-digit code) after ~7 days, so we don't keep addresses of people who never finished
+  signing up. Storage isn't the reason (each is ~1–2 KB). Only ever touch never-confirmed logins
+  that never joined: anyone who confirmed, signed in with Google, or redeemed an invite stays,
+  however long they go between visits. Mention it in the privacy policy.
 - **Instant exact prices (later, "Option A").** Since 2026-10-19 a linked item gets TCGplayer's
   market price (roughly Near Mint) right away and the exact price for its condition or grade the
   next morning. Later: look up the exact price the moment an item is added (a second or two
