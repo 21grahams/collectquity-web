@@ -75,10 +75,8 @@ What's next, in order. The old app is retired, so database work is open.
 - **Set field as a second way to pick (later).** With a Pokémon filled in, typing in Set could
   search the catalog for that Pokémon in that set ("Charizard" + "Base" → Base Set Charizard) and
   link it, instead of only suggesting set names you've used before.
-- **"Last opened" per user (soon).** Today only fresh logins and changes show up, and the app
-  keeps people logged in, so it's unclear who opens it weekly, the key beta question. Record the
-  date each user last opened the app (private, no tracking service), and maybe a small owner-only
-  query or view of weekly activity. Mention it in the privacy policy.
+- ~~"Last opened" per user~~ **Done 2026-10-19** with an owner-only Admin page (account menu):
+  invites used, who opened the app this week, join dates, counts, and creating invite codes.
 - **Instant exact prices (later, "Option A").** Since 2026-10-19 a linked item gets TCGplayer's
   market price (roughly Near Mint) right away and the exact price for its condition or grade the
   next morning. Later: look up the exact price the moment an item is added (a second or two
