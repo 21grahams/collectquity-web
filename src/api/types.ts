@@ -40,6 +40,22 @@ export interface Account extends Sections {
   timeZone: string | null;
   /** Finished the onboarding questions. */
   onboarded: boolean;
+  /** Sees the admin page (the owner). */
+  isAdmin: boolean;
+}
+
+/** One invite code on the admin page, with the person who used it (if anyone). */
+export interface AdminPerson {
+  note: string;
+  code: string;
+  usesLeft: number;
+  /** Days are the person's own calendar day, "YYYY-MM-DD". */
+  joinedOn: string | null;
+  lastOpenedOn: string | null;
+  singles: number;
+  sealed: number;
+  completedHolds: number;
+  splitsSealed: boolean | null;
 }
 
 export type InviteResult = 'joined' | 'invalid' | 'too_many';

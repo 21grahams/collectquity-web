@@ -47,7 +47,7 @@ export function PrivacyPage() {
         Privacy Policy
       </Typography>
       <Typography variant="body2" sx={{ color: tokens.text2, mb: 3 }}>
-        {APP_NAME} beta · Last updated October 14, 2026
+        {APP_NAME} beta · Last updated October 19, 2026
       </Typography>
 
       <Section title="What we collect">
@@ -66,6 +66,9 @@ export function PrivacyPage() {
           <li>
             <strong>Your time zone,</strong> from your device, so dates and quarters are right.
           </li>
+          <li>
+            <strong>The date you last opened the app</strong> (just the date).
+          </li>
         </ul>
         <p>
           Our providers also record technical details like your IP address and browser type to run logins and
@@ -76,8 +79,9 @@ export function PrivacyPage() {
 
       <Section title="How we use it">
         <p>
-          Only to run the app for you. We never sell your data, share it for advertising, or use it to profile
-          you.
+          Only to run the app for you, and to see how the beta is going: who has joined, when they last opened
+          the app, how many items they track (never what those items are) and which parts of the app they use.
+          We never sell your data, share it for advertising, or use it to profile you.
         </p>
       </Section>
 

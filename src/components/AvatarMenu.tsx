@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router';
 import { useAuth } from '../features/auth/authContext';
 import { DeleteAccountDialog } from '../features/auth/DeleteAccountDialog';
 import { useRemoveAvatar, useUploadAvatar } from '../hooks/mutations';
-import { useAvatarUrl } from '../hooks/queries';
+import { useAccount, useAvatarUrl } from '../hooks/queries';
 import { squareJpeg } from '../lib/avatarImage';
 import { APP_NAME, TAGLINE } from '../lib/brand';
 import { fonts, tokens } from '../theme/tokens';
@@ -68,6 +68,7 @@ export function AvatarMenu() {
   const [signingOut, setSigningOut] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const navigate = useNavigate();
+  const isAdmin = useAccount(true).data?.isAdmin;
   const { mode, setMode } = useColorScheme();
   const email = session?.user.email ?? '';
   // Google-only logins have no password to change.
@@ -242,6 +243,17 @@ export function AvatarMenu() {
         >
           Customize collection
         </MenuItem>
+        {isAdmin && (
+          <MenuItem
+            onClick={() => {
+              setAnchor(null);
+              navigate('/admin');
+            }}
+            sx={{ fontSize: 15, minHeight: 44 }}
+          >
+            Admin
+          </MenuItem>
+        )}
         {mode !== 'system' && (
           <MenuItem
             onClick={() => {

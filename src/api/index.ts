@@ -2,6 +2,7 @@
 
 import type {
   Account,
+  AdminPerson,
   AppContext,
   CatalogProduct,
   CompletedHold,
@@ -73,7 +74,37 @@ export async function getAccount(): Promise<Account> {
     usesAccounts: row.uses_accounts,
     // Missing only if this app runs before the database knows about onboarding: don't send existing users there.
     onboarded: row.onboarded ?? true,
+    isAdmin: row.is_admin ?? false,
   };
+}
+
+/** Notes today's date as this person's "last opened"; the admin page shows it. */
+export async function recordOpened(): Promise<void> {
+  const { error } = await send(supabase.rpc('api_record_opened'));
+  if (error) throw new ApiError(error.message);
+}
+
+export async function listAdminPeople(): Promise<AdminPerson[]> {
+  const rows = unwrap(await send(supabase.rpc('api_admin_people')));
+
+  return rows.map((r) => ({
+    note: r.note,
+    code: r.code,
+    usesLeft: r.uses_left,
+    joinedOn: r.joined_on ?? null,
+    lastOpenedOn: r.last_opened_on ?? null,
+    singles: r.singles ?? 0,
+    sealed: r.sealed ?? 0,
+    completedHolds: r.completed_holds ?? 0,
+    splitsSealed: r.splits_sealed ?? null,
+  }));
+}
+
+export async function createInvite(note: string): Promise<string> {
+  const code = await save(supabase.rpc('api_admin_create_invite', { p_note: note }));
+  if (!code) throw new ApiError('No code returned');
+
+  return code;
 }
 
 // No request id: saving the same choices twice changes nothing.

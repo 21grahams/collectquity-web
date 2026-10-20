@@ -61,6 +61,15 @@ export const useRedeemInvite = () => {
   });
 };
 
+export const useCreateInvite = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (note: string) => api.createInvite(note),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.adminPeople }),
+  });
+};
+
 export const useSaveSections = () => {
   const queryClient = useQueryClient();
 

@@ -5,6 +5,7 @@ import { Navigate } from 'react-router';
 
 import { ErrorState } from '../../components/ListStates';
 import { useAccount } from '../../hooks/queries';
+import { useRecordOpened } from '../../hooks/useRecordOpened';
 import { OnboardingPage } from '../onboarding/OnboardingPage';
 import { useAuth } from './authContext';
 import { InvitePage } from './InvitePage';
@@ -20,6 +21,7 @@ function Spinner() {
 export function RequireAuth({ children }: { children: ReactNode }) {
   const { session, loading, signOut } = useAuth();
   const account = useAccount(!!session);
+  useRecordOpened(account.data?.approved && session ? session.user.id : null);
 
   if (loading) return <Spinner />;
   if (!session) return <Navigate to="/login" replace />;

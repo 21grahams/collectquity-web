@@ -15,6 +15,7 @@ export const queryKeys = {
   summary: ['summary'] as const,
   avatar: ['avatar'] as const,
   marketLinks: ['marketLinks'] as const,
+  adminPeople: ['adminPeople'] as const,
 };
 
 // Approval almost never changes, so don't re-ask every time the app comes back to the front.
@@ -41,6 +42,9 @@ export function useSections(): Sections {
 
   return { tracksSingles, tracksSealed, splitsSealed, usesAccounts };
 }
+
+export const useAdminPeople = (enabled: boolean) =>
+  useQuery({ queryKey: queryKeys.adminPeople, queryFn: api.listAdminPeople, enabled });
 
 export const useAppContext = () => useQuery({ queryKey: queryKeys.context, queryFn: api.getContext });
 

@@ -8,6 +8,8 @@ export type Database = {
           collection: string;
           created_at: string;
           invite_code: string | null;
+          is_admin: boolean;
+          last_opened_on: string | null;
           onboarded_at: string | null;
           splits_sealed: boolean;
           time_zone: string;
@@ -20,6 +22,8 @@ export type Database = {
           collection?: string;
           created_at?: string;
           invite_code?: string | null;
+          is_admin?: boolean;
+          last_opened_on?: string | null;
           onboarded_at?: string | null;
           splits_sealed?: boolean;
           time_zone?: string;
@@ -32,6 +36,8 @@ export type Database = {
           collection?: string;
           created_at?: string;
           invite_code?: string | null;
+          is_admin?: boolean;
+          last_opened_on?: string | null;
           onboarded_at?: string | null;
           splits_sealed?: boolean;
           time_zone?: string;
@@ -821,6 +827,22 @@ export type Database = {
         };
         Returns: number;
       };
+      api_admin_create_invite: { Args: { p_note: string }; Returns: string };
+      api_admin_people: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          code: string;
+          code_created_at: string;
+          completed_holds: number;
+          joined_on: string;
+          last_opened_on: string;
+          note: string;
+          sealed: number;
+          singles: number;
+          splits_sealed: boolean;
+          uses_left: number;
+        }[];
+      };
       api_complete_short_hold: {
         Args: { p_profit: number; p_request_id: string; p_sold_price: number };
         Returns: string;
@@ -880,6 +902,7 @@ export type Database = {
         Returns: {
           approved: boolean;
           collection: string;
+          is_admin: boolean;
           onboarded: boolean;
           splits_sealed: boolean;
           time_zone: string;
@@ -1024,6 +1047,7 @@ export type Database = {
         }[];
       };
       api_move_sealed: { Args: { p_id: number; p_quantity: number; p_request_id: string }; Returns: string };
+      api_record_opened: { Args: Record<PropertyKey, never>; Returns: undefined };
       api_redeem_invite: { Args: { p_code: string; p_time_zone: string }; Returns: string };
       api_save_sections: {
         Args: {
@@ -1091,6 +1115,7 @@ export type Database = {
       app_timezone: { Args: { p_user?: string }; Returns: string };
       app_today: { Args: { p_user?: string }; Returns: string };
       apply_catalog_estimate: { Args: { p_sealed_item_id: number; p_single_id: number }; Returns: undefined };
+      caller_is_admin: { Args: Record<PropertyKey, never>; Returns: boolean };
       catalog_card_name: { Args: { p_name: string; p_number: string }; Returns: string };
       catalog_estimate: { Args: { p_printing: string; p_tcgplayer_id: string }; Returns: number };
       catalog_search_text: { Args: { p_text: string }; Returns: string };

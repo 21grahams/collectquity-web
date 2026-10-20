@@ -6,6 +6,7 @@ import { Navigate, Route, Routes } from 'react-router';
 import { AppShell } from './components/AppShell';
 import { visibleTabs } from './components/tabs';
 import { AccountsPage } from './features/accounts/AccountsPage';
+import { AdminPage } from './features/admin/AdminPage';
 import { ChangePasswordPage } from './features/auth/ChangePasswordPage';
 import { LoginPage } from './features/auth/LoginPage';
 import { RequireAuth } from './features/auth/RequireAuth';
@@ -42,6 +43,14 @@ export function App() {
         element={
           <RequireAuth>
             <CustomizeCollectionPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <RequireAuth>
+            <AdminPage />
           </RequireAuth>
         }
       />
