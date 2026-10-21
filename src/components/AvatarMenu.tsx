@@ -286,7 +286,7 @@ export function AvatarMenu() {
         <Box sx={{ px: 2, pt: 1.25, pb: 0.5, fontSize: 11, color: tokens.text3 }}>
           {APP_NAME} · {TAGLINE}
           <br />
-          Version {__APP_VERSION__} · built {formatBuiltAt(__BUILT_AT__)}
+          Version {__APP_RELEASE__} ({__APP_VERSION__}) · built {formatBuiltAt(__BUILT_AT__)}
         </Box>
         <MenuItem
           onClick={() => {

@@ -49,7 +49,15 @@ export const theme = createTheme({
         root: { backgroundColor: tokens.surface2 },
         notchedOutline: { borderColor: tokens.border },
         // iOS zooms the page when focusing an input under 16px.
-        input: { fontSize: 16 },
+        input: {
+          fontSize: 16,
+          // Browser autofill paints its own blue that runs under the floating label; keep our colors.
+          '&:-webkit-autofill': {
+            WebkitBoxShadow: `0 0 0 100px ${tokens.surface2} inset`,
+            WebkitTextFillColor: tokens.text,
+            caretColor: tokens.text,
+          },
+        },
       },
     },
     MuiInputLabel: {

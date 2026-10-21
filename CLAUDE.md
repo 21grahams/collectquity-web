@@ -56,6 +56,9 @@ Rules:
 - **Show code/diffs before committing**, even locally. **Ask before every push.**
 - Desktop and iPhone both matter; say when something needs a real-device check.
 - Small, reviewable steps.
+- **Versions (since 0.9.0, 2026-10-21):** bump `package.json` (and the lock file) once per push:
+  minor for a feature, patch for a fix or polish; 1.0.0 is the public launch. Tag the commit
+  `vX.Y.Z` and push the tag with it. The account menu shows "Version X.Y.Z (sha)".
 - **Imports:** type imports first, then third-party, then ours, with a blank line between sections.
   Prettier sorts them automatically (`npm run format`); CI fails if they're out of order.
 - **A blank line before `return`** when other statements come before it in the block (early
