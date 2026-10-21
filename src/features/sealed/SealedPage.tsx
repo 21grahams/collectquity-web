@@ -377,10 +377,10 @@ export function SealedPage() {
               : `Complete ${currentGroup.name} ✓`}
           </Box>
         )}
-        <PercentPicker value={valuePct} onChange={setValuePct} />
         {headed.length > 1 && (
           <CollapseAllButton allCollapsed={allCollapsed} onClick={toggleAll} short={isPhone} />
         )}
+        <PercentPicker value={valuePct} onChange={setValuePct} />
       </StickyToolbar>
 
       {longGroup && (
