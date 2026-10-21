@@ -65,6 +65,9 @@ const linkButton = {
 export function AvatarMenu() {
   const { session, signOut } = useAuth();
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
+  // Only a keyboard opening (a click with no pointer: detail 0) focuses the first item; on a
+  // phone that focus could show as a stray highlight on "Customize collection".
+  const [byKeyboard, setByKeyboard] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const navigate = useNavigate();
@@ -103,7 +106,10 @@ export function AvatarMenu() {
         aria-label="Account menu"
         aria-haspopup="menu"
         aria-expanded={open}
-        onClick={(e) => setAnchor(e.currentTarget)}
+        onClick={(e) => {
+          setByKeyboard(e.detail === 0);
+          setAnchor(e.currentTarget);
+        }}
         sx={{
           width: 34,
           height: 34,
@@ -130,6 +136,7 @@ export function AvatarMenu() {
         anchorEl={anchor}
         open={open}
         onClose={() => setAnchor(null)}
+        disableAutoFocusItem={!byKeyboard}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         slotProps={{
