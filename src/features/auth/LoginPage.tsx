@@ -7,6 +7,7 @@ import { Navigate, Link as RouterLink } from 'react-router';
 import { SaveButton } from '../../components/SaveButton';
 import { TAGLINE } from '../../lib/brand';
 import { validateLogin } from '../../lib/loginForm';
+import { isHomeScreenApp } from '../../lib/platform';
 import { useAuth } from './authContext';
 import { AuthLayout } from './AuthLayout';
 import { EmailField, PasswordField } from './fields';
@@ -42,7 +43,12 @@ export function LoginPage() {
   }
 
   return (
-    <AuthLayout onSubmit={handleSubmit} tagline={TAGLINE}>
+    <AuthLayout onSubmit={handleSubmit} homeLink tagline={TAGLINE}>
+      {!isHomeScreenApp && (
+        <Typography variant="h6" align="center">
+          Welcome back
+        </Typography>
+      )}
       {error && <Alert severity="error">{error}</Alert>}
       <GoogleButton onError={setError} />
       <EmailField value={email} onChange={setEmail} error={shown.email} />

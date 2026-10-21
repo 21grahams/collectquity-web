@@ -2,14 +2,12 @@ import { Box, Divider, Typography } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 
 import { GOOGLE_CLIENT_ID, loadGoogleIdentity, newNonce } from '../../lib/googleSignIn';
+import { isHomeScreenApp } from '../../lib/platform';
 import { useAuth } from './authContext';
 
 // Google's sign-in window can't hand its result back to a home-screen app (it keeps separate
 // storage from Safari), and the one-time code needs a secure page (not the practice preview on
 // the Mac's network address), so those offer email and password only.
-const isHomeScreenApp =
-  window.matchMedia?.('(display-mode: standalone)').matches ||
-  (navigator as Navigator & { standalone?: boolean }).standalone === true;
 const available = !isHomeScreenApp && !!globalThis.crypto?.subtle;
 
 /** Google's own "Continue with Google" button plus an "or" divider; nothing where it can't work. */

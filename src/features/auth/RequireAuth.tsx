@@ -6,6 +6,7 @@ import { Navigate } from 'react-router';
 import { ErrorState } from '../../components/ListStates';
 import { useAccount } from '../../hooks/queries';
 import { useRecordOpened } from '../../hooks/useRecordOpened';
+import { isHomeScreenApp } from '../../lib/platform';
 import { OnboardingPage } from '../onboarding/OnboardingPage';
 import { useAuth } from './authContext';
 import { InvitePage } from './InvitePage';
@@ -24,7 +25,8 @@ export function RequireAuth({ children }: { children: ReactNode }) {
   useRecordOpened(account.data?.approved && session ? session.user.id : null);
 
   if (loading) return <Spinner />;
-  if (!session) return <Navigate to="/login" replace />;
+  // A browser visitor first sees what Collectquity is; the home-screen app goes straight to login.
+  if (!session) return <Navigate to={isHomeScreenApp ? '/login' : '/welcome'} replace />;
   if (account.isPending) return <Spinner />;
   // A failed re-check keeps the last answer, so a weak signal never pulls the app out from under you.
   if (!account.data) {

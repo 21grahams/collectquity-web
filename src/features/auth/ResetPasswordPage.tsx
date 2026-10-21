@@ -88,7 +88,10 @@ export function ResetPasswordPage() {
 
   if (step === 'code') {
     return (
-      <AuthLayout onSubmit={handleSubmit}>
+      <AuthLayout onSubmit={handleSubmit} homeLink>
+        <Typography variant="h6" align="center">
+          Check your email
+        </Typography>
         <Typography align="center">
           If <strong>{email.trim()}</strong> has an account, we sent it a {CODE_LENGTH}-digit code. Enter it
           and choose a new password.
@@ -127,7 +130,7 @@ export function ResetPasswordPage() {
   }
 
   return (
-    <AuthLayout onSubmit={handleSubmit}>
+    <AuthLayout onSubmit={handleSubmit} homeLink>
       <Typography variant="h6" align="center">
         Reset your password
       </Typography>

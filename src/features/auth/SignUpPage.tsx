@@ -69,7 +69,10 @@ export function SignUpPage() {
 
   if (step === 'code') {
     return (
-      <AuthLayout onSubmit={handleSubmit}>
+      <AuthLayout onSubmit={handleSubmit} homeLink>
+        <Typography variant="h6" align="center">
+          Confirm your email
+        </Typography>
         <Typography align="center">
           We sent a {CODE_LENGTH}-digit code to <strong>{email.trim()}</strong>. Enter it to confirm your
           email.
@@ -98,7 +101,7 @@ export function SignUpPage() {
   }
 
   return (
-    <AuthLayout onSubmit={handleSubmit}>
+    <AuthLayout onSubmit={handleSubmit} homeLink>
       <Typography variant="h6" align="center">
         Create your account
       </Typography>
